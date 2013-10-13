@@ -3,6 +3,12 @@
 import csv
 
 def parse(filename, format):
+	''' parser takes a filename and a supposed format for the file
+	it then returns a list of dictionaries with keys representing the type of data
+	and values of the data itself
+
+	str filename
+	list format'''
 	items = []
 	with open(filename, 'rb') as csvfile:
 		parser = csv.reader(csvfile, delimiter=',')
