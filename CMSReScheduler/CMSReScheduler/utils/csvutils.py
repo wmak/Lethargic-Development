@@ -3,16 +3,19 @@
 
 import csv
 
-def parse(filename, format):
-	''' parser takes a filename and a supposed format for the file
+def parse(filename, format, delimiter=','):
+	''' parser takes a filename and a supposed format for the file, 
+	delimeter is preset but can also be modified as needed
 	it then returns a list of dictionaries with keys representing the type of data
 	and values of the data itself
 
 	str filename
-	list format'''
+	list format
+	str delimeter
+	'''
 	items = []
 	with open(filename, 'rb') as csvfile:
-		parser = csv.reader(csvfile, delimiter=',')
+		parser = csv.reader(csvfile, delimeter)
 		for row in parser:
 			new_item = {}
 			for i in range(len(format)):
