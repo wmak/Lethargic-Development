@@ -15,10 +15,16 @@ def parse(filename, format, delimiter=','):
 	'''
 	items = []
 	with open(filename, 'rb') as csvfile:
-		parser = csv.reader(csvfile, delimeter)
+		parser = csv.reader(csvfile, delimiter=delimiter)
 		for row in parser:
 			new_item = {}
 			for i in range(len(format)):
 				new_item[format[i]] = row[i]
 			items.append(new_item)
 	return items
+
+def update_courses(items):
+	from ..classes.models import Course
+	for item in items:
+		Course(code=item["code"], enrolment=item["enrolment"]).save()
+
