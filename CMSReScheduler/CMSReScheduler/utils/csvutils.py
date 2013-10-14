@@ -15,7 +15,7 @@ def parse(filename, format, delimiter=','):
 	'''
 	items = []
 	with open(filename, 'rb') as csvfile:
-		parser = csv.reader(csvfile, delimiter)
+		parser = csv.reader(csvfile, delimiter=delimiter)
 		for row in parser:
 			new_item = {}
 			for i in range(len(format)):
