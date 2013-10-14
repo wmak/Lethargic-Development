@@ -6,6 +6,8 @@ _For the first run_
 1. "pip install Django==1.5.4"
 - "sudo apt-get install libpq-dev"
 - "sudo pip install psycopg2"
+- "Install postgresql"
+- "CREATE DATABASE CMSdb"
 - "cd CMSReScheduler"
 - "python manage.py runserver"
 
