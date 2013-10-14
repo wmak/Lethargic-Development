@@ -27,4 +27,3 @@ def update_courses(items):
 	from ..classes.models import Course
 	for item in items:
 		Course(code=item["code"], enrolment=item["enrolment"]).save()
-
