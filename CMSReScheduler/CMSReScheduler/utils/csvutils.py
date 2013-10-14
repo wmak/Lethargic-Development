@@ -24,6 +24,8 @@ def parse(filename, format, delimiter=','):
 	return items
 
 def update_courses(items):
-	from ..classes.models import Course
+	from classes.models import Course
 	for item in items:
-		Course(code=item["code"], enrolment=item["enrolment"]).save()
+		entry = Course.objects.filter(code=item["code"])
+		if entry.count() == 0:
+			Course(code=item["code"], enrolment=item["enrolment"]).save()

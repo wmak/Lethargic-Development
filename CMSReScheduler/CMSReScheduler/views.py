@@ -1,3 +1,6 @@
-import utils.csvutils
+import utils.csvutils as csvutils
+from django.shortcuts import render
+from classes.models import Course
 
-update_courses(parse("test.csv", ["code", "enrolment"]))
+def home(request):
+	return render(request, 'test.html')
