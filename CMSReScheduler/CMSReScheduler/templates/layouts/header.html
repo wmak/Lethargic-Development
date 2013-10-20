@@ -3,9 +3,9 @@
 	<h1 id="header-title" class="center fleft">CMS (Re)Scheduling System</h1>
 	<div id="header-nav" class="right fleft">
 		<ul>
-			<li><a href="#">Profile</a></li>
-			<li><a href="#">Schedule</a></li>
-			<li><a href="#">Admin</a></li>
+			<li><a class="{% if active == "profile" %}active{% endif %}" href="#">Profile</a></li>
+			<li><a class="{% if active == "schedule" %}active{% endif %}" href="#">Schedule</a></li>
+			<li><a class="{% if active == "admin" %}active{% endif %}" href="{% url "admin" %}">Admin</a></li>
 			<li><a href="#">Log Out</a></li>
 		</ul>
 	</div>

@@ -7,3 +7,6 @@ def home(request):
 
 def admin(request):
 	return render(request, 'admin/index.html')
+
+def admin_upload(request):
+	return render(request, 'admin/upload.html')

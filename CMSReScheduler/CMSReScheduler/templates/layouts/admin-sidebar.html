@@ -1,5 +1,5 @@
 <div class="sidebar fleft">
-	<div class="item"><a href="#">Menu Option 1</a></div>
+	<div class="item {% if active == "upload" %}active{% endif %}"><a href="{% url "admin_upload" %}">Upload Schedule</a></div>
 	<div class="item"><a href="#">Menu Option 2</a></div>
 	<div class="item"><a href="#">Menu Option 3</a></div>
 	<div class="item"><a href="#">Menu Option 4</a></div>
