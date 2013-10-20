@@ -4,11 +4,11 @@ Lethargic-Development
 _For the first run_
 
 1. "pip install Django==1.5.4"
-- "sudo apt-get install libpq-dev"
-- "sudo pip install psycopg2"
-- "Install postgresql"
-- "CREATE DATABASE CMSdb"
+- Install mysql
+- Create a new user called "djangouser" with password "bulbasaur"
+- Create a database in mysql called "CMSdb"
 - "cd CMSReScheduler"
+    - This directory should have a file called manage.py
 - "python manage.py runserver"
 
 _For future runs_
