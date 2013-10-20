@@ -8,17 +8,18 @@ from django.template import RequestContext
 from django.http import HttpResponse
 from forms import UploadCsv
 
-#from ... import CSVParserFunction
-
 def home(request):
 	return render(request, 'test.html')
 
 def csvimport(request):
     if request.method == 'POST':
-        form = UploadCsv(request.POST, request.FILES)    
-        #csv_parser(request.FILES['file'])
-        print(request.FILES['file'])
-        #return HttpResponseRedirect('/sucess...')
+        form = UploadCsv(request.POST, request.FILES)
+        # The format is hardcoded and following the database's structure
+        # because we don't know how the csv file will be yet. 
+        # FIX that when we do.
+        format = ['code', 'name', 'enrolment']    
+        parsed = parse(request.FILES['file'], format, ',')
+        update_courses(parsed)
         return HttpResponse('CSV file imported sucessfully.')
     else:
         form = UploadCsv()
