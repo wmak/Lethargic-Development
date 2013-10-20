@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>CMS (Re)scheduling System - Admin Panel</title>
+
+		<!--<link rel="stylesheet" type="text/css" href="/static/style.css">-->
+		<!-- TODO: Put CSS into a static file that can be served -->
+		<style>
+			/* Reset */
+			html, body, div, span, applet, object, iframe,
+			h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+			a, abbr, acronym, address, big, cite, code,
+			del, dfn, em, img, ins, kbd, q, s, samp,
+			small, strike, strong, sub, sup, tt, var,
+			b, u, i, center,
+			dl, dt, dd, ol, ul, li,
+			fieldset, form, label, legend,
+			table, caption, tbody, tfoot, thead, tr, th, td,
+			article, aside, canvas, details, embed, 
+			figure, figcaption, footer, header, hgroup, 
+			menu, nav, output, ruby, section, summary,
+			time, mark, audio, video {
+				margin: 0;
+				padding: 0;
+				border: 0;
+				font-size: 100%;
+				font: inherit;
+				vertical-align: baseline;
+			}
+
+			html, body {
+				font-family: Arial, sans-serif;
+				font-size: 14px;
+				color: #000;
+				margin: 0.5em;
+			}
+
+			h1 {
+				font-size: 2em;
+				font-weight: bold;
+			}
+			a {
+				color: #000;
+				text-decoration: none;
+			}
+
+			.fleft {
+				float: left;
+			}
+			.fright {
+				float: right;
+			}
+			.clear {
+				clear: both;
+			}
+
+			.center {
+				text-align: center;
+			}
+			.right {
+				text-align: right;
+			}
+
+			header {
+				margin-bottom: 1em;
+			}
+			footer {
+				margin-top: 1em;
+			}
+
+			#header-logo {
+				width: 25%;
+			}
+			#header-title {
+				width: 50%;
+			}
+			#header-nav {
+				width: 25%;
+			}
+				#header-nav > ul > li {
+					display: inline-block;
+				}
+					#header-nav > ul > li > a {
+						padding: 5px;
+					}
+					#header-nav > ul > li > a:hover {
+						background: #eee;
+					}
+					#header-nav > ul > li > a.active {
+						background: rgba(30, 144, 255, 0.5);
+					}
+
+			.sidebar {
+				width: 23%;
+				margin-right: 1%;
+				border: 1px #000 solid;
+			}
+				.sidebar > .item {
+					padding: 5px;
+				}
+				.sidebar > .item:not(:last-child) {
+					border-bottom: 1px #000 solid;
+				}
+				.sidebar > .item:nth-child(2n+1) {
+					background: #fcfcfc;
+				}
+				.sidebar > .item:nth-child(2n) {
+					background: #ececec;
+				}
+				.sidebar > .item:hover {
+					cursor: pointer;
+					background: rgba(30, 144, 255, 0.3);
+				}
+
+			.content {
+				width: 73%;
+				margin-left: 1%;
+			}
+
+			#footer {
+				font-size: 0.8em;
+			}
+		</style>
+	</head>
+
+	<body>
+		{% include "layouts/header.html" %}
+		{% include "layouts/admin-sidebar.html" %}
+		<div class="content fleft">CONTENT GOES HERE</div>
+		<div class="clear"></div>
+		{% include "layouts/footer.html" %}
+	</body>
+</html>

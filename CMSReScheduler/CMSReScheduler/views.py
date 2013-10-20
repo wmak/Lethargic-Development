@@ -4,3 +4,6 @@ from classes.models import Course
 
 def home(request):
 	return render(request, 'test.html')
+
+def admin(request):
+	return render(request, 'admin/index.html')
