@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>{{ title }} | CMS (Re)scheduling System</title>
+
+		<!-- CSS -->
+		<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/style.css">
+	</head>
+
+	<body>
+		<header>
+			<div id="header-logo">
+				<div class="fleft"><img src="{{ STATIC_URL }}images/header.gif"></div>
+			</div>
+			<div id="header-title">
+				<h1 class="center fleft fullwidth">CMS (Re)Scheduling System</h1>
+			</div>
+			<div id="header-nav">
+				<div class="right fleft fullwidth">
+					<ul>
+						<li><a class="{% if active == "profile" %}active{% endif %}" href="#">Profile</a></li>
+						<li><a class="{% if active == "schedule" %}active{% endif %}" href="#">Schedule</a></li>
+						<li><a class="{% if active == "admin" %}active{% endif %}" href="{% url "admin" %}">Admin</a></li>
+						<li><a href="#">Log Out</a></li>
+					</ul>
+				</div>
+			</div>
+			<div class="clear"></div>
+			<hr></hr>
+		</header>
