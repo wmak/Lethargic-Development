@@ -24,3 +24,9 @@ def csvimport(request):
     else:
         form = UploadCsv()
     return render_to_response('csvimport.html', {'form': form}, context_instance=RequestContext(request))
+    
+def admin(request):
+	return render(request, 'admin/index.html')
+
+def admin_upload(request):
+	return render(request, 'admin/upload.html')

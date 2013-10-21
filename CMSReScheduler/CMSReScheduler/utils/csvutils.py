@@ -24,8 +24,25 @@ def parse(filename, format, delimiter=','):
 	return items
 
 def update_courses(items):
-	from classes.models import Course
+	from classes.models import Course, Department
 	for item in items:
 		entry = Course.objects.filter(code=item["code"])
 		if entry.count() == 0:
-			Course(code=item["code"], enrolment=item["enrolment"]).save()
+			#MUST FIX this when the format is known
+			dept = Department.objects.get(id=1) 
+			Course(code=item["code"], name=item["name"], enrolment=item["enrolment"], department=dept).save()
+
+def update_departments(items):
+	from classes.models import Department
+	for item in items:
+		entry = Department.objects.filter(name=item["name"])
+		if entry.count() == 0:
+			Department(name=item["name"], numberOfLecturers=item["numberOfLecturers"]).save()
+
+def update_rooms(items):
+	from classes.models import Room
+	for item in items:
+		entry = Room.object.filter(code=item["code"])
+		if entry.count() == 0:
+			Room(code=item["code"], capacity=item["capacity"]).save()
+
