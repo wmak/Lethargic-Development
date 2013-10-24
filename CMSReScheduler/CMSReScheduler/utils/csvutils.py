@@ -3,7 +3,7 @@
 
 import csv
 
-def parse(filename, format, delimiter=','):
+def parse(csvfile, format, delimiter=','):
 	''' parser takes a filename and a supposed format for the file, 
 	delimeter is preset but can also be modified as needed
 	it then returns a list of dictionaries with keys representing the type of data
@@ -14,13 +14,12 @@ def parse(filename, format, delimiter=','):
 	str delimeter
 	'''
 	items = []
-	with open(filename, 'rb') as csvfile:
-		parser = csv.reader(csvfile, delimiter=delimiter)
-		for row in parser:
-			new_item = {}
-			for i in range(len(format)):
-				new_item[format[i]] = row[i]
-			items.append(new_item)
+	parser = csv.reader(csvfile, delimiter=delimiter)
+	for row in parser:
+		new_item = {}
+		for i in range(len(format)):
+			new_item[format[i]] = row[i]
+		items.append(new_item)
 	return items
 
 def update_courses(items):
@@ -28,9 +27,12 @@ def update_courses(items):
 	for item in items:
 		entry = Course.objects.filter(code=item["code"])
 		if entry.count() == 0:
-			#MUST FIX this when the format is known
-			dept = Department.objects.get(id=1) 
-			Course(code=item["code"], name=item["name"], enrolment=item["enrolment"], department=dept).save()
+			try:
+				department = Department.objects.get(name = item["department"])
+			except Department.DoesNotExist:
+				Department(name = item["department"], numberOfLecturers=0).save()
+				department = Department.objects.get(name = item["department"])
+			Course(code=item["code"], name=item["name"], enrolment=item["enrolment"], department=department).save()
 
 def update_departments(items):
 	from classes.models import Department
