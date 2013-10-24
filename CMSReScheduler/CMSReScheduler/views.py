@@ -13,6 +13,9 @@ def home(request):
 
 
 def import_csv_file(request, type):
+''' NOTE: for now I have a single url for this. I can send them  each to a certain page if you guys prefer.
+    This is still very much up for debate. Let me know what you all think
+'''
     if type == 'schedule':
         form = UploadCsv(type, request.FILES)
         format = ['code', 'name', 'enrolment']
@@ -54,8 +57,7 @@ def admin(request):
 def admin_upload(request):
 	return render(request, 'admin/upload.html')
 
-def instructor_schedule(request, name):
-    return render_to_request('schedule.html',)
+
 
 
 
