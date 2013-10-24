@@ -19,5 +19,5 @@ _For the first run_
 - `python manage.py runserver`
 
 _For future runs_
-- "python manage.py runserver"
+- `python manage.py runserver`
 Now the CMSReScheduler will be running on your local environment on port 8000
