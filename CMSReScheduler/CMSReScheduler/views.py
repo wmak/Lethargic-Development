@@ -2,15 +2,16 @@
 # encoding: utf-8
 
 import utils.csvutils as csvutils
-from django.shortcuts import render
-from classes.models import Course
 
-from django.http import HttpResponseRedirect
-from django.shortcuts import render_to_response
+from django.http import HttpResponse, HttpResponseRedirect, QueryDict
+from django.shortcuts import render, render_to_response
 from django.template import RequestContext
-from django.http import HttpResponse
+
 from forms import UploadCsv
 import simplejson as json
+
+from classes.models import Course
+
 
 def home(request):
 	return render(request, 'test.html')
@@ -43,26 +44,29 @@ def course(request, course):
 		DELETE -- Remove this course from the schedule (It will still exist as a course)
 		POST -- Add a new course
 	'''
-	if request.method == "PUT":
-		pass
-	elif request.method == "GET":
-		entry = Course.objects.filter(code=course)
-		if entry.count() != 0:
-			try:
-				info = {"Name" : entry[0].name, "Enrolment" : entry[0].enrolment, "Department" : entry[0].department}
+	data = {"Error" : "Nothing happened somehow"}
+	status = 500
+	try:
+		current = Course.objects.filter(code=course)
+		if current.count() != 0:
+			if request.method == "PUT":
+				params = QueryDict(request.body, request.encoding)
+				print params
+			elif request.method == "GET":
+				info = {"Name" : current[0].name, "Enrolment" : current[0].enrolment, "Department" : current[0].department.name}
 				status = 200
-			except Exception as e:
-				info = {"Error" : "Internal error occured" + e}
-				status = 500
+			elif request.method == "DELETE":
+				pass
+			elif request.method == "POST":
+				pass
+			else:
+				info = {"Error" : "Unknown request"}
+				status = 400
 		else:
 			info = {"Error" : "Unknown course code"}
 			status = 404
-	elif request.method == "DELETE":
-		pass
-	elif request.method == "POST":
-		pass
-	else:
-		info = {"Error" : "Unknown request"}
-		status = 400
+	except Exception as e:
+		info = {"Error" : "Internal error occured" + e}
+		status = 500
 	data = json.dumps(info)
 	return HttpResponse(content = data, status = status)
