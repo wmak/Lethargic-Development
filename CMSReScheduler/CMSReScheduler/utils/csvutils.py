@@ -18,7 +18,7 @@ def parse(csvfile, format, delimiter=','):
 	for row in parser:
 		new_item = {}
 		for i in range(len(format)):
-			new_item[format[i]] = row[i]
+			new_item[format[i]] = row[i].strip()
 		items.append(new_item)
 	return items
 
