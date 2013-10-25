@@ -7,6 +7,7 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.http import HttpResponse
 from forms import UploadCsv
+from forms import UserRegistrationForm
 
 def home(request):
 	return render(request, 'test.html')
@@ -30,3 +31,13 @@ def admin(request):
 
 def admin_upload(request):
 	return render(request, 'admin/upload.html')
+
+def user_registration(request):
+    if request.method == 'POST':
+        userform = UserRegistrationForm(request.POST)
+        if userform.is_valid():
+            new_user = userform.save()
+            return HttpResponse('User registered successfully.')
+        else:
+            userform = RegistrationForm()
+    return render_to_response('userregistration.html', {'form': userform}, context_instance=RequestContext(request))
