@@ -38,6 +38,6 @@ def user_registration(request):
         if userform.is_valid():
             new_user = userform.save()
             return HttpResponse('User registered successfully.')
-        else:
-            userform = RegistrationForm()
+    else:
+        userform = UserRegistrationForm()
     return render_to_response('userregistration.html', {'form': userform}, context_instance=RequestContext(request))
