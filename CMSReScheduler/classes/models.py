@@ -11,16 +11,16 @@ class Department(models.Model):
 
 
 class Course(models.Model):
-''' We need to have a "day", "start_time", and "end_time"  field for the courses so that we can pass
+	''' We need to have a "day", "start_time", and "end_time"  field for the courses so that we can pass
     them to the front end to use to actually move the schedule around I think.
-'''
+	'''
 
-'''
+	'''
 	Ives: we could do that, but the problem here is that there are courses that have lectures, tutorials and practical
 	sessions in different days and hours, so for each of them we would have to insert a tuple in the database, and these 
 	tuples would have a lot of repeated info (code, name, enrolment, dept). Besides, code is a candidate key for the Course table,
 	so it should not be repeated.
-'''
+	'''
 	code = models.CharField(max_length=9) #ex. CSCC01H3F
 	name = models.CharField(max_length=50)
 	enrolment = models.IntegerField()
@@ -66,6 +66,7 @@ class Chair(Instructor):				#incomplete
 	
 	def prohibitChanges():
 		#TODO
+		return
 
 	def viewDepartmentCourses():
 		return Course.objects.filter(department = self.department)
@@ -138,4 +139,6 @@ class CourseSchedule(models.Model):
 ''' For an instructor's schedule: get instructor.myCourses. For each course in myCourses, use the table above the
 								  get its schedule. This is done in getSchedule method in the Instructor class.
 	For a room's schedule: filter the table above using room. This is done in getSchedule method in the Room class.
+'''
+
 '''
