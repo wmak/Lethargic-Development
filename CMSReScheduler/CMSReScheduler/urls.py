@@ -8,6 +8,7 @@ urlpatterns = patterns('',
     # Examples:
     url(r'^$', 'CMSReScheduler.views.home', name='home'),
     url(r'^import/(?P<type>.*)/$', 'CMSReScheduler.views.import_csv_file' ),
+    url(r'^schedule/(?P<instructor>.*)/$', 'CMSReScheduler.views.instructor_schedule' ),
     url(r'^csvimport/$', 'CMSReScheduler.views.csvimport', name='csvimport'),
     url(r'^admin/$', 'CMSReScheduler.views.admin', name='admin'),
     url(r'^admin/upload/$', 'CMSReScheduler.views.admin_upload', name='admin_upload'),

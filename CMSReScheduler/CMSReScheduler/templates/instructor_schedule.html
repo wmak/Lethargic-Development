@@ -1,8 +1,10 @@
 {% extends "header.html" %}
 {% block content %}
         <div id="instructor_schedule">
-                {% for i in class %}
-                <p> {{class} }</p>
+                <p> Name: {{instructor} }</p>
+                <p> Courses: </p>
+                {% for course in courses %}
+                <p>  {{course}} </p>
                 {% endfor %}
         </div>
 {% endblock %}
