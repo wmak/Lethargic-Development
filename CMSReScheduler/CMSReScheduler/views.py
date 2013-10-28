@@ -62,15 +62,3 @@ def instructor_schedule(request, instructor):
     i = Instructor.objects.get(name=instructor)
     context = {"courses": i.myCourses, 'instructor': i.name}
     return render_to_respose('instructor_schedule.html', context, context_instance-RequestContext(request))
-
-
-
-
-
-
-
-
-
-
-
-
