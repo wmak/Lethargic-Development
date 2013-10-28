@@ -143,6 +143,30 @@ footer {
 	margin-left: 1%;
 }
 
+/* Schedule */
+.schedule-cell {
+	float: left;
+	display: inline-block;
+	text-align: center;
+	vertical-align: middle;
+	padding: 1%;
+	width: 16.6%;
+	box-sizing:border-box;
+  	-moz-box-sizing:border-box;
+  	-webkit-box-sizing:border-box;
+	border: 1px #000 solid;
+	border-top: none;
+	border-left: none;
+}
+.schedule-day {
+	border-top: 1px #000 solid;
+	font-weight: bold;
+}
+.schedule-time {
+	border: none;
+	border-right: 1px #000 solid;
+}
+
 /* Forms */
 .form-left > .form-entry {
 	padding-bottom: 1em;

@@ -1,5 +1,21 @@
 		{% include "layouts/header.html" with title="Admin Panel" active="admin" %}
 		{% include "layouts/admin-sidebar.html" %}
-		<div class="content fleft"></div>
+		<div class="content fleft">
+			{% load schedule %}
+			{% for i in 19|get_range %}
+				{% for j in 6|get_range %}
+					<div class="schedule-cell {{ forloop.parentloop.counter|schedule_cell_day }} {{ forloop.counter|schedule_cell_time }}">
+						{% if forloop.parentloop.counter == 1 %}
+							{{ forloop.counter0|schedule_day }}
+						{% else %}
+							{% if forloop.counter == 1 %}
+								{{ forloop.parentloop.counter|schedule_time }}
+							{% endif %}
+						{% endif %}
+						&nbsp;
+					</div>
+				{% endfor %}
+			{% endfor %}
+		</div>
 		<div class="clear"></div>
 		{% include "layouts/footer.html" %}
