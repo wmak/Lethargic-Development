@@ -95,4 +95,4 @@ class Schedule(models.Model):
 	# endTime = models.TimeField()
 
 	def __unicode__(self):
-		return u'%s\n%s\n%s\n%s - %s' % (self.room.code, self.course.code, self.instructor.name, startTime, endTime);
+		return u'%s\n%s\n%s\n%s - %s' % (self.room.code, self.course.code, self.instructor.name);
