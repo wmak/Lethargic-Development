@@ -6,6 +6,7 @@ import utils.csvutils as csvutils
 from django.http import HttpResponse, HttpResponseRedirect, QueryDict
 from django.shortcuts import render, render_to_response
 from django.template import RequestContext
+from django.views.decorators.csrf import csrf_exempt
 
 from forms import UploadCsv
 import simplejson as json
@@ -36,6 +37,7 @@ def admin(request):
 def admin_upload(request):
 	return render(request, 'admin/upload.html')
 
+@csrf_exempt
 def course(request, course):
 	''' 
 		Perform an action on a course 
@@ -44,7 +46,7 @@ def course(request, course):
 		DELETE -- Remove this course from the schedule (It will still exist as a course)
 		POST -- Add a new course
 	'''
-	data = {"Error" : "Nothing happened somehow"}
+	info = {"Error" : "Nothing happened somehow"}
 	status = 500
 	try:
 		current = Course.objects.filter(code=course)
