@@ -38,4 +38,7 @@ def schedule_cell_time(value):
 
 @register.filter
 def schedule_time(value):
-	return str(value + 5) + ":00"
+	if value + 5 > 12:
+		return str(value - 7) + ":00 PM"
+	else:
+		return str(value + 5) + ":00 AM"

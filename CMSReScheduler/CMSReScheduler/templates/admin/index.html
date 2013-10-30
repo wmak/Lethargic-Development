@@ -2,7 +2,7 @@
 		{% include "layouts/admin-sidebar.html" %}
 		<div class="content fleft">
 			{% load schedule %}
-			{% for i in 19|get_range %}
+			{% for i in 18|get_range %}
 				{% for j in 6|get_range %}
 					<div class="schedule-cell {{ forloop.parentloop.counter|schedule_cell_day }} {{ forloop.counter|schedule_cell_time }}">
 						{% if forloop.parentloop.counter == 1 %}
