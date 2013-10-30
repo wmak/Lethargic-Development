@@ -1,0 +1,11 @@
+{% extends "header.html" %}
+{% block content %}
+        <div id="instructor_schedule">
+                <p> Name: {{instructor} }</p>
+                <p> Courses: </p>
+                {% for course in courses %}
+                <p>  {{course}} </p>
+                {% endfor %}
+        </div>
+{% endblock %}
+{% extends "footer.html" %} 
