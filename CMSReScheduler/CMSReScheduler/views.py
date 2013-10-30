@@ -2,6 +2,7 @@
 # encoding: utf-8
 
 import utils.csvutils as csvutils
+import utils.classesutils as classutils
 
 from django.http import HttpResponse, HttpResponseRedirect, QueryDict
 from django.shortcuts import render, render_to_response
@@ -11,7 +12,7 @@ from django.views.decorators.csrf import csrf_exempt
 from forms import UploadCsv
 import simplejson as json
 
-from classes.models import Course
+from classes.models import Course, Department
 
 
 def home(request):
@@ -25,7 +26,7 @@ def csvimport(request):
 		# FIX that when we do.
 		format = ['code', 'name', 'enrolment', 'department']
 		parsed = csvutils.parse(request.FILES['file'], format, ',')
-		csvutils.update_courses(parsed)
+		classutils.update_courses(parsed)
 		return HttpResponse('CSV file imported sucessfully.')
 	else:
 		form = UploadCsv()
@@ -48,27 +49,70 @@ def course(request, course):
 	'''
 	info = {"Error" : "Nothing happened somehow"}
 	status = 500
+	body = ""
+	if request.body:
+		body = json.loads(request.body)
 	try:
-		current = Course.objects.filter(code=course)
-		if current.count() != 0:
-			if request.method == "PUT":
-				params = QueryDict(request.body, request.encoding)
-				print params
-			elif request.method == "GET":
-				info = {"Name" : current[0].name, "Enrolment" : current[0].enrolment, "Department" : current[0].department.name}
+		if request.method == "PUT":
+			current = classutils.get_course(course)
+			if body.has_key("name"):
+				if body["name"]:
+					try:
+						current.enrolment = body["name"] 
+						info.setdefault("name", "Updated")
+					except Exception as e:
+						info.setdefault("name", "Error: " + str(e))
+				else:
+					info.setdefault("name", "Error: name entry was blank")
+			if body.has_key("enrolment"):
+				try:
+					current.enrolment = body["enrolment"]
+					info.setdefault("enrolment", "Updated")
+				except Exception as e:
+					info.setdefault("enrolment", "Error: " + str(e))
+			if body.has_key("department"):
+				try:
+					current.department = department.objects.get(name = body["department"])
+					info.setdefault("department", "Updated")
+				except Exception as e:
+					info.setdefault("department", "Error: " + str(e))
+			if info:
+				current.save()
 				status = 200
-			elif request.method == "DELETE":
-				pass
-			elif request.method == "POST":
-				pass
 			else:
-				info = {"Error" : "Unknown request"}
+				info = {"Error" : "Nothing updated"}
 				status = 400
+		elif request.method == "GET":
+			current = classutils.get_course(course)
+			if current:
+				info = {"name" : current.name, "enrolment" : current.enrolment, "department" : current.department.name}
+				status = 200
+			else:
+				info = {"Error" : "Unknown course code"}
+				status = 400
+		elif request.method == "DELETE":
+			current = classutils.get_course(course)
+			if current:
+				current.delete()
+				info = {course : "successfully deleted"}
+				status = 200
+			else:
+				info = {"Error" : "Unknown course code"}
+				status = 400
+		elif request.method == "POST":
+			body.setdefault("code", course)
+			result = classutils.add_course(body)
+			if not result:
+				info = {course : "successfully added"}
+				status = 200
+			else:
+				info = {"Error" : "Internal error occurred" + result}
+				status = 500
 		else:
-			info = {"Error" : "Unknown course code"}
-			status = 404
+			info = {"Error" : "Unknown request"}
+			status = 400
 	except Exception as e:
-		info = {"Error" : "Internal error occured" + e}
+		info = {"Error" : "Internal error occurred " + str(e)}
 		status = 500
 	data = json.dumps(info)
 	return HttpResponse(content = data, status = status)
