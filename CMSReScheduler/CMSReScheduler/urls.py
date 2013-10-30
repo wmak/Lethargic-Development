@@ -5,12 +5,14 @@ from django.conf.urls import patterns, include, url
 # admin.autodiscover()
 
 urlpatterns = patterns('',
-	# Examples:
-	url(r'^$', 'CMSReScheduler.views.home', name='home'),
-	url(r'^csvimport/$', 'CMSReScheduler.views.csvimport', name='csvimport'),
-	url(r'^admin/$', 'CMSReScheduler.views.admin', name='admin'),
-	url(r'^admin/upload/$', 'CMSReScheduler.views.admin_upload', name='admin_upload'),
-	# url(r'^CMSReScheduler/', include('CMSReScheduler.foo.urls')),
+    # Examples:
+    url(r'^$', 'CMSReScheduler.views.home', name='home'),
+    url(r'^import/(?P<type>.*)/$', 'CMSReScheduler.views.import_csv_file' ),
+    url(r'^schedule/(?P<instructor>.*)/$', 'CMSReScheduler.views.instructor_schedule' ),
+    url(r'^csvimport/$', 'CMSReScheduler.views.csvimport', name='csvimport'),
+    url(r'^admin/$', 'CMSReScheduler.views.admin', name='admin'),
+    url(r'^admin/upload/$', 'CMSReScheduler.views.admin_upload', name='admin_upload'),
+    # url(r'^CMSReScheduler/', include('CMSReScheduler.foo.urls')),
 
 	# Uncomment the admin/doc line below to enable admin documentation:
 	# url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
