@@ -19,43 +19,32 @@ def home(request):
 	return render(request, 'test.html')
 
 
-def import_csv_file(request, type):
-    ''' NOTE: for now I have a single url for this. I can send them  each to a certain page if you guys prefer.
-    This is still very much up for debate. Let me know what you all think '''
-    if type == 'schedule':
-        form = UploadCsv(type, request.FILES)
-        format = ['code', 'name', 'enrolment']
-        parser_list = parse(request.FILES['file'], format, ',')
-        update_courses(parser_list)
-        return HttpResponse('The schedule file has been uploaded!')
-    elif type == 'room':
-        form = UploadCsv(type, request.FILES)
-        format = ['code', 'name', 'building']
-        parser_list = parse(request.FILES['file'], format, ',')
-        update_rooms(parser_list)
-        return HttpResponse('Room file has been uploaded!')
-    elif type == 'department':
-        form = UploadCsv(type, request.FILES)
-        format = ['code', 'name']
-        parser_list = parse(request.FILES['file'], format, ',')
-        update_departments(parser_list)
-        return HttpResponse('Department file has been uploaded!')
-    else:
-        return HttpResponse('Invalid Type!')
-
-def csvimport(request):
-	if request.method == 'POST':
-		form = UploadCsv(request.POST, request.FILES)
-		# The format is hardcoded and following the database's structure
-		# because we don't know how the csv file will be yet. 
-		# FIX that when we do.
-		format = ['code', 'name', 'enrolment', 'department']
-		parsed = csvutils.parse(request.FILES['file'], format, ',')
-		classutils.update_courses(parsed)
-		return HttpResponse('CSV file imported sucessfully.')
+def csvimport(request, model_type):
+	''' NOTE: for now I have a single url for this. I can send them  each to a certain page if you guys prefer.
+	This is still very much up for debate. Let me know what you all think '''
+	model_type = model_type.strip().lower()
+	if request.method != 'POST':
+		return render_to_response('csvimport.html', {'form': UploadCsv()}, context_instance=RequestContext(request))
+	form = UploadCsv(model_type, request.FILES)
+	if model_type == 'schedule':
+		format = ['code', 'name', 'enrolment']
+		parser_list = csvutils.parse(request.FILES['file'], format, ',')
+		classutils.update_schedule(parser_list)
+	elif model_type == 'room':
+		format = ['code', 'name', 'building']
+		parser_list = csvutils.parse(request.FILES['file'], format, ',')
+		classutils.update_courses(parser_list)
+	elif model_type == 'course':
+		format = ['code', 'name', 'building']
+		parser_list = csvutils.parse(request.FILES['file'], format, ',')
+		classutils.update_courses(parser_list)
+	elif model_type == 'department':
+		format = ['code', 'name']
+		parser_list = csvutils.parse(request.FILES['file'], format, ',')
+		classutils.update_courses(parser_list)
 	else:
-		form = UploadCsv()
-	return render_to_response('csvimport.html', {'form': form}, context_instance=RequestContext(request))
+		return HttpResponse('Invalid model_type!')
+	return HttpResponse('The %s file has been uploaded!' % model_type)
 	
 def admin(request):
 	return render(request, 'admin/index.html')
@@ -143,6 +132,6 @@ def course(request, course):
 	return HttpResponse(content = data, status = status)
 
 def instructor_schedule(request, instructor):
-    i = Instructor.objects.get(name=instructor)
-    context = {"courses": i.myCourses, 'instructor': i.name}
-    return render_to_respose('instructor_schedule.html', context, context_instance-RequestContext(request))
+	i = Instructor.objects.get(name=instructor)
+	context = {"courses": i.myCourses, 'instructor': i.name}
+	return render_to_respose('instructor_schedule.html', context, context_instance-RequestContext(request))
