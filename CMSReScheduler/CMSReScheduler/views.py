@@ -64,6 +64,10 @@ def registration(request, type):
             if form.is_valid():
                 new_user = form.save()
                 return HttpResponse('User registered successfully.')
+            else:
+                return HttpResponse('Invalid form.')
+        else:
+            return HttpResponse('Select one of the roles available.')
     else:
         form = InstructorRegistrationForm()
     return render_to_response('registration.html', {'form': form}, context_instance=RequestContext(request))
