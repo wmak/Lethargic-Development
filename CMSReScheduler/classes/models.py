@@ -53,7 +53,7 @@ class Instructor(User):			#incomplete
 			schedule.append(CourseSchedule.objects.filter(course = c))
 		return schedule
 
-class Chair(Instructor):				#incomplete
+class Chair(Instructor):#incomplete
 	
 	def prohibitChanges():
 		#TODO
@@ -62,10 +62,11 @@ class Chair(Instructor):				#incomplete
 	def viewDepartmentCourses():
 		return Course.objects.filter(department = self.department)
 
-class Chair(Instructor):				#incomplete
+class Chair(Instructor):#incomplete
 	
 	def prohibitChanges():
 		#TODO
+		pass
 
 	def viewDepartmentInstructors():
 		return Instructor.objects.filter(department = self.department)

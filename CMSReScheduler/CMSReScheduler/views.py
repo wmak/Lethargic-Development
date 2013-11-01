@@ -14,19 +14,16 @@ import simplejson as json
 
 from classes.models import Course, Department
 
-
-def home(request):
-	return render(request, 'test.html')
-
 def csvimport(request, model_type):
 	''' NOTE: for now I have a single url for this. I can send them  each to a certain page if you guys prefer.
 	This is still very much up for debate. Let me know what you all think '''
 	model_type = model_type.strip().lower()
 	if request.method != 'POST':
 		return render_to_response('csvimport.html', {'form': UploadCsv()}, context_instance=RequestContext(request))
+
 	form = UploadCsv(model_type, request.FILES)
 	if model_type == 'schedule':
-		format = ['code', 'name', 'enrolment']
+		format = ['course', 'room', 'dayOfWeek', 'startTime', 'endTime', 'typeOfSession']
 		parser_list = csvutils.parse(request.FILES['file'], format, ',')
 		classutils.update_schedule(parser_list)
 	elif model_type == 'room':
@@ -34,7 +31,7 @@ def csvimport(request, model_type):
 		parser_list = csvutils.parse(request.FILES['file'], format, ',')
 		classutils.update_courses(parser_list)
 	elif model_type == 'course':
-		format = ['code', 'name', 'building']
+		format = ['code', 'name', 'enrolment', 'department']
 		parser_list = csvutils.parse(request.FILES['file'], format, ',')
 		classutils.update_courses(parser_list)
 	elif model_type == 'department':
