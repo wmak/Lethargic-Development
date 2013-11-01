@@ -11,16 +11,6 @@ class Department(models.Model):
 
 
 class Course(models.Model):
-	''' We need to have a "day", "start_time", and "end_time"  field for the courses so that we can pass
-    them to the front end to use to actually move the schedule around I think.
-	'''
-
-	'''
-	Ives: we could do that, but the problem here is that there are courses that have lectures, tutorials and practical
-	sessions in different days and hours, so for each of them we would have to insert a tuple in the database, and these 
-	tuples would have a lot of repeated info (code, name, enrolment, dept). Besides, code is a candidate key for the Course table,
-	so it should not be repeated.
-	'''
 	code = models.CharField(max_length=9) #ex. CSCC01H3F
 	name = models.CharField(max_length=50)
 	enrolment = models.IntegerField()
@@ -100,34 +90,6 @@ class UndergradAdminAssistant(User):
 		c = Course.objects.get(code = courseCode)
 		return c.enrolment
 
-'''
-class Schedule(models.Model):
- I don't understand how this one works. A schedule should have all the courses an instructor
-    has not just one I think. Also, it should have the day and their start and end times no? I think this would be easier to 
-    implement in the courses model.
-
-
-
-	Ives: I agree, this one is not very clear. My idea here was that this is like a schedule "item",
-	like a cell in a table. But it has some unnecessary information and it does not include days nor the type of session (LEC, TUT or PRA).
-
-
-	instructor = models.ForeignKey(Instructor)
-	course = models.ForeignKey(Course)
-	room = models.ForeignKey(Room)
-	startTime = models.TimeField()
-	endTime = models.TimeField();
-
-	def __unicode__(self):
-		return u'%s\n%s\n%s\n%s - %s' % (self.room.code, self.course.code, self.instructor.name, startTime, endTime);
-'''
-
-
-'''Based on Shai's comments, I had another idea of how to represent the Schedule.
-   If we do the schedule by course, we avoid repeating info and we can clearly settle the days and hours.
-   It should also be somehow high-level, since we can have basically two types of schedules: an instructor's schedule
-   and a room's schedule. 
-'''
 class CourseSchedule(models.Model):
 	course = models.ForeignKey(Course)
 	room = models.ForeignKey(Room)
