@@ -13,7 +13,8 @@
                 <p>
                         Fill all fields and click on "Register".
                 </p>
-                <form action="/registration/" method="post">
+                
+                <form action="/registration/instructor/" method="post">
                         {% csrf_token %}
                         
                         {{ form.as_p }}
