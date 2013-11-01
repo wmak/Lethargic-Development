@@ -11,16 +11,16 @@ class Department(models.Model):
 
 
 class Course(models.Model):
-        ''' We need to have a "day", "start_time", and "end_time"  field for the courses so that we can pass
-    them to the front end to use to actually move the schedule around I think. '''
-        code = models.CharField(max_length=9) #ex. CSCC01H3F
-        name = models.CharField(max_length=50)
-        enrolment = models.IntegerField()
-        department = models.ForeignKey(Department)
-        day = models.CharField(max_length=10)
-        startTime = models.TimeField()
-        endTime = models.TimeField()
-
+''' We need to have a "day", "start_time", and "end_time"  field for the courses so that we can pass
+    them to the front end to use to actually move the schedule around I think.
+'''
+	code = models.CharField(max_length=9) #ex. CSCC01H3F
+	name = models.CharField(max_length=50)
+	enrolment = models.IntegerField()
+	department = models.ForeignKey(Department)
+	day = models.CharField(max_length=10)
+	startTime = models.TimeField()
+	endTime = models.TimeField()
         def __unicode__(self):
                 return u'%s - %s' % (self.code, self.name)
 
@@ -47,10 +47,10 @@ class Instructor(User):                        #incomplete
         def __unicode__(self):
                 return u'Professor %s' % (self.name)
 
-class Chair(Instructor):                                #incomplete
-        
-        def prohibitChanges():
-                pass #TODO
+class Chair(Instructor):				#incomplete
+	
+	def prohibitChanges():
+		#TODO
 
         def viewDepartmentCourses():
                 return Course.objects.filter(department = self.department)
@@ -83,14 +83,16 @@ class UndergradAdminAssistant(User):
                 return c.enrolment
 
 class Schedule(models.Model):
-        ''' I don't understand how this one works. A schedule should have all the courses an instructor
+''' I don't understand how this one works. A schedule should have all the courses an instructor
     has not just one I think. Also, it should have the day and their start and end times no? I think this would be easier to 
-    implement in the courses model. '''
-        instructor = models.ForeignKey(Instructor)
-        course = models.ForeignKey(Course)
-        room = models.ForeignKey(Room)
-        # startTime = models.TimeField()
-        # endTime = models.TimeField()
+    implement in the courses model.
+'''
+	instructor = models.ForeignKey(Instructor)
+	course = models.ForeignKey(Course)
+	room = models.ForeignKey(Room)
+	# startTime = models.TimeField()
+	# endTime = models.TimeField()
 
-        def __unicode__(self):
-                return u'%s\n%s\n%s\n%s - %s' % (self.room.code, self.course.code, self.instructor.name);
+	def __unicode__(self):
+		return u'%s\n%s\n%s\n%s - %s' % (self.room.code, self.course.code, self.instructor.name);
+>>>>>>> parent of 1b5a75e... Changed comments to fix IndentationError
