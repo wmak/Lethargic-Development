@@ -11,7 +11,6 @@ from forms import UploadCsv
 def home(request):
 	return render(request, 'test.html')
 
-
 def import_csv_file(request, type):
 ''' NOTE: for now I have a single url for this. I can send them  each to a certain page if you guys prefer.
     This is still very much up for debate. Let me know what you all think
@@ -56,9 +55,3 @@ def admin(request):
 
 def admin_upload(request):
 	return render(request, 'admin/upload.html')
-
-
-def instructor_schedule(request, instructor):
-    i = Instructor.objects.get(name=instructor)
-    context = {"courses": i.myCourses, 'instructor': i.name}
-    return render_to_respose('instructor_schedule.html', context, context_instance-RequestContext(request))
