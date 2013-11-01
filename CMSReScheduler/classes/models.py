@@ -11,15 +11,11 @@ class Department(models.Model):
 
 
 class Course(models.Model):
-	''' We need to have a "day", "start_time", and "end_time"  field for the courses so that we can pass
-    them to the front end to use to actually move the schedule around I think. '''
+
 	code = models.CharField(max_length=9) #ex. CSCC01H3F
 	name = models.CharField(max_length=50)
 	enrolment = models.IntegerField()
 	department = models.ForeignKey(Department)
-	day = models.CharField(max_length=10)
-	startTime = models.TimeField()
-	endTime = models.TimeField()
 
 	def __unicode__(self):
 		return u'%s - %s' % (self.code, self.name)
@@ -30,6 +26,10 @@ class Room(models.Model):
 
 	def __unicode__(self):
 		return self.code
+
+	def getSchedule():
+		return CourseSchedule.objects.filter(room = self)
+
 
 class User(models.Model):
 	name = models.CharField(max_length=30)
@@ -47,13 +47,25 @@ class Instructor(User):			#incomplete
 	def __unicode__(self):
 		return u'Professor %s' % (self.name)
 
+	def getSchedule():
+		schedule = []
+		for c in myCourses:
+			schedule.append(CourseSchedule.objects.filter(course = c))
+		return schedule
+
 class Chair(Instructor):				#incomplete
 	
 	def prohibitChanges():
-		pass #TODO
+		#TODO
+		return
 
 	def viewDepartmentCourses():
 		return Course.objects.filter(department = self.department)
+
+class Chair(Instructor):				#incomplete
+	
+	def prohibitChanges():
+		#TODO
 
 	def viewDepartmentInstructors():
 		return Instructor.objects.filter(department = self.department)
@@ -62,10 +74,37 @@ class Chair(Instructor):				#incomplete
 		instructors = viewDepartmentInstructors();
 		schedules = []
 		for i in instructors:
-			schedules.append(Schedule.objects.filter(instructor = i))
+			schedules.append(i.getSchedule())
 		return schedules
 
+
+
 class UndergradAdminAssistant(User):
+
+        #This method returns all classrooms, that is,
+        #rooms with capacity different from 1.
+        def listClassrooms():
+                return Room.objects.get(~Q(capacity = 1))
+
+        def getChairs():
+                return Chair.objects.all
+
+        def getInstructorsOfDepartment(dept):
+                return Instructor.objects.filter(department = dept)
+
+        def checkEnrolment(courseCode):
+                c = Course.objects.get(code = courseCode)
+                return c.enrolment
+
+class Schedule(models.Model):
+	instructor = models.ForeignKey(Instructor)
+	course = models.ForeignKey(Course)
+	room = models.ForeignKey(Room)
+	# startTime = models.TimeField()
+	# endTime = models.TimeField()
+
+	def __unicode__(self):
+		return u'%s\n%s\n%s\n%s - %s' % (self.room.code, self.course.code, self.instructor.name);
 
 	#This method returns all classrooms, that is,
 	#rooms with capacity different from 1.
@@ -82,15 +121,10 @@ class UndergradAdminAssistant(User):
 		c = Course.objects.get(code = courseCode)
 		return c.enrolment
 
-class Schedule(models.Model):
-	''' I don't understand how this one works. A schedule should have all the courses an instructor
-    has not just one I think. Also, it should have the day and their start and end times no? I think this would be easier to 
-    implement in the courses model. '''
-	instructor = models.ForeignKey(Instructor)
+class CourseSchedule(models.Model):
 	course = models.ForeignKey(Course)
 	room = models.ForeignKey(Room)
-	# startTime = models.TimeField()
-	# endTime = models.TimeField()
-
-	def __unicode__(self):
-		return u'%s\n%s\n%s\n%s - %s' % (self.room.code, self.course.code, self.instructor.name);
+	dayOfWeek = models.CharField(max_length = 9)
+	startTime = models.TimeField()
+	endTime = models.TimeField()
+	typeOfSession = models.CharField(max_length = 3) # LEC, TUT or PRA

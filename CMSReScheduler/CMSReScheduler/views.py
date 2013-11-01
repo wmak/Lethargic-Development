@@ -18,7 +18,6 @@ from classes.models import Course, Department
 def home(request):
 	return render(request, 'test.html')
 
-
 def csvimport(request, model_type):
 	''' NOTE: for now I have a single url for this. I can send them  each to a certain page if you guys prefer.
 	This is still very much up for debate. Let me know what you all think '''
@@ -45,7 +44,7 @@ def csvimport(request, model_type):
 	else:
 		return HttpResponse('Invalid model_type!')
 	return HttpResponse('The %s file has been uploaded!' % model_type)
-	
+
 def admin(request):
 	return render(request, 'admin/index.html')
 
