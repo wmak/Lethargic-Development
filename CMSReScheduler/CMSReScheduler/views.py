@@ -26,18 +26,18 @@ def csvimport(request, model_type):
 		format = ['course', 'room', 'dayOfWeek', 'startTime', 'endTime', 'typeOfSession']
 		parser_list = csvutils.parse(request.FILES['file'], format, ',')
 		classutils.update_schedule(parser_list)
-	elif model_type == 'room':
-		format = ['code', 'name', 'building']
-		parser_list = csvutils.parse(request.FILES['file'], format, ',')
-		classutils.update_courses(parser_list)
+	# elif model_type == 'room':
+	# 	format = ['code', 'name', 'building']
+	# 	parser_list = csvutils.parse(request.FILES['file'], format, ',')
+	# 	classutils.update_courses(parser_list)
 	elif model_type == 'course':
 		format = ['code', 'name', 'enrolment', 'department']
 		parser_list = csvutils.parse(request.FILES['file'], format, ',')
 		classutils.update_courses(parser_list)
-	elif model_type == 'department':
-		format = ['code', 'name']
-		parser_list = csvutils.parse(request.FILES['file'], format, ',')
-		classutils.update_courses(parser_list)
+	# elif model_type == 'department':
+	# 	format = ['code', 'name']
+	# 	parser_list = csvutils.parse(request.FILES['file'], format, ',')
+	# 	classutils.update_courses(parser_list)
 	else:
 		return HttpResponse('Invalid model_type!')
 	return HttpResponse('The %s file has been uploaded!' % model_type)
