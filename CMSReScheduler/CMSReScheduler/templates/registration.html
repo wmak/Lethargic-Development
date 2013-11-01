@@ -16,51 +16,8 @@
                 <form action="/registration/" method="post">
                         {% csrf_token %}
                         
-                        <p>
+                        {{ form.as_p }}
 
-                        <label>
-                                <div>Name</div> 
-                                {{ form.name }} 
-                                {{ form.name.errors }}
-                        </label>
-
-                        <label>
-                                <div>Password</div> 
-                                {{ form.password }} 
-                                {{ form.password.errors }}
-                        </label>
-
-                        <label>
-                                <div>Address</div> 
-                                {{ form.address }} 
-                                {{ form.address.errors }}
-                        </label>
-
-                        <label>
-                                <div>E-mail</div>
-                                {{ form.email }} 
-                                {{ form.email.errors }}
-                        </label>  
-
-                        <label>
-                                <div>Department</div> 
-                                {{ form.department }} 
-                                {{ form.department.errors }}
-                        </label>
-
-                        <label>
-                                <div>Room</div> 
-                                {{ form.room }} 
-                                {{ form.room.errors }}
-                        </label>
-
-                        <label>
-                                <div>My courses</div> 
-                                {{ form.myCourses }} 
-                                {{ form.myCourses.errors }}
-                        </label>
-
-                        </p>
                         <p><input type="submit" value="Register" /></p>
                 </form>
                 
