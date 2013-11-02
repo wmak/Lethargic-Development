@@ -12,7 +12,7 @@ from django.views.decorators.csrf import csrf_exempt
 from forms import UploadCsv
 import simplejson as json
 
-from classes.models import Course, Department
+from classes.models import Course, Department, CourseSchedule
 
 def csvimport(request, model_type):
 	''' NOTE: for now I have a single url for this. I can send them  each to a certain page if you guys prefer.
@@ -96,6 +96,10 @@ def course(request, course):
 			current = classutils.get_course(course)
 			if current:
 				info = {"name" : current.name, "enrolment" : current.enrolment, "department" : current.department.name}
+				times = []
+				for time in CourseSchedule.objects.filter(course = current):
+					times.append(time.time_range)
+				info.setdefault("Times", times)
 				status = 200
 			else:
 				info = {"Error" : "Unknown course code"}
