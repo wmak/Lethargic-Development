@@ -29,7 +29,7 @@ def csvimport(request, model_type):
 	# elif model_type == 'room':
 	# 	format = ['code', 'name', 'building']
 	# 	parser_list = csvutils.parse(request.FILES['file'], format, ',')
-	# 	classutils.update_courses(parser_list)
+	# 	csvutils.update_rooms(parser_list)
 	elif model_type == 'course':
 		format = ['code', 'name', 'enrolment', 'department']
 		parser_list = csvutils.parse(request.FILES['file'], format, ',')
@@ -37,7 +37,7 @@ def csvimport(request, model_type):
 	# elif model_type == 'department':
 	# 	format = ['code', 'name']
 	# 	parser_list = csvutils.parse(request.FILES['file'], format, ',')
-	# 	classutils.update_courses(parser_list)
+	# 	csvutils.update_departments(parser_list)
 	else:
 		return HttpResponse('Invalid model_type!')
 	return HttpResponse('The %s file has been uploaded!' % model_type)
