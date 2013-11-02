@@ -96,35 +96,11 @@ class UndergradAdminAssistant(User):
                 c = Course.objects.get(code = courseCode)
                 return c.enrolment
 
-class Schedule(models.Model):
-	instructor = models.ForeignKey(Instructor)
-	course = models.ForeignKey(Course)
-	room = models.ForeignKey(Room)
-	# startTime = models.TimeField()
-	# endTime = models.TimeField()
-
-	def __unicode__(self):
-		return u'%s\n%s\n%s\n%s - %s' % (self.room.code, self.course.code, self.instructor.name);
-
-	#This method returns all classrooms, that is,
-	#rooms with capacity different from 1.
-	def listClassrooms():
-		return Room.objects.get(~Q(capacity = 1))
-
-	def getChairs():
-		return Chair.objects.all
-
-	def getInstructorsOfDepartment(dept):
-		return Instructor.objects.filter(department = dept)
-
-	def checkEnrolment(courseCode):
-		c = Course.objects.get(code = courseCode)
-		return c.enrolment
 
 class CourseSchedule(models.Model):
 	course = models.ForeignKey(Course)
 	room = models.ForeignKey(Room)
 	dayOfWeek = models.CharField(max_length = 9)
 	startTime = models.TimeField()
-	endTime = models.TimeField()
+	length = models.IntegerField() #in minutes
 	typeOfSession = models.CharField(max_length = 3) # LEC, TUT or PRA

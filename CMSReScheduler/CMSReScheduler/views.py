@@ -1,12 +1,16 @@
 import utils.csvutils as csvutils
 from django.shortcuts import render
 from classes.models import Course
+from classes.models import Room
+from classes.models import CourseSchedule
 
 from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.http import HttpResponse
 from forms import UploadCsv
+import datetime
+import time
 
 def home(request):
 	return render(request, 'test.html')
@@ -55,3 +59,37 @@ def admin(request):
 
 def admin_upload(request):
 	return render(request, 'admin/upload.html')
+
+#This view should receive two strings:
+#1 - fields on which we should filter
+#2 - values for each of the fields passed in 1.
+#For Rooms we are considering the following fields:
+# - capacity: an integer indicating the minimum capacity the room should have
+# - availableon: the day to use checking if the room is available
+# - availableat: the startTime to use when checking if the room is available
+# - availablefor: the length to use when checking if the room is available
+# - building: two character indicating the code for a building (IC, for example)
+#The strings must be separated by '-'s.
+#The order of the fields does not matter as long as the values are 
+#in the same order.
+
+#incomplete
+def filterRooms(request, fields, values):
+    fList = fields.split('-')
+    vList = values.split('-')
+    qSet = Room.objects.all()
+    for i in fList:
+        if fList[i] == 'capacity':
+            qSet = qSet.filter(capacity__gt = int(vList[i]))
+        elif fList[i] == 'building':
+            qSet = qSet.filter(code__startswith = vList[i])
+        elif fList[i] == 'availableon':
+            qSet = qSet.filter(courseschedule__dayOfWeek = vList[i])
+        elif fList[i] == 'availableat':
+            t = time.strptime(vList[i], "%H:%M")
+            dt = datetime.time(t.tm_hour, t.tm_min)
+            qSet = qSet.exclude(courseschedule__startTime = dt)
+            qSet = handleLength(qSet, dt);
+        elif fList[i] == 'availablefor':
+            qSet = checkLengthOfAvailability(qSet, int(vList[i]))
+
