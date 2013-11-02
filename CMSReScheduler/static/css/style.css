@@ -100,9 +100,11 @@ footer {
 	margin-left: 1%;
 	display: inline-block;
 	vertical-align: top;
+	position: relative;
 }
 	#header-nav > .right.fleft > ul > li {
 		display: inline-block;
+		margin: 0 1%;
 	}
 		#header-nav > .right.fleft > ul > li > a {
 			padding: 5px;
@@ -115,7 +117,6 @@ footer {
 			background: rgba(30, 144, 255, 0.3);
 		}
 		#header-nav > .right.fleft > ul > li > a#notifications {
-			margin-right: 5px;
 			padding: 3px 5px;
 			border-radius: 20px;
 			color: rgba(0, 0, 0, 0.5);
@@ -124,12 +125,58 @@ footer {
 			font-weight: bold;
 		}
 		#header-nav > .right.fleft > ul > li > a#notifications.active {
-			color: #f00;
+			color: rgba(255, 30, 144, 0.8);
 			background: rgba(255, 30, 144, 0.3);
 			border: 1px rgba(255, 0, 144, 0.5) solid;
 		}
-		#header-nav > .right.fleft > ul > li > a#notifications.active:hover {
-			background: rgba(255, 30, 144, 0.5);
+		#header-nav > .right.fleft > ul > li > a#notifications.active.clicked {
+			color: #000;
+			border: 1px rgba(100, 150, 200, 0.5) solid;
+			background: rgba(100, 150, 200, 0.3);
+		}
+	#header-nav > #notifications-box {
+		position: absolute;
+		width: 100%;
+		word-wrap: break-word;
+		top: 32px;
+		background: #eee;
+		border: 1px #000 solid;
+	}
+	#header-nav > #notifications-box:after {
+		content: '';
+		display: block;
+		position: absolute;
+		top: -10px;
+		width: 0;
+		height: 0;
+		border-color: transparent transparent #eee transparent;
+		border-style: solid;
+		border-width: 0 12px 10px 12px;
+	}
+	#header-nav > #notifications-box:before {
+		content: '';
+		display: block;
+		position: absolute;
+		top: -11px;
+		width: 0;
+		height: 0;
+		border-color: transparent transparent #000 transparent;
+		border-style: solid;
+		border-width: 0 12px 10px 12px;
+	}
+		#header-nav > #notifications-box > ul > li.notification {
+			padding: 10px;
+			list-style: none;
+			border-bottom: 1px #000 solid;
+		}
+		#header-nav > #notifications-box > ul > li.notification:hover {
+			cursor: pointer;
+		}
+		#header-nav > #notifications-box > ul > li.notification.active {
+			background: rgba(30, 144, 255, 0.3);
+		}
+		#header-nav > #notifications-box > ul > li.notification:last-child {
+			border-bottom: none;
 		}
 
 .sidebar {
