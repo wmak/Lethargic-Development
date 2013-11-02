@@ -70,6 +70,9 @@ a {
 .fullwidth {
 	width: 100%;
 }
+.hidden {
+	display: none;
+}
 
 header {
 	margin-bottom: 1em;
@@ -110,6 +113,23 @@ footer {
 		}
 		#header-nav > .right.fleft > ul > li > a.active {
 			background: rgba(30, 144, 255, 0.3);
+		}
+		#header-nav > .right.fleft > ul > li > a#notifications {
+			margin-right: 5px;
+			padding: 3px 5px;
+			border-radius: 20px;
+			color: rgba(0, 0, 0, 0.5);
+			border: 1px rgba(0, 0, 0, 0.3) solid;
+			background: #eee;
+			font-weight: bold;
+		}
+		#header-nav > .right.fleft > ul > li > a#notifications.active {
+			color: #f00;
+			background: rgba(255, 30, 144, 0.3);
+			border: 1px rgba(255, 0, 144, 0.5) solid;
+		}
+		#header-nav > .right.fleft > ul > li > a#notifications.active:hover {
+			background: rgba(255, 30, 144, 0.5);
 		}
 
 .sidebar {

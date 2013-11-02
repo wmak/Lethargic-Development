@@ -19,11 +19,14 @@
 			<div id="header-nav">
 				<div class="right fleft fullwidth">
 					<ul>
+						<!-- Replace "if true == true" with statement to determine whether there are unread notifications -->
+						<li><a class="{% if true == true %}active{% endif %}" id="notifications" href="#">&nbsp;!&nbsp;</a></li>
 						<li><a class="{% if active == "profile" %}active{% endif %}" href="#">Profile</a></li>
 						<li><a class="{% if active == "schedule" %}active{% endif %}" href="#">Schedule</a></li>
 						<li><a class="{% if active == "admin" %}active{% endif %}" href="{% url "admin" %}">Admin</a></li>
 						<li><a href="#">Log Out</a></li>
 					</ul>
+					<div class="hidden">No new notifications</div>
 				</div>
 			</div>
 			<div class="clear"></div>
