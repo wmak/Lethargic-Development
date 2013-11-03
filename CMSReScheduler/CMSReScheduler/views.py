@@ -1,8 +1,5 @@
 import utils.csvutils as csvutils
 from django.shortcuts import render
-from classes.models import Course
-from classes.models import Room
-from classes.models import CourseSchedule
 
 from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
@@ -10,8 +7,6 @@ from django.template import RequestContext
 from django.http import HttpResponse
 from django.core import serializers
 from forms import UploadCsv
-import datetime
-import time
 import simplejson
 
 def home(request):
@@ -62,40 +57,29 @@ def admin(request):
 def admin_upload(request):
 	return render(request, 'admin/upload.html')
 
-#This view should receive two strings:
-#1 - fields on which we should filter
-#2 - values for each of the fields passed in 1.
-#For Rooms we are considering the following fields:
-# - capacity: an integer indicating the minimum capacity the room should have
-# - availableon: the day to use checking if the room is available
-# - availableat: the startTime to use when checking if the room is available
-# - availablefor: the length to use when checking if the room is available
-# - building: two character indicating the code for a building (IC, for example)
+#This view should receive three strings:
+#1 - which model will be used, shoulb be in the plural for consistency
+#2 - fields on which we should filter
+#3 - values for each of the fields passed in 1.
 #The strings must be separated by '-'s.
 #The order of the fields does not matter as long as the values are 
 #in the same order.
-
-#incomplete
-def filterRooms(request, fields, values):
+def filter(request, model, fields, values): 
     if request.method == "GET":
         try:
             fList = fields.split('-')
             vList = values.split('-')
-            qSet = Room.objects.all()
-            for i in fList:
-                if fList[i] == 'capacity':
-                    qSet = qSet.filter(capacity__gt = int(vList[i]))
-                elif fList[i] == 'building':
-                    qSet = qSet.filter(code__startswith = vList[i])
-                elif fList[i] == 'availableon':
-                    qSet = qSet.filter(courseschedule__dayOfWeek = vList[i])
-                elif fList[i] == 'availableat':
-                    t = time.strptime(vList[i], "%H:%M")
-                    dt = datetime.time(t.tm_hour, t.tm_min)
-                    qSet = qSet.exclude(courseschedule__startTime = dt)
-                    qSet = handleLength(qSet, dt);
-                elif fList[i] == 'availablefor':
-                    qSet = checkLengthOfAvailability(qSet, int(vList[i]))
+            qSet = []
+            if(fList.length != vList.length):
+                data = json.dumps("Unable to filter. Number of fields does not match the number of values.")
+                return HttpResponse(content = data)
+            if model == "rooms":
+                qSet = filterRooms(fList, vList)
+            elif model == "courses":
+                qSet = filterCourses(fList, vList)
+            else:
+                data = json.dumps("Unable to filter. No such model named %s" % (model))
+                return HttpResponse(content = data)
             JSONSerializer = serializers.get_serializer("json")
             s = JSONSerializer()
             s.serialize(qSet)
@@ -105,6 +89,5 @@ def filterRooms(request, fields, values):
             data = json.dumps("Error while room filtering")
             return HttpResponse(content = data)
     else:
-        data = json.dumps("Unable to filter")
+        data = json.dumps("Unable to filter.")
         return HttpResponse(content = data)
-
