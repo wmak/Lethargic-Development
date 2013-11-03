@@ -12,6 +12,9 @@ urlpatterns = patterns('',
     url(r'^csvimport/$', 'CMSReScheduler.views.csvimport', name='csvimport'),
     url(r'^admin/$', 'CMSReScheduler.views.admin', name='admin'),
     url(r'^admin/upload/$', 'CMSReScheduler.views.admin_upload', name='admin_upload'),
+    #this regex is not complete yet
+    #it should only receive urls like: rooms/filter/capacity-building/50-IC/
+    url(r'^rooms/filter/(?P<fields>.*)/(?P<values>.*)/$', name = 'filterRooms'),
     # url(r'^CMSReScheduler/', include('CMSReScheduler.foo.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:

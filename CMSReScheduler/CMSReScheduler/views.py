@@ -8,9 +8,11 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.http import HttpResponse
+from django.core import serializers
 from forms import UploadCsv
 import datetime
 import time
+import simplejson
 
 def home(request):
 	return render(request, 'test.html')
@@ -75,21 +77,34 @@ def admin_upload(request):
 
 #incomplete
 def filterRooms(request, fields, values):
-    fList = fields.split('-')
-    vList = values.split('-')
-    qSet = Room.objects.all()
-    for i in fList:
-        if fList[i] == 'capacity':
-            qSet = qSet.filter(capacity__gt = int(vList[i]))
-        elif fList[i] == 'building':
-            qSet = qSet.filter(code__startswith = vList[i])
-        elif fList[i] == 'availableon':
-            qSet = qSet.filter(courseschedule__dayOfWeek = vList[i])
-        elif fList[i] == 'availableat':
-            t = time.strptime(vList[i], "%H:%M")
-            dt = datetime.time(t.tm_hour, t.tm_min)
-            qSet = qSet.exclude(courseschedule__startTime = dt)
-            qSet = handleLength(qSet, dt);
-        elif fList[i] == 'availablefor':
-            qSet = checkLengthOfAvailability(qSet, int(vList[i]))
+    if request.method == "GET":
+        try:
+            fList = fields.split('-')
+            vList = values.split('-')
+            qSet = Room.objects.all()
+            for i in fList:
+                if fList[i] == 'capacity':
+                    qSet = qSet.filter(capacity__gt = int(vList[i]))
+                elif fList[i] == 'building':
+                    qSet = qSet.filter(code__startswith = vList[i])
+                elif fList[i] == 'availableon':
+                    qSet = qSet.filter(courseschedule__dayOfWeek = vList[i])
+                elif fList[i] == 'availableat':
+                    t = time.strptime(vList[i], "%H:%M")
+                    dt = datetime.time(t.tm_hour, t.tm_min)
+                    qSet = qSet.exclude(courseschedule__startTime = dt)
+                    qSet = handleLength(qSet, dt);
+                elif fList[i] == 'availablefor':
+                    qSet = checkLengthOfAvailability(qSet, int(vList[i]))
+            JSONSerializer = serializers.get_serializer("json")
+            s = JSONSerializer()
+            s.serialize(qSet)
+            data = s.getvalue()
+            return HttpResponse(content = data)
+        except Exception as e:
+            data = json.dumps("Error while room filtering")
+            return HttpResponse(content = data)
+    else:
+        data = json.dumps("Unable to filter")
+        return HttpResponse(content = data)
 
