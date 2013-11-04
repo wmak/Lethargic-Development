@@ -48,7 +48,8 @@ def admin(request):
 
 def admin_upload(request):
 	return render(request, 'admin/upload.html')
-
+	
+# when you change the registration url, dont forget to edit 'type' here as well
 def registration(request, type):
     if request.method == 'POST':
         if type == 'instructor':
