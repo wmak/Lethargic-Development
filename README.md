@@ -13,7 +13,9 @@ _For the first run_
 	- `FLUSH PRIVILEGES;`
 - Create a database in mysql called "CMSdb"
 	- `CREATE DATABASE CMSdb;`
-- `pip install MySQL-python`
+- Install required Python Libraries
+	- `pip install MySQL-python`
+	- `pip install simplejson`
 - `cd CMSReScheduler`
     - This directory should have a file called manage.py
 - `python manage.py runserver`
