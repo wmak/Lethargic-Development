@@ -1,5 +1,5 @@
 from django.db import models
-
+from datetime import datetime
 # Create your models here.
 
 class Department(models.Model):
@@ -53,19 +53,11 @@ class Instructor(User):			#incomplete
 			schedule.append(CourseSchedule.objects.filter(course = c))
 		return schedule
 
-class Chair(Instructor):				#incomplete
+class Chair(Instructor):#incomplete
 	
 	def prohibitChanges():
 		#TODO
-		return
-
-	def viewDepartmentCourses():
-		return Course.objects.filter(department = self.department)
-
-class Chair(Instructor):				#incomplete
-	
-	def prohibitChanges():
-		#TODO
+		pass
 
 	def viewDepartmentInstructors():
 		return Instructor.objects.filter(department = self.department)
@@ -128,3 +120,8 @@ class CourseSchedule(models.Model):
 	startTime = models.TimeField()
 	endTime = models.TimeField()
 	typeOfSession = models.CharField(max_length = 3) # LEC, TUT or PRA
+	section = models.CharField(max_length = 4) #0001
+
+	@property
+	def time_range(self):
+		return u"%s - %s" % (self.startTime.strftime("%H:%M"), self.endTime.strftime("%H:%M"))
