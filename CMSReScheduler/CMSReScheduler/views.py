@@ -49,7 +49,7 @@ def admin_upload(request):
 	return render(request, 'admin/upload.html')
 
 @csrf_exempt
-def course(request, course):
+def course(request, course, section):
 	''' 
 		Perform an action on a course 
 		PUT -- Modify the course
@@ -61,7 +61,11 @@ def course(request, course):
 	status = 500
 	body = ""
 	if request.body:
-		body = json.loads(request.body)
+		try:
+			body = json.loads(request.body)
+		except:
+			info = {"Error" : "Badly formatted Json"}
+			body = None
 	try:
 		if request.method == "PUT":
 			current = classutils.get_course(course)
@@ -86,6 +90,19 @@ def course(request, course):
 					info.setdefault("department", "Updated")
 				except Exception as e:
 					info.setdefault("department", "Error: " + str(e))
+			if section and body.has_key("switch"):
+				try:
+					current = CourseSchedule.objects.filter(course = current, typeOfSession = section)[0]
+					to_switch = classutils.get_course(body["switch"]["code"])
+					next = CourseSchedule.objects.filter(course = to_switch, typeOfSession = body["switch"]["section"])[0]
+					current.course, next.course = next.course, current.course
+					current.typeOfSession, next.typeOfSession = next.typeOfSession, current.typeOfSession
+					current.save()
+					next.save()
+					info = {"info" : course + section + " and " + body["switch"]["code"] + body["switch"]["section"] + " switched"}
+					status  = 200
+				except Exception as e:
+					info.setdefault("department", "Error: " + str(e))
 			if info:
 				current.save()
 				status = 200
@@ -98,7 +115,7 @@ def course(request, course):
 				info = {"name" : current.name, "enrolment" : current.enrolment, "department" : current.department.name}
 				times = []
 				for time in CourseSchedule.objects.filter(course = current):
-					times.append(time.time_range)
+					times.append(time.typeOfSession + ":" + time.time_range)
 				info.setdefault("Times", times)
 				status = 200
 			else:
