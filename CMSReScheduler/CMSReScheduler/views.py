@@ -9,8 +9,7 @@ from django.shortcuts import render, render_to_response
 from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
 
-from forms import UploadCsv
-from forms import InstructorRegistrationForm
+from forms import UploadCsv, InstructorRegistrationForm
 import simplejson as json
 
 from classes.models import Course, Department, CourseSchedule
@@ -56,14 +55,19 @@ def registration(request, type):
             form = InstructorRegistrationForm(request.POST)
             if form.is_valid():
                 new_user = form.save()
-                return HttpResponse('User registered successfully.')
+                info = 'User registered successfully.'
+                status = 200
             else:
-                return HttpResponse('Invalid form.')
+            	info = 'Invalid form.'
+                status = 400
         else:
-            return HttpResponse('Select one of the roles available.')
+        	info = 'Select one of the roles available.'
+            status = 400
+    	return render_to_response(content=info, status=status)    
     else:
         form = InstructorRegistrationForm()
-    return render_to_response('registration.html', {'form': form}, context_instance=RequestContext(request))
+        status = 200
+    return render_to_response('registration.html', {'form': form}, status=status, context_instance=RequestContext(request))
 
 @csrf_exempt
 def course(request, course):
