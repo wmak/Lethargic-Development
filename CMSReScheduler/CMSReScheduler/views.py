@@ -10,9 +10,7 @@ from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
 
 from forms import UploadCsv
-<<<<<<< HEAD
 from forms import InstructorRegistrationForm
-=======
 import simplejson as json
 
 from classes.models import Course, Department, CourseSchedule
@@ -44,7 +42,6 @@ def csvimport(request, model_type):
 	else:
 		return HttpResponse('Invalid model_type!')
 	return HttpResponse('The %s file has been uploaded!' % model_type)
->>>>>>> develop
 
 def admin(request):
 	return render(request, 'admin/index.html')
