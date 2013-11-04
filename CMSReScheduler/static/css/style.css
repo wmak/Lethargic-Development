@@ -129,7 +129,7 @@ footer {
 			background: rgba(255, 30, 144, 0.3);
 			border: 1px rgba(255, 0, 144, 0.5) solid;
 		}
-		#header-nav > .right.fleft > ul > li > a#notifications.active.clicked {
+		#header-nav > .right.fleft > ul > li > a#notifications.clicked {
 			color: #000;
 			border: 1px rgba(100, 150, 200, 0.5) solid;
 			background: rgba(100, 150, 200, 0.3);
