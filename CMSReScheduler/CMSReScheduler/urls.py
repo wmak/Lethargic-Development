@@ -8,6 +8,7 @@ urlpatterns = patterns('',
     # Examples:
     url(r'^$', 'CMSReScheduler.views.home', name='home'),
     url(r'^schedule/(?P<instructor>.*)/$', 'CMSReScheduler.views.instructor_schedule' ),
+    # since 'type' is a key word, you should find a better word for url regex
     url(r'^registration/(?P<type>.*)/$', 'CMSReScheduler.views.registration', name='registration'),
     url(r'^csvimport/(?P<model_type>.*)/$', 'CMSReScheduler.views.csvimport', name='csvimport'),
     url(r'^admin/$', 'CMSReScheduler.views.admin', name='admin'),
