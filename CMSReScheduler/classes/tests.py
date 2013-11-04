@@ -43,7 +43,7 @@ class CourseTest(TestCase):
 
 class RoomTest(TestCase):
 	def setUp(self):
-		Room.objects.create_course('IC220', 150)
+		Room.objects.create_room('IC220', 150)
 
 	def test_setUp(self):
 		room = Room.objects.get(code="IC220")
@@ -57,7 +57,7 @@ class RoomTest(TestCase):
 
 class UserTest(TestCase):
 	def setUp(self):
-		User.objects.create_course('Shai Mitchell', '1295 Military Trail, Scarborough, Ontarro', \
+		User.objects.create_user('Shai Mitchell', '1295 Military Trail, Scarborough, Ontarro', \
 			'shai.mitchell@email.ca', 'Coputter Science')
 
 	def test_setUp(self):

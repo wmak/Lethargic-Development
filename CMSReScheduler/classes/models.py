@@ -29,7 +29,7 @@ class Course(models.Model):
                 return u'%s - %s' % (self.code, self.name)
 
 class RoomManager(models.Manager):
-    def create_croom(self, code, capacity):
+    def create_room(self, code, capacity):
         room = self.create(code=code, capacity=capacity)
         return rooom
 
