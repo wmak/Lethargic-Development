@@ -6,7 +6,6 @@ from django.conf.urls import patterns, include, url
 
 urlpatterns = patterns('',
     # Examples:
-    url(r'^$', 'CMSReScheduler.views.home', name='home'),
     url(r'^schedule/(?P<instructor>.*)/$', 'CMSReScheduler.views.instructor_schedule' ),
     url(r'^registration/(?P<user_role>.*)/$', 'CMSReScheduler.views.registration', name='registration'),
     url(r'^csvimport/(?P<model_type>.*)/$', 'CMSReScheduler.views.csvimport', name='csvimport'),
