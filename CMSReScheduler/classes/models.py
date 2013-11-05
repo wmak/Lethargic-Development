@@ -53,7 +53,12 @@ class Instructor(User):			#incomplete
 			schedule.append(CourseSchedule.objects.filter(course = c))
 		return schedule
 
+
 class Chair(Instructor):
+	
+	def prohibitChanges():
+		#TODO
+
 	def viewDepartmentInstructors():
 		return Instructor.objects.filter(department = self.department)
 
