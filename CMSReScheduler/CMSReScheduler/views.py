@@ -53,26 +53,26 @@ def admin_upload(request):
 # The registration will consider the user role 
 # because there are 3 differente classes to deal with users
 def registration(request, user_role):
-    if request.method == 'POST':
-    	# Depending on the role, the appropriate form will be rendered
-        if user_role == 'instructor':
-            form = InstructorRegistrationForm(request.POST)
-            if form.is_valid():
-                new_user = form.save()
-                info = 'User registered successfully.'
-                status = 200
-            else:
-            	info = 'Invalid form.'
-                status = 400
-        else:
-        	# There is no "neutral user", so every registration has to include the role
-        	info = 'Select one of the roles available.'
-            status = 400
-    	return render_to_response(content=info, status=status)    
-    else:
-        form = InstructorRegistrationForm()
-        status = 200
-    return render_to_response('registration.html', {'form': form}, status=status, context_instance=RequestContext(request))
+	if request.method == 'POST':
+		# Depending on the role, the appropriate form will be rendered
+		if user_role == 'instructor':
+			form = InstructorRegistrationForm(request.POST)
+			if form.is_valid():
+				new_user = form.save()
+				info = 'User registered successfully.'
+				status = 200
+			else:
+				info = 'Invalid form.'
+				status = 400
+		else:
+			# There is no "neutral user", so every registration has to include the role
+			info = 'Select one of the roles available.'
+			status = 400
+		return render_to_response(content=info, status=status)
+	else:
+		form = InstructorRegistrationForm()
+		status = 200
+	return render_to_response('registration.html', {'form': form}, status=status, context_instance=RequestContext(request))
 
 @csrf_exempt
 def course(request, course, section):
