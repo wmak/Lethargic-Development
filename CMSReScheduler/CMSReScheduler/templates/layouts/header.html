@@ -6,6 +6,9 @@
 
 		<!-- CSS -->
 		<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/style.css">
+
+		<!-- JS -->
+		<script type="text/javascript" src="{{ STATIC_URL }}js/script.js"></script>	
 	</head>
 
 	<body>
@@ -18,11 +21,24 @@
 			</div>
 			<div id="header-nav">
 				<div class="right fleft fullwidth">
+					<ul class="fleft">
+						<!-- Replace "if true == true" check for notifications, and if they exist, whether there are any unread -->
+						<li><a class="{% if true == 1 %}active{% endif %}" id="notifications" href="#" onclick="toggleNotifications(this);">&nbsp;!&nbsp;</a></li>
+					</ul>
 					<ul>
 						<li><a class="{% if active == "profile" %}active{% endif %}" href="#">Profile</a></li>
 						<li><a class="{% if active == "schedule" %}active{% endif %}" href="#">Schedule</a></li>
 						<li><a class="{% if active == "admin" %}active{% endif %}" href="{% url "admin" %}">Admin</a></li>
 						<li><a href="#">Log Out</a></li>
+					</ul>
+				</div>
+				<!-- Replace "Noticication #" with for loop that iterates through notifications, displaying them -->
+				<!-- Unread notifications have the "active" class -->
+				<div class="hidden" id="notifications-box">
+					<ul>
+						<li class="notification">Notification 1</li>
+						<li class="notification active">Notification 2</li>
+						<li class="notification">Notification 3</li>
 					</ul>
 				</div>
 			</div>
