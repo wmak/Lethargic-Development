@@ -66,28 +66,34 @@ def admin_upload(request):
 #in the same order.
 def filter(request, model, fields, values): 
     if request.method == "GET":
+        status = 200
         try:
             fList = fields.split('-')
             vList = values.split('-')
             qSet = []
             if(fList.length != vList.length):
                 data = json.dumps("Unable to filter. Number of fields does not match the number of values.")
-                return HttpResponse(content = data)
+                status = 400
+                return HttpResponse(content = data, status = status)
             if model == "rooms":
                 qSet = filterRooms(fList, vList)
             elif model == "courses":
                 qSet = filterCourses(fList, vList)
             else:
                 data = json.dumps("Unable to filter. No such model named %s" % (model))
-                return HttpResponse(content = data)
+                status = 400
+                return HttpResponse(content = data, status = status)
             JSONSerializer = serializers.get_serializer("json")
             s = JSONSerializer()
             s.serialize(qSet)
             data = s.getvalue()
-            return HttpResponse(content = data)
+            status = 200
+            return HttpResponse(content = data, status = status)
         except Exception as e:
             data = json.dumps("Error while room filtering")
-            return HttpResponse(content = data)
+            status = 500
+            return HttpResponse(content = data, status = status)
     else:
         data = json.dumps("Unable to filter.")
-        return HttpResponse(content = data)
+        status = 500
+        return HttpResponse(content = data, status = status)

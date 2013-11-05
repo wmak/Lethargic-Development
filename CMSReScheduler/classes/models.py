@@ -81,20 +81,20 @@ class Chair(Instructor):				#incomplete
 
 class UndergradAdminAssistant(User):
 
-        #This method returns all classrooms, that is,
-        #rooms with capacity different from 1.
-        def listClassrooms():
-                return Room.objects.get(~Q(capacity = 1))
+    #This method returns all classrooms, that is,
+    #rooms with capacity different from 1.
+    def listClassrooms():
+            return Room.objects.get(~Q(capacity = 1))
 
-        def getChairs():
-                return Chair.objects.all
+    def getChairs():
+            return Chair.objects.all
 
-        def getInstructorsOfDepartment(dept):
-                return Instructor.objects.filter(department = dept)
+    def getInstructorsOfDepartment(dept):
+            return Instructor.objects.filter(department = dept)
 
-        def checkEnrolment(courseCode):
-                c = Course.objects.get(code = courseCode)
-                return c.enrolment
+    def checkEnrolment(courseCode):
+            c = Course.objects.get(code = courseCode)
+            return c.enrolment
 
 
 class CourseSchedule(models.Model):
@@ -104,3 +104,15 @@ class CourseSchedule(models.Model):
 	startTime = models.TimeField()
 	length = models.IntegerField() #in minutes
 	typeOfSession = models.CharField(max_length = 3) # LEC, TUT or PRA
+
+	@property
+    def time_range(self):
+    		h = length / 60
+    		m = length % 60
+    		endHour = startTime.hour + h
+    		endMinutes = startTime.minute + m
+    		if endMinutes >= 60:
+    			endHour++
+    			endMinutes -= 60
+    		endTime = datetime.time(endHour, endMinutes)
+            return u"%s - %s" % (self.startTime.strftime("%H:%M"), endTime.strftime("%H:%M"))
