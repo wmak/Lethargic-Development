@@ -10,7 +10,11 @@ from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
 
 from forms import UploadCsv
-import simplejson as json
+try:
+    import json
+except ImportError:
+    # Python 2.5
+    import simplejson as json
 
 from classes.models import Course, Department, CourseSchedule
 
@@ -46,7 +50,7 @@ def admin(request):
 	return render(request, 'admin/index.html')
 
 def admin_upload(request):
-	return render(request, 'admin/upload.html')
+	return render(request, 'admin/upload.html', {"departments": Department.objects.all})
 
 @csrf_exempt
 def course(request, course):

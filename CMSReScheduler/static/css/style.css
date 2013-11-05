@@ -223,7 +223,10 @@ footer {
   	-webkit-box-sizing:border-box;
 	border: 1px #000 solid;
 	border-top: none;
-	border-left: none;
+	border-right: none;
+}
+.schedule-cell:nth-child(6n) {
+	border-right: 1px #000 solid;
 }
 .schedule-day {
 	border-top: 1px #000 solid;
@@ -231,7 +234,6 @@ footer {
 }
 .schedule-time {
 	border: none;
-	border-right: 1px #000 solid;
 }
 
 /* Forms */

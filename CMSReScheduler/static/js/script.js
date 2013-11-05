@@ -9,3 +9,8 @@ function toggleNotifications(obj) {
 		obj.className += " clicked";
     }
 }
+
+function selectUploadType(value) {
+	form = document.getElementById('admin-upload-form');
+	form.action = "/csvimport/" + value + "/";
+}
