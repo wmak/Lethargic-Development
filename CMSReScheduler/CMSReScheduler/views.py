@@ -7,15 +7,15 @@ from django.template import RequestContext
 from django.http import HttpResponse
 from django.core import serializers
 from forms import UploadCsv
-import simplejson
+import simplejson as json
 
 def home(request):
 	return render(request, 'test.html')
 
 def import_csv_file(request, type):
-''' NOTE: for now I have a single url for this. I can send them  each to a certain page if you guys prefer.
-    This is still very much up for debate. Let me know what you all think
-'''
+    ''' NOTE: for now I have a single url for this. I can send them  each to a certain page if you guys prefer.
+        This is still very much up for debate. Let me know what you all think
+    '''
     if type == 'schedule':
         form = UploadCsv(type, request.FILES)
         format = ['code', 'name', 'enrolment']
@@ -90,7 +90,7 @@ def filter(request, model, fields, values):
             status = 200
             return HttpResponse(content = data, status = status)
         except Exception as e:
-            data = json.dumps("Error while room filtering")
+            data = json.dumps("Error while filtering")
             status = 500
             return HttpResponse(content = data, status = status)
     else:

@@ -62,11 +62,7 @@ class Chair(Instructor):				#incomplete
 	def viewDepartmentCourses():
 		return Course.objects.filter(department = self.department)
 
-class Chair(Instructor):				#incomplete
-	
-	def prohibitChanges():
-		#TODO
-
+class Chair(Instructor):
 	def viewDepartmentInstructors():
 		return Instructor.objects.filter(department = self.department)
 
@@ -104,15 +100,19 @@ class CourseSchedule(models.Model):
 	startTime = models.TimeField()
 	length = models.IntegerField() #in minutes
 	typeOfSession = models.CharField(max_length = 3) # LEC, TUT or PRA
+	section = models.CharField(max_length = 4) #0001
 
 	@property
-    def time_range(self):
-    		h = length / 60
-    		m = length % 60
-    		endHour = startTime.hour + h
-    		endMinutes = startTime.minute + m
-    		if endMinutes >= 60:
-    			endHour++
-    			endMinutes -= 60
-    		endTime = datetime.time(endHour, endMinutes)
-            return u"%s - %s" % (self.startTime.strftime("%H:%M"), endTime.strftime("%H:%M"))
+	def time_range(self):		
+		return u"%s - %s" % (self.startTime.strftime("%H:%M"), self.calcEndTime().strftime("%H:%M"))
+
+	def calcEndTime():
+		h = length / 60
+		m = length % 60
+		endHour = startTime.hour + h
+		endMinutes = startTime.minute + m
+		if endMinutes >= 60:
+			endHour += 1
+			endMinutes -= 60
+		endTime = datetime.time(endHour, endMinutes)
+		return endTime
