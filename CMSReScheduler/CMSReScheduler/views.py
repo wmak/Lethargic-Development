@@ -2,16 +2,13 @@
 # encoding: utf-8
 
 import utils.csvutils as csvutils
-from django.shortcuts import render
 import utils.classesutils as classutils
 
 from django.http import HttpResponse, HttpResponseRedirect, QueryDict
 from django.shortcuts import render, render_to_response
 from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
-from django.http import HttpResponse
 from django.core import serializers
-from forms import UploadCsv
 
 from forms import UploadCsv, InstructorRegistrationForm
 import simplejson as json
@@ -45,7 +42,6 @@ def csvimport(request, model_type):
 	else:
 		return HttpResponse('Invalid model_type!')
 	return HttpResponse('The %s file has been uploaded!' % model_type)
-
 
 def admin(request):
 	return render(request, 'admin/index.html')
@@ -95,7 +91,6 @@ def filter(request, model, fields, values):
         status = 500
         return HttpResponse(content = data, status = status)
 
-	
 # when you change the registration url, dont forget to edit 'type' here as well
 
 # The registration will consider the user role 
@@ -246,4 +241,3 @@ def instructor_schedule(request, instructor):
 	i = Instructor.objects.get(name=instructor)
 	context = {"courses": i.myCourses, 'instructor': i.name}
 	return render_to_respose('instructor_schedule.html', context, context_instance-RequestContext(request))
-

@@ -53,7 +53,6 @@ class Instructor(User):			#incomplete
 			schedule.append(CourseSchedule.objects.filter(course = c))
 		return schedule
 
-
 class Chair(Instructor):
 	def viewDepartmentInstructors():
 		return Instructor.objects.filter(department = self.department)
@@ -108,3 +107,4 @@ class CourseSchedule(models.Model):
 			endMinutes -= 60
 		endTime = datetime.time(endHour, endMinutes)
 		return endTime
+
