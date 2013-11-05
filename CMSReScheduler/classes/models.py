@@ -1,5 +1,5 @@
 from django.db import models
-
+from datetime import datetime
 # Create your models here.
 
 class Department(models.Model):
@@ -53,14 +53,6 @@ class Instructor(User):			#incomplete
 			schedule.append(CourseSchedule.objects.filter(course = c))
 		return schedule
 
-class Chair(Instructor):				#incomplete
-	
-	def prohibitChanges():
-		#TODO
-		return
-
-	def viewDepartmentCourses():
-		return Course.objects.filter(department = self.department)
 
 class Chair(Instructor):
 	def viewDepartmentInstructors():
