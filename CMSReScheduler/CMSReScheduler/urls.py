@@ -6,7 +6,11 @@ from django.conf.urls import patterns, include, url
 
 urlpatterns = patterns('',
     # Examples:
-    url(r'^$', 'CMSReScheduler.views.home', name='home'),
+    
+    # I commented next line because there is no views.home and this was crashing the app here.
+    # If anyone put this here and will create a view, uncomment later. (Daniel)
+    #url(r'^$', 'CMSReScheduler.views.home', name='home'),
+    
     url(r'^schedule/(?P<instructor>.*)/$', 'CMSReScheduler.views.instructor_schedule' ),
     url(r'^registration/(?P<user_role>.*)/$', 'CMSReScheduler.views.registration', name='registration'),
     url(r'^csvimport/(?P<model_type>.*)/$', 'CMSReScheduler.views.csvimport', name='csvimport'),
