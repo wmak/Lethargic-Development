@@ -49,9 +49,13 @@ def admin_upload(request):
 	return render(request, 'admin/upload.html')
 	
 # when you change the registration url, dont forget to edit 'type' here as well
-def registration(request, type):
+
+# The registration will consider the user role 
+# because there are 3 differente classes to deal with users
+def registration(request, user_role):
     if request.method == 'POST':
-        if type == 'instructor':
+    	# Depending on the role, the appropriate form will be rendered
+        if user_role == 'instructor':
             form = InstructorRegistrationForm(request.POST)
             if form.is_valid():
                 new_user = form.save()
@@ -61,6 +65,7 @@ def registration(request, type):
             	info = 'Invalid form.'
                 status = 400
         else:
+        	# There is no "neutral user", so every registration has to include the role
         	info = 'Select one of the roles available.'
             status = 400
     	return render_to_response(content=info, status=status)    
