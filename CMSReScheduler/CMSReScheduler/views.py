@@ -53,13 +53,28 @@ def course(request, course, section):
 	''' 
 		Perform an action on a course 
 		PUT -- Modify the course
+			request body = {
+				"name" : "new name",	# Changes the courses name to new name
+				"enrolment" : val,		# Changes the courses enrolment to val, either a string or int.
+				"department" : "new",	# Changes the courses department to new
+				"switch" : {"code" : "Course code to switch with", "section" : "the section to swap with"},
+			}
 		GET -- All relevant information pertaining to this course
+			No request body required
 		DELETE -- Remove this course from the schedule (It will still exist as a course)
+			No request body required
 		POST -- Add a new course
+			request body = {
+				"code" : "new value",
+				"name" : "new value",
+				"enrolment" : "new value",
+				"department" : "new value",
+			}
 	'''
 	info = {"Error" : "Nothing happened somehow"}
 	status = 500
 	body = ""
+	# If the request has a body, assume that it is json. And parse it.
 	if request.body:
 		try:
 			body = json.loads(request.body)
@@ -67,8 +82,10 @@ def course(request, course, section):
 			info = {"Error" : "Badly formatted Json"}
 			body = None
 	try:
+		# Modifying a course if its a put request
 		if request.method == "PUT":
 			current = classutils.get_course(course)
+			# if the body has a name key, then it's a request for changing the name
 			if body.has_key("name"):
 				if body["name"]:
 					try:
@@ -78,18 +95,21 @@ def course(request, course, section):
 						info.setdefault("name", "Error: " + str(e))
 				else:
 					info.setdefault("name", "Error: name entry was blank")
+			# same Applies to enrolment
 			if body.has_key("enrolment"):
 				try:
 					current.enrolment = body["enrolment"]
 					info.setdefault("enrolment", "Updated")
 				except Exception as e:
 					info.setdefault("enrolment", "Error: " + str(e))
+			# and as well with department, these are separate if statements if the user wants to make multiple changes in one request
 			if body.has_key("department"):
 				try:
 					current.department = department.objects.get(name = body["department"])
 					info.setdefault("department", "Updated")
 				except Exception as e:
 					info.setdefault("department", "Error: " + str(e))
+			# Special key switch will switch all details but course and typeOfSession between two CourseSchedules
 			if section and body.has_key("switch"):
 				try:
 					current = CourseSchedule.objects.filter(course = current, typeOfSession = section)[0]
