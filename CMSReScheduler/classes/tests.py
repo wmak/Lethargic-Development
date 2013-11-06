@@ -92,18 +92,18 @@ class AdminUploadTest(TestCase):
 
 class CourseTest(TestCase):
 	def test_course_cscc01h3_status(self):
-		url = 'course/cscc01h3'
+		url = '/course/cscc01h3'
 		resp = self.client.get(url)
 		self.assertEqual(resp.status_code, 200)
 
 class CsvImportTest(object):
 	def test_csv_upload_schedule_status(self):
-		url = 'csvimport/schedule'
+		url = '/csvimport/schedule'
 		resp = self.client.get(url)
 		self.assertEqual(resp.status_code, 200)
 
 	def test_csv_upload_course_status(self):
-		url = 'csvimport/course'
+		url = '/csvimport/course'
 		resp = self.client.get(url)
 		self.assertEqual(resp.status_code, 200)
 		
