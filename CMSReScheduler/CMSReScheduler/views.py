@@ -46,6 +46,9 @@ def csvimport(request, model_type):
 		return HttpResponse('Invalid model_type!')
 	return HttpResponse('The %s file has been uploaded!' % model_type)
 
+def index(request):
+	return render(request, 'index.html')
+
 def admin(request):
 	# TODO: Filter the results by instructor
 	daysOfWeek = ["MO", "TU", "WE", "TH", "FR"]
