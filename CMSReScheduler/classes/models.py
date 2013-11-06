@@ -166,11 +166,12 @@ class CourseScheduleManager(models.Manager):
 class CourseSchedule(models.Model):
 	course = models.ForeignKey(Course)
 	room = models.ForeignKey(Room)
-	dayOfWeek = models.CharField(max_length = 2) # Mo = Monday, We = Wednesday
+	dayOfWeek = models.CharField(max_length = 9)
 	startTime = models.TimeField()
 	length = models.IntegerField() #in minutes
 	typeOfSession = models.CharField(max_length = 3) # LEC, TUT or PRA
 	section = models.CharField(max_length = 4) #0001
+
 	@property
 	def time_range(self):
 		return u"%s - %s" % (self.startTime.strftime("%H:%M"), self.endTime.strftime("%H:%M"))
