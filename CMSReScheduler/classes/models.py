@@ -20,7 +20,6 @@ class CourseManager(models.Manager):
 
 class Course(models.Model):
 
-<<<<<<< HEAD
         code = models.CharField(max_length=9) #ex. CSCC01H3F
         name = models.CharField(max_length=50)
         enrolment = models.IntegerField()
@@ -30,18 +29,10 @@ class Course(models.Model):
                 return u'%s - %s' % (self.code, self.name)
 
 class RoomManager(models.Manager):
+
     def create_room(self, code, capacity):
         room = self.create(code=code, capacity=capacity)
         return rooom
-=======
-	code = models.CharField(max_length=9) #ex. CSCC01H3F
-	name = models.CharField(max_length=50)
-	enrolment = models.IntegerField()
-	department = models.ForeignKey(Department)
-
-	def __unicode__(self):
-		return u'%s - %s' % (self.code, self.name)
->>>>>>> 79e8c344666fba1e2bf6e231cd779f61f6149374
 
 class Room(models.Model):
         code = models.CharField(max_length=10) #ex. IC220
@@ -97,20 +88,19 @@ class Chair(Instructor):                                #incomplete
 
 class Chair(Instructor):                                #incomplete
         
-        def prohibitChanges():
-                #TODO
+    def prohibitChanges():
+            #TODO
 
-<<<<<<< HEAD
-        def viewDepartmentInstructors():
-                return Instructor.objects.filter(department = self.department)
+    def viewDepartmentInstructors():
+            return Instructor.objects.filter(department = self.department)
 
-        def viewInstructorsSchedules():
-                instructors = viewDepartmentInstructors();
-                schedules = []
-                for i in instructors:
-                        schedules.append(i.getSchedule())
-                return schedules
-=======
+    def viewInstructorsSchedules():
+            instructors = viewDepartmentInstructors();
+            schedules = []
+            for i in instructors:
+                    schedules.append(i.getSchedule())
+            return schedules
+
 	def getSchedule():
 		schedule = []
 		for c in myCourses:
@@ -122,28 +112,18 @@ class Chair(Instructor):
 	
 	def prohibitChanges():
 		#TODO
-<<<<<<< HEAD
 		pass
->>>>>>> 79e8c344666fba1e2bf6e231cd779f61f6149374
-=======
->>>>>>> ef944f33abc2ec2dce215cb7f9cbd3712ac4cfe0
 
-
-<<<<<<< HEAD
-=======
 	def viewInstructorsSchedules():
 		instructors = viewDepartmentInstructors();
 		schedules = []
 		for i in instructors:
 			schedules.append(i.getSchedule())
 		return schedules
->>>>>>> 79e8c344666fba1e2bf6e231cd779f61f6149374
-
 
 
 class UndergradAdminAssistant(User):
 
-<<<<<<< HEAD
         #This method returns all classrooms, that is,
         #rooms with capacity different from 1.
         def listClassrooms():
@@ -159,33 +139,18 @@ class UndergradAdminAssistant(User):
                 c = Course.objects.get(code = courseCode)
                 return c.enrolment
 
-<<<<<<< HEAD
+
 class CourseScheduleManager(models.Manager):
     def create_course_schedule(self, course, room, dayOfWeek, department, length, typeOfSession):
         course_schedule = self.create(course=course, room=room, dayOfWeek=dayOfWeek, startTime=startTime, \
         	length=length, typeOfSession=typeOfSession)
         return course_schedule
 
-class CourseSchedule(models.Model):
-        course = models.ForeignKey(Course)
-        room = models.ForeignKey(Room)
-        dayOfWeek = models.CharField(max_length = 9)
-        startTime = models.TimeField()
-        length = models.IntegerField() #in minutes
-        typeOfSession = models.CharField(max_length = 3) # LEC, TUT or PRA
-=======
-class Schedule(models.Model):
-	instructor = models.ForeignKey(Instructor)
-	course = models.ForeignKey(Course)
-	room = models.ForeignKey(Room)
-	# startTime = models.TimeField()
-	# endTime = models.TimeField()
-=======
+
     #This method returns all classrooms, that is,
     #rooms with capacity different from 1.
     def listClassrooms():
             return Room.objects.get(~Q(capacity = 1))
->>>>>>> ef944f33abc2ec2dce215cb7f9cbd3712ac4cfe0
 
     def getChairs():
             return Chair.objects.all
@@ -208,11 +173,9 @@ class CourseSchedule(models.Model):
 	section = models.CharField(max_length = 4) #0001
 
 	@property
-<<<<<<< HEAD
 	def time_range(self):
 		return u"%s - %s" % (self.startTime.strftime("%H:%M"), self.endTime.strftime("%H:%M"))
->>>>>>> 79e8c344666fba1e2bf6e231cd779f61f6149374
-=======
+
 	def time_range(self):		
 		return u"%s - %s" % (self.startTime.strftime("%H:%M"), self.calcEndTime().strftime("%H:%M"))
 
@@ -226,5 +189,3 @@ class CourseSchedule(models.Model):
 			endMinutes -= 60
 		endTime = datetime.time(endHour, endMinutes)
 		return endTime
-
->>>>>>> ef944f33abc2ec2dce215cb7f9cbd3712ac4cfe0
