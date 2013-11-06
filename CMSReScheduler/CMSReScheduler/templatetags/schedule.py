@@ -9,6 +9,13 @@ def get_range(value):
 	return range(value)
 
 @register.filter
+def schedule_cell_day(value):
+	if value == 1:
+		return "schedule-day"
+	else:
+		return ""
+
+@register.filter
 def schedule_day(value):
 	# TODO: Refactor
 	if value == 1:
@@ -21,6 +28,13 @@ def schedule_day(value):
 		return "Thursday"
 	elif value == 5:
 		return "Friday"
+	else:
+		return ""
+
+@register.filter
+def schedule_cell_time(value):
+	if value == 1:
+		return "schedule-time"
 	else:
 		return ""
 
