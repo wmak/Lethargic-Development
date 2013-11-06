@@ -117,12 +117,16 @@ class Chair(Instructor):                                #incomplete
 			schedule.append(CourseSchedule.objects.filter(course = c))
 		return schedule
 
-class Chair(Instructor):#incomplete
+
+class Chair(Instructor):
 	
 	def prohibitChanges():
 		#TODO
+<<<<<<< HEAD
 		pass
 >>>>>>> 79e8c344666fba1e2bf6e231cd779f61f6149374
+=======
+>>>>>>> ef944f33abc2ec2dce215cb7f9cbd3712ac4cfe0
 
 
 <<<<<<< HEAD
@@ -139,6 +143,7 @@ class Chair(Instructor):#incomplete
 
 class UndergradAdminAssistant(User):
 
+<<<<<<< HEAD
         #This method returns all classrooms, that is,
         #rooms with capacity different from 1.
         def listClassrooms():
@@ -175,35 +180,51 @@ class Schedule(models.Model):
 	room = models.ForeignKey(Room)
 	# startTime = models.TimeField()
 	# endTime = models.TimeField()
+=======
+    #This method returns all classrooms, that is,
+    #rooms with capacity different from 1.
+    def listClassrooms():
+            return Room.objects.get(~Q(capacity = 1))
+>>>>>>> ef944f33abc2ec2dce215cb7f9cbd3712ac4cfe0
 
-	def __unicode__(self):
-		return u'%s\n%s\n%s\n%s - %s' % (self.room.code, self.course.code, self.instructor.name);
+    def getChairs():
+            return Chair.objects.all
 
-	#This method returns all classrooms, that is,
-	#rooms with capacity different from 1.
-	def listClassrooms():
-		return Room.objects.get(~Q(capacity = 1))
+    def getInstructorsOfDepartment(dept):
+            return Instructor.objects.filter(department = dept)
 
-	def getChairs():
-		return Chair.objects.all
+    def checkEnrolment(courseCode):
+            c = Course.objects.get(code = courseCode)
+            return c.enrolment
 
-	def getInstructorsOfDepartment(dept):
-		return Instructor.objects.filter(department = dept)
-
-	def checkEnrolment(courseCode):
-		c = Course.objects.get(code = courseCode)
-		return c.enrolment
 
 class CourseSchedule(models.Model):
 	course = models.ForeignKey(Course)
 	room = models.ForeignKey(Room)
 	dayOfWeek = models.CharField(max_length = 9)
 	startTime = models.TimeField()
-	endTime = models.TimeField()
+	length = models.IntegerField() #in minutes
 	typeOfSession = models.CharField(max_length = 3) # LEC, TUT or PRA
 	section = models.CharField(max_length = 4) #0001
 
 	@property
+<<<<<<< HEAD
 	def time_range(self):
 		return u"%s - %s" % (self.startTime.strftime("%H:%M"), self.endTime.strftime("%H:%M"))
 >>>>>>> 79e8c344666fba1e2bf6e231cd779f61f6149374
+=======
+	def time_range(self):		
+		return u"%s - %s" % (self.startTime.strftime("%H:%M"), self.calcEndTime().strftime("%H:%M"))
+
+	def calcEndTime():
+		h = length / 60
+		m = length % 60
+		endHour = startTime.hour + h
+		endMinutes = startTime.minute + m
+		if endMinutes >= 60:
+			endHour += 1
+			endMinutes -= 60
+		endTime = datetime.time(endHour, endMinutes)
+		return endTime
+
+>>>>>>> ef944f33abc2ec2dce215cb7f9cbd3712ac4cfe0
