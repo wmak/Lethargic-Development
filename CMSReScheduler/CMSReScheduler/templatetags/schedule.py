@@ -1,4 +1,6 @@
 from django import template
+from django.utils.safestring import mark_safe
+from classes.models import Course, Department, CourseSchedule, Room
 
 register = template.Library()
 
@@ -42,3 +44,31 @@ def schedule_time(value):
 		return str(value - 7) + ":00 PM"
 	else:
 		return str(value + 5) + ":00 AM"
+
+@register.filter
+def get_time(value):
+	return str(value + 7) + ":00:00"
+
+@register.filter
+def get_course_code(value):
+	course = Course.objects.filter(id=value)
+	if not course:
+		return mark_safe("&nbsp;")
+	else:
+		return course[0].code
+
+@register.filter
+def get_room_code(value):
+	room = Room.objects.filter(id=value)
+	if not room:
+		return mark_safe("&nbsp;")
+	else:
+		return room[0].code
+
+@register.filter
+def has_course(value, arg):
+	course = value.filter(startTime=arg)
+	if not course:
+		return None
+	else:
+		return course[0]
