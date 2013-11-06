@@ -82,7 +82,6 @@ def registration(request, user_role):
 		form = InstructorRegistrationForm()
 		status = 200
 	return render_to_response('registration.html', {'form': form}, status=status, context_instance=RequestContext(request))
->>>>>>> 53575619321f3fa6be50e46bec1e5b5b00aba72a
 
 @csrf_exempt
 def course(request, course, section):
