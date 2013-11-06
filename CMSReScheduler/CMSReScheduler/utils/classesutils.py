@@ -34,17 +34,20 @@ def add_course(item, create_department = False):
 			return e
 
 def add_schedule(item, create_room = False):
+	days = {'MO': 'Monday', 'TU': 'Tuesday', 'WE': 'Wednesday', 'TH': 'Thursday', 'FR': 'Friday' }
 	startTime = datetime.strptime(item["startTime"], "%H:%M")
 	endTime = datetime.strptime(item["endTime"], "%H:%M")
 	course = Course.objects.get(code=item["course"])
+
 	try:
+		dayOfWeek = days[item['daysOfWeek']]
 		room = Room.objects.get(code = item["room"])
-		CourseSchedule(course=course, room=room, dayOfWeek=item["dayOfWeek"], startTime=startTime, endTime=endTime, typeOfSession=item["typeOfSession"]).save()
+		CourseSchedule(course=course, room=room, dayOfWeek=dayOfWeek, startTime=startTime, endTime=endTime, typeOfSession=item["typeOfSession"]).save()
 	except Exception as e:
 		print e
 		if create_room:
 			room = Room(code = item["room"], capacity=0)
 			room.save()
-			CourseSchedule(course=course, room=room, dayOfWeek=item["dayOfWeek"], startTime=startTime, endTime=endTime, typeOfSession=item["typeOfSession"]).save()
+			CourseSchedule(course=course, room=room, dayOfWeek=dayOfWeek, startTime=startTime, endTime=endTime, typeOfSession=item["typeOfSession"]).save()
 		else:
 			return e
