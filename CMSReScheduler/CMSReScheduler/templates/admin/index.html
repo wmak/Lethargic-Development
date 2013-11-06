@@ -1,21 +1,131 @@
 		{% include "layouts/header.html" with title="Admin Panel" active="admin" %}
 		{% include "layouts/admin-sidebar.html" %}
+		{% block content %}
 		<div class="content fleft">
 			{% load schedule %}
-			{% for i in 18|get_range %}
-				{% for j in 6|get_range %}
-					<div class="schedule-cell {{ forloop.parentloop.counter|schedule_cell_day }} {{ forloop.counter|schedule_cell_time }}">
-						{% if forloop.parentloop.counter == 1 %}
-							{{ forloop.counter0|schedule_day }}
+			<div class="schedule-column">
+				{% for i in 18|get_range %}
+					<div class="schedule-cell schedule-time">
+						{% if forloop.counter == 1 %}
+							&nbsp;
 						{% else %}
-							{% if forloop.counter == 1 %}
-								{{ forloop.parentloop.counter|schedule_time }}
-							{% endif %}
+							&nbsp;<br />{{ forloop.counter|schedule_time }}<br />&nbsp;
 						{% endif %}
-						&nbsp;
 					</div>
 				{% endfor %}
-			{% endfor %}
+			</div>
+			<!-- *** TODO: Refector into a loop *** -->
+			<div class="schedule-column">
+				<div class="schedule-cell schedule-day">
+					{{ 1|schedule_day }}
+				</div>
+				{% for i in 17|get_range %}
+					<div class="schedule-cell">
+						{% with time=i|get_time %}
+							{% with course=MO|has_course:time %}
+								{% if course == None %}
+									&nbsp;<br />
+									&nbsp;<br />
+									&nbsp;
+								{% else %}
+									{{ course.course_id|get_course_code }}<br />
+									{{ course.typeOfSession }} {{ course.section }}<br />
+									{{ course.room_id|get_room_code }}
+								{% endif %}
+							{% endwith %}
+						{% endwith %}
+					</div>
+				{% endfor %}
+			</div>
+			<div class="schedule-column">
+				<div class="schedule-cell schedule-day">
+					{{ 2|schedule_day }}
+				</div>
+				{% for i in 17|get_range %}
+					<div class="schedule-cell">
+						{% with time=i|get_time %}
+							{% with course=TU|has_course:time %}
+								{% if course == None %}
+									&nbsp;<br />
+									&nbsp;<br />
+									&nbsp;
+								{% else %}
+									{{ course.course_id|get_course_code }}<br />
+									{{ course.typeOfSession }} {{ course.section }}<br />
+									{{ course.room_id|get_room_code }}
+								{% endif %}
+							{% endwith %}
+						{% endwith %}
+					</div>
+				{% endfor %}
+			</div>
+			<div class="schedule-column">
+				<div class="schedule-cell schedule-day">
+					{{ 3|schedule_day }}
+				</div>
+				{% for i in 17|get_range %}
+					<div class="schedule-cell">
+						{% with time=i|get_time %}
+							{% with course=WE|has_course:time %}
+								{% if course == None %}
+									&nbsp;<br />
+									&nbsp;<br />
+									&nbsp;
+								{% else %}
+									{{ course.course_id|get_course_code }}<br />
+									{{ course.typeOfSession }} {{ course.section }}<br />
+									{{ course.room_id|get_room_code }}
+								{% endif %}
+							{% endwith %}
+						{% endwith %}
+					</div>
+				{% endfor %}
+			</div>
+			<div class="schedule-column">
+				<div class="schedule-cell schedule-day">
+					{{ 4|schedule_day }}
+				</div>
+				{% for i in 17|get_range %}
+					<div class="schedule-cell">
+						{% with time=i|get_time %}
+							{% with course=TH|has_course:time %}
+								{% if course == None %}
+									&nbsp;<br />
+									&nbsp;<br />
+									&nbsp;
+								{% else %}
+									{{ course.course_id|get_course_code }}<br />
+									{{ course.typeOfSession }} {{ course.section }}<br />
+									{{ course.room_id|get_room_code }}
+								{% endif %}
+							{% endwith %}
+						{% endwith %}
+					</div>
+				{% endfor %}
+			</div>
+			<div class="schedule-column">
+				<div class="schedule-cell schedule-day">
+					{{ 5|schedule_day }}
+				</div>
+				{% for i in 17|get_range %}
+					<div class="schedule-cell">
+						{% with time=i|get_time %}
+							{% with course=FR|has_course:time %}
+								{% if course == None %}
+									&nbsp;<br />
+									&nbsp;<br />
+									&nbsp;
+								{% else %}
+									{{ course.course_id|get_course_code }}<br />
+									{{ course.typeOfSession }} {{ course.section }}<br />
+									{{ course.room_id|get_room_code }}
+								{% endif %}
+							{% endwith %}
+						{% endwith %}
+					</div>
+				{% endfor %}
+			</div>
+			<div class="clear"></div>
 		</div>
-		<div class="clear"></div>
+		{% endblock %}
 		{% include "layouts/footer.html" %}

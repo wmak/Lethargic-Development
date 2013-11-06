@@ -47,7 +47,12 @@ def csvimport(request, model_type):
 	return HttpResponse('The %s file has been uploaded!' % model_type)
 
 def admin(request):
-	return render(request, 'admin/index.html')
+	# TODO: Filter the results by instructor
+	daysOfWeek = ["MO", "TU", "WE", "TH", "FR"]
+	context = {}
+	for day in daysOfWeek:
+		context[day] = CourseSchedule.objects.filter(dayOfWeek=day).order_by("startTime")
+	return render(request, 'admin/index.html', context)
 
 def admin_upload(request):
 	return render(request, 'admin/upload.html', {"departments": Department.objects.all})
