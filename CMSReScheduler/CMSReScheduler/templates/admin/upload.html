@@ -1,18 +1,31 @@
 		{% include "layouts/header.html" with title="Admin Upload" active="admin" %}
 		{% include "layouts/admin-sidebar.html" with active="upload" %}
 		<div class="content fleft">
-			<form class="form-left">
+			<form method="POST" enctype="multipart/form-data" class="form-left" id="admin-upload-form">
+				{% csrf_token %}
 				<div class="form-entry">
 					<div class="form-label">Department: </div>
 					<select name="department" class="form-input">
-						<option value="">Department Name</option>
+						<option value="">Select Department</option>
+						{% for department in departments %}
+							<option value="{{ department.id }}">{{ department.name }}</option>
+						{% endfor %}
 					</select>
 				</div>
 
 				<div class="form-entry">
 					<div class="form-label">Instructor: </div>
 					<select name="instructor" class="form-input">
-						<option value="">Instructor Name</option>
+						<option value="">Select Instructor</option>
+					</select>
+				</div>
+
+				<div class="form-entry">
+					<div class="form-label">Type: </div>
+					<select name="type" class="form-input" onchange="selectUploadType(this.value)">
+						<option value="">Select Type</option>
+						<option value="schedule">Schedule</option>
+						<option value="course">Course</option>
 					</select>
 				</div>
 

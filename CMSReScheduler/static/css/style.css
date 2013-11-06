@@ -70,6 +70,9 @@ a {
 .fullwidth {
 	width: 100%;
 }
+.hidden {
+	display: none;
+}
 
 header {
 	margin-bottom: 1em;
@@ -97,9 +100,11 @@ footer {
 	margin-left: 1%;
 	display: inline-block;
 	vertical-align: top;
+	position: relative;
 }
 	#header-nav > .right.fleft > ul > li {
 		display: inline-block;
+		margin: 0 1%;
 	}
 		#header-nav > .right.fleft > ul > li > a {
 			padding: 5px;
@@ -110,6 +115,68 @@ footer {
 		}
 		#header-nav > .right.fleft > ul > li > a.active {
 			background: rgba(30, 144, 255, 0.3);
+		}
+		#header-nav > .right.fleft > ul > li > a#notifications {
+			padding: 3px 5px;
+			border-radius: 20px;
+			color: rgba(0, 0, 0, 0.5);
+			border: 1px rgba(0, 0, 0, 0.3) solid;
+			background: #eee;
+			font-weight: bold;
+		}
+		#header-nav > .right.fleft > ul > li > a#notifications.active {
+			color: rgba(255, 30, 144, 0.8);
+			background: rgba(255, 30, 144, 0.3);
+			border: 1px rgba(255, 0, 144, 0.5) solid;
+		}
+		#header-nav > .right.fleft > ul > li > a#notifications.clicked {
+			color: #000;
+			border: 1px rgba(100, 150, 200, 0.5) solid;
+			background: rgba(100, 150, 200, 0.3);
+		}
+	#header-nav > #notifications-box {
+		position: absolute;
+		width: 100%;
+		word-wrap: break-word;
+		top: 32px;
+		background: #eee;
+		border: 1px #000 solid;
+	}
+	#header-nav > #notifications-box:after {
+		content: '';
+		display: block;
+		position: absolute;
+		top: -10px;
+		width: 0;
+		height: 0;
+		border-color: transparent transparent #eee transparent;
+		border-style: solid;
+		border-width: 0 12px 10px 12px;
+	}
+	#header-nav > #notifications-box:before {
+		content: '';
+		display: block;
+		position: absolute;
+		top: -11px;
+		width: 0;
+		height: 0;
+		border-color: transparent transparent #000 transparent;
+		border-style: solid;
+		border-width: 0 12px 10px 12px;
+	}
+		#header-nav > #notifications-box > ul > li.notification {
+			padding: 10px;
+			list-style: none;
+			border-bottom: 1px #000 solid;
+		}
+		#header-nav > #notifications-box > ul > li.notification:hover {
+			cursor: pointer;
+		}
+		#header-nav > #notifications-box > ul > li.notification.active {
+			background: rgba(30, 144, 255, 0.3);
+		}
+		#header-nav > #notifications-box > ul > li.notification:last-child {
+			border-bottom: none;
 		}
 
 .sidebar {
@@ -141,6 +208,32 @@ footer {
 .content {
 	width: 73%;
 	margin-left: 1%;
+}
+
+/* Schedule */
+.schedule-cell {
+	float: left;
+	display: inline-block;
+	text-align: center;
+	vertical-align: middle;
+	padding: 1%;
+	width: 16.6%;
+	box-sizing:border-box;
+  	-moz-box-sizing:border-box;
+  	-webkit-box-sizing:border-box;
+	border: 1px #000 solid;
+	border-top: none;
+	border-right: none;
+}
+.schedule-cell:nth-child(6n) {
+	border-right: 1px #000 solid;
+}
+.schedule-day {
+	border-top: 1px #000 solid;
+	font-weight: bold;
+}
+.schedule-time {
+	border: none;
 }
 
 /* Forms */

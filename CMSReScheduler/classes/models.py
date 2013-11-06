@@ -53,11 +53,11 @@ class Instructor(User):			#incomplete
 			schedule.append(CourseSchedule.objects.filter(course = c))
 		return schedule
 
-class Chair(Instructor):#incomplete
+
+class Chair(Instructor):
 	
 	def prohibitChanges():
 		#TODO
-		pass
 
 	def viewDepartmentInstructors():
 		return Instructor.objects.filter(department = self.department)
@@ -73,54 +73,43 @@ class Chair(Instructor):#incomplete
 
 class UndergradAdminAssistant(User):
 
-        #This method returns all classrooms, that is,
-        #rooms with capacity different from 1.
-        def listClassrooms():
-                return Room.objects.get(~Q(capacity = 1))
+    #This method returns all classrooms, that is,
+    #rooms with capacity different from 1.
+    def listClassrooms():
+            return Room.objects.get(~Q(capacity = 1))
 
-        def getChairs():
-                return Chair.objects.all
+    def getChairs():
+            return Chair.objects.all
 
-        def getInstructorsOfDepartment(dept):
-                return Instructor.objects.filter(department = dept)
+    def getInstructorsOfDepartment(dept):
+            return Instructor.objects.filter(department = dept)
 
-        def checkEnrolment(courseCode):
-                c = Course.objects.get(code = courseCode)
-                return c.enrolment
+    def checkEnrolment(courseCode):
+            c = Course.objects.get(code = courseCode)
+            return c.enrolment
 
-class Schedule(models.Model):
-	instructor = models.ForeignKey(Instructor)
-	course = models.ForeignKey(Course)
-	room = models.ForeignKey(Room)
-	# startTime = models.TimeField()
-	# endTime = models.TimeField()
-
-	def __unicode__(self):
-		return u'%s\n%s\n%s\n%s - %s' % (self.room.code, self.course.code, self.instructor.name);
-
-	#This method returns all classrooms, that is,
-	#rooms with capacity different from 1.
-	def listClassrooms():
-		return Room.objects.get(~Q(capacity = 1))
-
-	def getChairs():
-		return Chair.objects.all
-
-	def getInstructorsOfDepartment(dept):
-		return Instructor.objects.filter(department = dept)
-
-	def checkEnrolment(courseCode):
-		c = Course.objects.get(code = courseCode)
-		return c.enrolment
 
 class CourseSchedule(models.Model):
 	course = models.ForeignKey(Course)
 	room = models.ForeignKey(Room)
 	dayOfWeek = models.CharField(max_length = 9)
 	startTime = models.TimeField()
-	endTime = models.TimeField()
-	typeOfSession = models.CharField(max_length = 8) # LEC, TUT or PRA and number
+	length = models.IntegerField() #in minutes
+	typeOfSession = models.CharField(max_length = 3) # LEC, TUT or PRA
+	section = models.CharField(max_length = 4) #0001
 
 	@property
-	def time_range(self):
-		return u"%s - %s" % (self.startTime.strftime("%H:%M"), self.endTime.strftime("%H:%M"))
+	def time_range(self):		
+		return u"%s - %s" % (self.startTime.strftime("%H:%M"), self.calcEndTime().strftime("%H:%M"))
+
+	def calcEndTime():
+		h = length / 60
+		m = length % 60
+		endHour = startTime.hour + h
+		endMinutes = startTime.minute + m
+		if endMinutes >= 60:
+			endHour += 1
+			endMinutes -= 60
+		endTime = datetime.time(endHour, endMinutes)
+		return endTime
+
