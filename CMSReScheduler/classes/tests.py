@@ -7,6 +7,8 @@ Replace this with more appropriate tests for your application.
 
 from django.test import TestCase
 from models.py import *
+from views.py import *
+from urls.py import *
 
 
 # Model Testing 
@@ -22,7 +24,7 @@ class DepartmentTest(TestCase):
 
 	def test_string(self):
 		comp_sci = Department.objects.get(name="Computer Science")
-		self.assertEqual(comp_sci, 'Computer Science')
+		self.assertEqual(comp_sci.__unicode__(), 'Computer Science')
 
 
 class CourseTest(TestCase):
@@ -38,7 +40,7 @@ class CourseTest(TestCase):
 
 	def test_string(self):
 		course = Course.objects.get(code="cscc01h3")
-		self.assertEqual(course, 'cscc01h3 - Introduction to Software Engineering')
+		self.assertEqual(course.__unicode__(), 'cscc01h3 - Introduction to Software Engineering')
 
 
 class RoomTest(TestCase):
@@ -52,7 +54,7 @@ class RoomTest(TestCase):
 
 	def test_string(self):
 		room = Room.objects.get(code="IC220")
-		self.assertEqual(room, 'IC220')
+		self.assertEqual(room.__unicode__(), 'IC220')
 
 
 class UserTest(TestCase):
@@ -69,7 +71,41 @@ class UserTest(TestCase):
 		
 	def test_string(self):
 		user = Course.objects.get(name="Shai Mitchell")
-		self.assertEqual(user, 'Shai Mitchell')
+		self.assertEqual(user.__unicode__(), 'Shai Mitchell')
 
 
 # End Of Model Testing
+
+
+# View Testing
+class AdminTest(TestCase):
+	def test_admin_status(self):
+		url = reverse('CMSReScheduler.views.admin')
+		resp = self.client.get(url)
+		self.assertEqual(resp.status_code, 200)
+
+class AdminUploadTest(TestCase):
+	def test_admin_upload_status(self):
+		url = reverse('CMSReScheduler.views.admin_upload')
+		resp = self.client.get(url)
+		self.assertEqual(resp.status_code, 200)
+
+class CourseTest(TestCase):
+	def test_course_cscc01h3_status(self):
+		url = 'course/cscc01h3'
+		resp = self.client.get(url)
+		self.assertEqual(resp.status_code, 200)
+
+class CsvImportTest(object):
+	def test_csv_upload_schedule_status(self):
+		url = 'csvimport/schedule'
+		resp = self.client.get(url)
+		self.assertEqual(resp.status_code, 200)
+
+	def test_csv_upload_course_status(self):
+		url = 'csvimport/course'
+		resp = self.client.get(url)
+		self.assertEqual(resp.status_code, 200)
+		
+
+# End of View Testing
