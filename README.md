@@ -18,8 +18,12 @@ _For the first run_
 	- `pip install simplejson`
 - `cd CMSReScheduler`
     - This directory should have a file called manage.py
+- `python manage.py syncdb`
+- `python manage.py loaddata initialdata.json`
 - `python manage.py runserver`
 
 _For future runs_
+- `python manage.py syncdb`
+- `python manage.py loaddata initialdata.json`
 - `python manage.py runserver`
-Now the CMSReScheduler will be running on your local environment on port 8000
+    - Now the CMSReScheduler will be running on your local environment on port 8000
