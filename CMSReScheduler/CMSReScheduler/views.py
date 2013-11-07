@@ -12,10 +12,10 @@ from django.core import serializers
 
 from forms import UploadCsv, InstructorRegistrationForm
 try:
-    import json
+	import json
 except ImportError:
-    # Python 2.5
-    import simplejson as json
+	# Python 2.5
+	import simplejson as json
 
 from classes.models import Course, Department, CourseSchedule
 
@@ -70,38 +70,38 @@ def admin_upload(request):
 #The order of the fields does not matter as long as the values are 
 #in the same order.
 def filter(request, model, fields, values): 
-    if request.method == "GET":
-        status = 200
-        try:
-            fList = fields.split('-')
-            vList = values.split('-')
-            qSet = []
-            if(fList.length != vList.length):
-                data = json.dumps("Unable to filter. Number of fields does not match the number of values.")
-                status = 400
-                return HttpResponse(content = data, status = status)
-            if model == "rooms":
-                qSet = filterRooms(fList, vList)
-            elif model == "courses":
-                qSet = filterCourses(fList, vList)
-            else:
-                data = json.dumps("Unable to filter. No such model named %s" % (model))
-                status = 400
-                return HttpResponse(content = data, status = status)
-            JSONSerializer = serializers.get_serializer("json")
-            s = JSONSerializer()
-            s.serialize(qSet)
-            data = s.getvalue()
-            status = 200
-            return HttpResponse(content = data, status = status)
-        except Exception as e:
-            data = json.dumps("Error while filtering")
-            status = 500
-            return HttpResponse(content = data, status = status)
-    else:
-        data = json.dumps("Unable to filter.")
-        status = 500
-        return HttpResponse(content = data, status = status)
+	if request.method == "GET":
+		status = 200
+		try:
+			fList = fields.split('-')
+			vList = values.split('-')
+			qSet = []
+			if(fList.length != vList.length):
+				data = json.dumps("Unable to filter. Number of fields does not match the number of values.")
+				status = 400
+				return HttpResponse(content = data, status = status)
+			if model == "rooms":
+				qSet = filterRooms(fList, vList)
+			elif model == "courses":
+				qSet = filterCourses(fList, vList)
+			else:
+				data = json.dumps("Unable to filter. No such model named %s" % (model))
+				status = 400
+				return HttpResponse(content = data, status = status)
+			JSONSerializer = serializers.get_serializer("json")
+			s = JSONSerializer()
+			s.serialize(qSet)
+			data = s.getvalue()
+			status = 200
+			return HttpResponse(content = data, status = status)
+		except Exception as e:
+			data = json.dumps("Error while filtering")
+			status = 500
+			return HttpResponse(content = data, status = status)
+	else:
+		data = json.dumps("Unable to filter.")
+		status = 500
+		return HttpResponse(content = data, status = status)
 
 # when you change the registration url, dont forget to edit 'type' here as well
 

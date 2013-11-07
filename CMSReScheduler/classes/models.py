@@ -129,9 +129,8 @@ class CourseSchedule(models.Model):
 	room = models.ForeignKey(Room)
 	dayOfWeek = models.CharField(max_length = 9)
 	startTime = models.TimeField()
-	endtime = models.TimeField() #in minutes
-	typeOfSession = models.CharField(max_length = 3) # LEC, TUT or PRA
-	section = models.CharField(max_length = 4) #0001
+	endTime = models.TimeField() #in minutes
+	typeOfSession = models.CharField(max_length = 7) # LEC, TUT or PRA
 
 	@property
 	def time_range(self):
