@@ -38,12 +38,11 @@ def add_course(item, create_department = False):
 			return e
 
 def add_schedule(item, create_room = True, create_course = True):
-	days = {'MO': 'Monday', 'TU': 'Tuesday', 'WE': 'Wednesday', 'TH': 'Thursday', 'FR': 'Friday' }
 	startTime = datetime.strptime(item["startTime"], "%H:%M")
 	endTime = datetime.strptime(item["endTime"], "%H:%M")
 	room = None
 	course = None
-	dayOfWeek = days[item['dayOfWeek']]
+	dayOfWeek = item['dayOfWeek']
 	try:
 		if create_room and Room.objects.filter(code=item["room"]).count() == 0:
 			room = Room(code = item["room"], capacity=0)
