@@ -55,7 +55,6 @@ class UserManager(models.Manager):
 	def getSchedule():
 		return CourseSchedule.objects.filter(room = self)
 
-
 class User(models.Model):
 		name = models.CharField(max_length=30)
 		address = models.CharField(max_length=50)
@@ -72,15 +71,16 @@ class UserProfile(models.Model):
 	address = models.CharField(max_length=50)
 	room = models.ForeignKey(Room)
 	myCourses = models.ManyToManyField(Course)
-	# Missing role
+	role = models.CharField(max_length = 10) # Instructor, admin or chair
+	active = models.BooleanField(default=False)
 
 
 	def __str__(self):  
-          return "%s's profile" % self.user  
+		return "%s's profile" % self.user  
 
 	def create_user_profile(sender, instance, created, **kwargs):  
-    if created:  
-       profile, created = UserProfile.objects.get_or_create(user=instance)
+		if created:  
+		profile, created = UserProfile.objects.get_or_create(user=instance)
 
 	def getSchedule():
 		schedule = []
@@ -118,8 +118,8 @@ class UserProfile(models.Model):
 			return c.enrolment
 
 def create_user_profile(sender, instance, created, **kwargs):
-    if created:
-        UserProfile.objects.create(user=instance)
+	if created:
+		UserProfile.objects.create(user=instance)
 post_save.connect(create_user_profile, sender=User)
 
 class CourseScheduleManager(models.Manager):
