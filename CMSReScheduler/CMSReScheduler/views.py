@@ -12,16 +12,19 @@ from django.core import serializers
 
 from forms import UploadCsv, InstructorRegistrationForm
 try:
-    import json
+	import json
 except ImportError:
-    # Python 2.5
-    import simplejson as json
+	# Python 2.5
+	import simplejson as json
 
 from classes.models import Course, Department, CourseSchedule
 
+'''Constant declaration'''
+GOOD_REQUEST = 200
+BAD_REQUEST = 400
+INTERNAL_ERROR = 500
+
 def csvimport(request, model_type):
-	''' NOTE: for now I have a single url for this. I can send them  each to a certain page if you guys prefer.
-	This is still very much up for debate. Let me know what you all think '''
 	model_type = model_type.strip().lower()
 	if request.method != 'POST':
 		return render_to_response('csvimport.html', {'form': UploadCsv()}, context_instance=RequestContext(request))
@@ -62,51 +65,49 @@ def admin_upload(request):
 	return render(request, 'admin/upload.html', {"departments": Department.objects.all})
 
 
-#This view should receive three strings:
-#1 - which model will be used, shoulb be in the plural for consistency
-#2 - fields on which we should filter
-#3 - values for each of the fields passed in 1.
-#The strings must be separated by '-'s.
-#The order of the fields does not matter as long as the values are 
-#in the same order.
+'''This view should receive three strings:
+1 - which model will be used, shoulb be in the plural for consistency
+2 - fields on which we should filter
+3 - values for each of the fields passed in 1.
+The strings must be separated by '-'s.
+The order of the fields does not matter as long as the values are 
+in the same order.'''
 def filter(request, model, fields, values): 
-    if request.method == "GET":
-        status = 200
-        try:
-            fList = fields.split('-')
-            vList = values.split('-')
-            qSet = []
-            if(fList.length != vList.length):
-                data = json.dumps("Unable to filter. Number of fields does not match the number of values.")
-                status = 400
-                return HttpResponse(content = data, status = status)
-            if model == "rooms":
-                qSet = filterRooms(fList, vList)
-            elif model == "courses":
-                qSet = filterCourses(fList, vList)
-            else:
-                data = json.dumps("Unable to filter. No such model named %s" % (model))
-                status = 400
-                return HttpResponse(content = data, status = status)
-            JSONSerializer = serializers.get_serializer("json")
-            s = JSONSerializer()
-            s.serialize(qSet)
-            data = s.getvalue()
-            status = 200
-            return HttpResponse(content = data, status = status)
-        except Exception as e:
-            data = json.dumps("Error while filtering")
-            status = 500
-            return HttpResponse(content = data, status = status)
-    else:
-        data = json.dumps("Unable to filter.")
-        status = 500
-        return HttpResponse(content = data, status = status)
+	if request.method == "GET":
+		status = GOOD_REQUEST
+		try:
+			fList = fields.split('-')
+			vList = values.split('-')
+			qSet = []
+			if(fList.length != vList.length):
+				data = json.dumps("Unable to filter. Number of fields does not match the number of values.")
+				status = BAD_REQUEST
+				return HttpResponse(content = data, status = status)
+			if model == "rooms":
+				qSet = filterRooms(fList, vList)
+			elif model == "courses":
+				qSet = filterCourses(fList, vList)
+			else:
+				data = json.dumps("Unable to filter. No such model named %s" % (model))
+				status = BAD_REQUEST
+				return HttpResponse(content = data, status = status)
+			JSONSerializer = serializers.get_serializer("json")
+			s = JSONSerializer()
+			s.serialize(qSet)
+			data = s.getvalue()
+			status = GOOD_REQUEST
+			return HttpResponse(content = data, status = status)
+		except Exception as e:
+			data = json.dumps("Error while filtering")
+			status = INTERNAL_ERROR
+			return HttpResponse(content = data, status = status)
+	else:
+		data = json.dumps("Unable to filter.")
+		status = INTERNAL_ERROR
+		return HttpResponse(content = data, status = status)
 
-# when you change the registration url, dont forget to edit 'type' here as well
-
-# The registration will consider the user role 
-# because there are 3 differente classes to deal with users
+'''The registration will consider the user role 
+because there are 3 differente classes to deal with users'''
 def registration(request, user_role):
 	if request.method == 'POST':
 		# Depending on the role, the appropriate form will be rendered
@@ -115,21 +116,20 @@ def registration(request, user_role):
 			if form.is_valid():
 				new_user = form.save()
 				info = 'User registered successfully.'
-				status = 200
+				status = GOOD_REQUEST
 			else:
 				info = 'Invalid form.'
-				status = 400
+				status = BAD_REQUEST
 		else:
 			# There is no "neutral user", so every registration has to include the role
 			info = 'Select one of the roles available.'
-			status = 400
+			status = BAD_REQUEST
 		return render_to_response(content=info, status=status)
 	else:
 		form = InstructorRegistrationForm()
-		status = 200
+		status = GOOD_REQUEST
 	return render_to_response('registration.html', {'form': form}, status=status, context_instance=RequestContext(request))
 
-@csrf_exempt
 def course(request, course, section):
 	''' 
 		Perform an action on a course 
@@ -153,7 +153,7 @@ def course(request, course, section):
 			}
 	'''
 	info = {"Error" : "Nothing happened somehow"}
-	status = 500
+	status = INTERNAL_ERROR
 	body = ""
 	# If the request has a body, assume that it is json. And parse it.
 	if request.body:
@@ -201,15 +201,15 @@ def course(request, course, section):
 					current.save()
 					next.save()
 					info = {"info" : course + section + " and " + body["switch"]["code"] + body["switch"]["section"] + " switched"}
-					status  = 200
+					status  = GOOD_REQUEST
 				except Exception as e:
 					info.setdefault("department", "Error: " + str(e))
 			if info:
 				current.save()
-				status = 200
+				status = GOOD_REQUEST
 			else:
 				info = {"Error" : "Nothing updated"}
-				status = 400
+				status = BAD_REQUEST
 		elif request.method == "GET":
 			current = classutils.get_course(course)
 			if current:
@@ -218,34 +218,34 @@ def course(request, course, section):
 				for time in CourseSchedule.objects.filter(course = current):
 					times.append(time.typeOfSession + ":" + time.time_range)
 				info.setdefault("Times", times)
-				status = 200
+				status = GOOD_REQUEST
 			else:
 				info = {"Error" : "Unknown course code"}
-				status = 400
+				status = BAD_REQUEST
 		elif request.method == "DELETE":
 			current = classutils.get_course(course)
 			if current:
 				current.delete()
 				info = {course : "successfully deleted"}
-				status = 200
+				status = GOOD_REQUEST
 			else:
 				info = {"Error" : "Unknown course code"}
-				status = 400
+				status = BAD_REQUEST
 		elif request.method == "POST":
 			body.setdefault("code", course)
 			result = classutils.add_course(body)
 			if not result:
 				info = {course : "successfully added"}
-				status = 200
+				status = GOOD_REQUEST
 			else:
 				info = {"Error" : "Internal error occurred" + result}
-				status = 500
+				status = INTERNAL_ERROR
 		else:
 			info = {"Error" : "Unknown request"}
-			status = 400
+			status = BAD_REQUEST
 	except Exception as e:
 		info = {"Error" : "Internal error occurred " + str(e)}
-		status = 500
+		status = INTERNAL_ERROR
 	data = json.dumps(info)
 	return HttpResponse(content = data, status = status)
 

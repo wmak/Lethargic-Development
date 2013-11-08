@@ -3,6 +3,7 @@
 
 import csv
 from classesutils import add_course
+import codecs
 
 def parse(csvfile, format, delimiter=','):
 	''' parser takes a filename and a supposed format for the file, 
@@ -15,7 +16,7 @@ def parse(csvfile, format, delimiter=','):
 	str delimiter
 	'''
 	items = []
-	parser = csv.reader(csvfile, delimiter=delimiter)
+	parser = csv.reader(codecs.EncodedFile(csvfile,"utf-8"), delimiter=delimiter)
 	for row in parser:
 		new_item = {}
 		for i in range(len(format)):
