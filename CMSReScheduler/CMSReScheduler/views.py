@@ -253,3 +253,9 @@ def instructor_schedule(request, instructor):
 	i = Instructor.objects.get(name=instructor)
 	context = {"courses": i.myCourses, 'instructor': i.name}
 	return render_to_respose('instructor_schedule.html', context, context_instance-RequestContext(request))
+
+def room_schedule(request, room):
+	''' takes in a request object and the room from the url and makes a query to the database to find all the courses
+		that use that room and returns them to a webpage  
+	'''
+	pass
