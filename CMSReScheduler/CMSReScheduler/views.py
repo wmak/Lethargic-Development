@@ -9,8 +9,9 @@ from django.shortcuts import render, render_to_response
 from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
 from django.core import serializers
+from django.contrib.auth import authenticate, login
 
-from forms import UploadCsv, InstructorRegistrationForm
+from forms import UploadCsv
 try:
 	import json
 except ImportError:
@@ -23,6 +24,25 @@ from classes.models import Course, Department, CourseSchedule
 GOOD_REQUEST = 200
 BAD_REQUEST = 400
 INTERNAL_ERROR = 500
+
+def login_view(request):
+	username = request.POST.get('username', '')
+	password = request.POST.get('password', '')
+	user = auth.authenticate(username=username, password=password)
+	if user is not None and user.is_active:
+		# Correct password, and the user is marked "active"
+		auth.login(request, user)
+		# Redirect to a success page depending on the user's role.
+		#return HttpResponseRedirect("/account/loggedin/")
+		return HttpResponse('Logged in...')
+	else:
+		# Show an error page
+		return HttpResponseRedirect('Error.')
+
+def logout_view(request):
+	auth.logout(request)
+	# Redirect to a success page.
+	return HttpResponseRedirect("Logged out.")
 
 def csvimport(request, model_type):
 	model_type = model_type.strip().lower()
@@ -107,7 +127,7 @@ def filter(request, model, fields, values):
 		return HttpResponse(content = data, status = status)
 
 '''The registration will consider the user role 
-because there are 3 differente classes to deal with users'''
+because there are 3 differente classes to deal with users
 def registration(request, user_role):
 	if request.method == 'POST':
 		# Depending on the role, the appropriate form will be rendered
@@ -129,7 +149,7 @@ def registration(request, user_role):
 		form = InstructorRegistrationForm()
 		status = GOOD_REQUEST
 	return render_to_response('registration.html', {'form': form}, status=status, context_instance=RequestContext(request))
-
+'''
 def course(request, course, section):
 	''' 
 		Perform an action on a course 
@@ -248,8 +268,9 @@ def course(request, course, section):
 		status = INTERNAL_ERROR
 	data = json.dumps(info)
 	return HttpResponse(content = data, status = status)
-
+'''
 def instructor_schedule(request, instructor):
 	i = Instructor.objects.get(name=instructor)
 	context = {"courses": i.myCourses, 'instructor': i.name}
 	return render_to_respose('instructor_schedule.html', context, context_instance-RequestContext(request))
+'''
