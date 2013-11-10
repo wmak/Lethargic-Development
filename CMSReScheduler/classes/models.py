@@ -14,15 +14,14 @@ class Department(models.Model):
 				return self.name
 
 class CourseManager(models.Manager):
-	def create_course(self, name, code, enrolment, department):
-		course = self.create(name=name, code=code, enrolment=enrolment, department=department)
+	def create_course(self, name, code, department):
+		course = self.create(name=name, code=code, department=department)
 		return course
 
 class Course(models.Model):
 
 		code = models.CharField(max_length=9) #ex. CSCC01H3F
 		name = models.CharField(max_length=50)
-		enrolment = models.IntegerField()
 		department = models.ForeignKey(Department)
 
 		def __unicode__(self):
@@ -118,19 +117,20 @@ class UndergradAdminAssistant(User):
 
 
 class CourseScheduleManager(models.Manager):
-	def create_course_schedule(self, course, room, dayOfWeek, department, length, typeOfSession):
+	def create_course_schedule(self, course, room, dayOfWeek, department, length, typeOfSession, enrolment):
 		course_schedule = self.create(course=course, room=room, dayOfWeek=dayOfWeek, startTime=startTime, \
-			length=length, typeOfSession=typeOfSession)
+			length=length, typeOfSession=typeOfSession, enrolment = enrolment)
 		return course_schedule
 
 
 class CourseSchedule(models.Model):
-	course = models.ForeignKey(Course)
-	room = models.ForeignKey(Room)
+	course = models.CharField(max_length = 9) #must be the a valid course code
+	room = models.CharField(max_length=10) #must be a valid room code
 	dayOfWeek = models.CharField(max_length = 9)
 	startTime = models.TimeField()
 	endTime = models.TimeField() #in minutes
 	typeOfSession = models.CharField(max_length = 7) # LEC, TUT or PRA
+	enrolment = models.IntegerField()
 
 	@property
 	def time_range(self):
