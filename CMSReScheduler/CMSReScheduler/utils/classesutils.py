@@ -23,19 +23,19 @@ def get_course(code):
 
 def add_course(item, create_department = False):
 	try:
-		department = Department.objects.get(name = item["department"])
+		if create_department and Department.objects.filter(name = item["department"]).count() == 0:
+			department = Department(name = item["department"], numberOfLecturers=0)
+			department.save()
+		elif (Department.objects.filter(name = item["department"]).count() == 1):
+			room = Room.objects.get(code = item["room"])
+		else:
+			return "Error Department doesn't exist"
 		course = Course(code=item["code"], name=item["name"], enrolment=item["enrolment"], department=department)
 		course.save()
 		return course
 	except Exception as e:
-		if create_department:
-			Department(name = item["department"], numberOfLecturers=0).save()
-			department = Department.objects.get(name = item["department"])
-			course = Course(code=item["code"], name=item["name"], enrolment=item["enrolment"], department=department)
-			course.save()
-			return course
-		else:
-			return e
+		print "EXCEPTION" + str(e)
+		return e
 
 def add_schedule(item, create_room = True, create_course = True):
 	startTime = datetime.strptime(item["startTime"], "%H:%M")
