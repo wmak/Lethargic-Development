@@ -36,7 +36,7 @@ def admin(request):
 	return render(request, 'admin/index.html', context)
 
 def admin_upload(request):
-	msg = ""
+	msg, msg_type = "", ""
 	if request.method == 'POST':
 		try:
 			model_type = request.POST["type"]
@@ -59,12 +59,15 @@ def admin_upload(request):
 			# 	csvutils.update_departments(parser_list)
 			else:
 				msg = "Invalid type."
+				msg_type = "error"
 		except Exception as e:
 			msg = "Invalid file."
+			msg_type = "error"
 
 		if msg == "":
 			msg = "The %s file has been uploaded." % model_type
-	return render_to_response('admin/upload.html', {'form': UploadCsv(), "departments": Department.objects.all, "message": msg}, context_instance=RequestContext(request))
+			msg_type = "success"
+	return render_to_response('admin/upload.html', {'form': UploadCsv(), "departments": Department.objects.all, "message": msg, "message_type": msg_type}, context_instance=RequestContext(request))
 
 '''This view should receive three strings:
 1 - which model will be used, shoulb be in the plural for consistency
