@@ -213,7 +213,7 @@ def course(request, course, section):
 		elif request.method == "GET":
 			current = classutils.get_course(course)
 			if current:
-				info = {"name" : current.name, "enrolment" : current.enrolment, "department" : current.department.name}
+				info = {"name" : current.name, "department" : current.department.name}
 				times = []
 				for time in CourseSchedule.objects.filter(course = current):
 					times.append(time.typeOfSession + ":" + time.time_range)
