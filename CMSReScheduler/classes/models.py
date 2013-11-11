@@ -34,14 +34,14 @@ class RoomManager(models.Manager):
 		return rooom
 
 class Room(models.Model):
-		code = models.CharField(max_length=10) #ex. IC220
-		capacity = models.IntegerField()
+	code = models.CharField(max_length=10) #ex. IC220
+	capacity = models.IntegerField()
 
-		def __unicode__(self):
-				return self.code
+	def __unicode__(self):
+			return self.code
 
-		def getSchedule():
-				return CourseSchedule.objects.filter(room = self)
+	def getSchedule():
+			return CourseSchedule.objects.filter(room = self)
 
 
 class UserManager(models.Manager):
