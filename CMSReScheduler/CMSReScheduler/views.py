@@ -259,8 +259,20 @@ def room_schedule(request, room_code):
 		that use that room and returns them to a webpage  
 	'''
 	room = Room.objects.get(code=room_code)
-	room_schedule = room.getSchedule()
-	context = {'room': room.code, 'schedule': room_schedule}
+	c = CourseSchedule.object.al().filter(room=room)
+	courses = []
+	start_times = []
+	end_times = []
+	class_type = []
+
+	for course in c:
+		new_course = Course.objects.get(code=course.course) # finding the course object that corresponds with 
+		courses.append([new_course.code, new_course.name])
+		start_times.append(course.startTime)
+		end_times.append(course.endTime)
+		class_type.append(course.typeOfSession)
+
+	context = {'room': room.code, 'courses': courses, 'start_times': start_times, 'end_times': end_times, 'type': class_type}
 	return render_to_respose(room_schedule.html, context, context_instance-RequestContext(request))
 
 

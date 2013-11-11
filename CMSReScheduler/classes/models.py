@@ -49,8 +49,6 @@ class UserManager(models.Manager):
 		user = self.create(name=name, address=address, email=email, department=department)
 		return user
 
-	def getSchedule():
-		return CourseSchedule.objects.filter(room = self)
 
 
 class User(models.Model):
@@ -109,7 +107,7 @@ class UndergradAdminAssistant(User):
 				return Chair.objects.all
 
 		def getInstructorsOfDepartment(dept):
-				return Instructor.objects.filter(department = dept)
+					return Instructor.objects.filter(department = dept)
 
 		def checkEnrolment(courseCode):
 				c = Course.objects.get(code = courseCode)

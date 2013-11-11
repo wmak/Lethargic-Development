@@ -12,6 +12,7 @@ urlpatterns = patterns('',
     url(r'^csvimport/(?P<model_type>.*)/$', 'CMSReScheduler.views.csvimport', name='csvimport'),
     url(r'^admin/$', 'CMSReScheduler.views.admin', name='admin'),
     url(r'^admin/upload/$', 'CMSReScheduler.views.admin_upload', name='admin_upload'),
+    url(r'^rooms/(?P<room_code>.*)/$', 'CMSReScheduler.views.csvimport', name='csvimport'),
     #this regex is not complete yet
     #it should only receive urls like: rooms/filter/capacity-building/50-IC/
     url(r'^(?P<model>.*)/filter/(?P<fields>.*)/(?P<values>.*)/$', 'CMSReScheduler.views.filter', name = 'filter'),
