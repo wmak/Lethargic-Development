@@ -253,10 +253,6 @@ def course(request, course, section):
 	data = json.dumps(info)
 	return HttpResponse(content = data, status = status)
 
-def instructor_schedule(request, instructor):
-	i = Instructor.objects.get(name=instructor)
-	context = {"courses": i.myCourses, 'instructor': i.name}
-	return render_to_respose('instructor_schedule.html', context, context_instance-RequestContext(request))
 
 def department_schedule(request, department_name, instructor_name):
 	''' Takes in a request object as well as two strings for the name of the department and the name
