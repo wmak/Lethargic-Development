@@ -4,7 +4,7 @@
                 <h1> Room: {{room} }</h1>
                 <h2> Courses: </h2>
                 {% for i in range(len(courses)) %}
-               		<p> {{courses[i][0]}} {{type}} - {{courses[i][1]}} : {{start_times[i]}} - {{end_times[i]}}</p>
+               		<p> {{courses[i][0]}} {{type}} - {{courses[i][1]}} : Day: {{days[i]}},  Time: {{start_times[i]}} - {{end_times[i]}}</p>
                 {% endfor %}
         </div>
 {% endblock %}

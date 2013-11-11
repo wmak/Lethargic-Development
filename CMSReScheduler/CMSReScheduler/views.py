@@ -268,6 +268,7 @@ def room_schedule(request, room_code):
 	start_times = []
 	end_times = []
 	class_type = []
+	days = []
 
 	for course in c:
 		# finding the course object that corresponds with the course name
@@ -276,8 +277,10 @@ def room_schedule(request, room_code):
 		start_times.append(course.startTime)
 		end_times.append(course.endTime)
 		class_type.append(course.typeOfSession)
+		days.append(course.dayOfWeek)
 
-	context = {'room': room.code, 'courses': courses, 'start_times': start_times, 'end_times': end_times, 'type': class_type}
+	context = {'room': room.code, 'courses': courses, 'start_times': start_times, 'end_times': end_times, \
+				'type': class_type, 'days': days}
 	return render_to_respose(room_schedule.html, context, context_instance-RequestContext(request))
 
 
