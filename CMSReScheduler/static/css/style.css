@@ -246,9 +246,12 @@ footer {
 		padding: 1%;
 		border-bottom: 1px #000 solid;
 	}
-		.schedule-column:first-child > .schedule-cell:last-child {
-			padding-bottom: 2px;
-		}
+	.schedule-column:first-child > .schedule-cell:last-child {
+		padding-bottom: 2px;
+	}
+	.schedule-column > .schedule-cell.course {
+		background: rgba(30, 144, 255, 0.3);
+	}
 	.schedule-column > .schedule-day {
 		font-weight: bold;
 	}

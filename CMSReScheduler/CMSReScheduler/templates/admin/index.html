@@ -9,122 +9,37 @@
 						{% if forloop.counter == 1 %}
 							&nbsp;
 						{% else %}
-							&nbsp;<br />{{ forloop.counter|schedule_time }}<br />&nbsp;
+							&nbsp;<br />{{ forloop.counter|get_time }}<br />&nbsp;
 						{% endif %}
 					</div>
 				{% endfor %}
 			</div>
-			<!-- *** TODO: Refector into a loop *** -->
-			<div class="schedule-column">
-				<div class="schedule-cell schedule-day">
-					{{ 1|schedule_day }}
-				</div>
-				{% for i in 17|get_range %}
-					<div class="schedule-cell">
-						{% with time=i|get_time %}
-							{% with course=MO|has_course:time %}
+			{% for i in 5|get_range %}
+				<div class="schedule-column">
+					<div class="schedule-cell schedule-day">
+						{{ i|schedule_day }}
+					</div>
+					{% for j in 17|get_range %}
+						{% with time=j|get_time:False %}
+							{% with course=i|get_courses_by_day|get_course:time %}
 								{% if course == None %}
-									&nbsp;<br />
-									&nbsp;<br />
-									&nbsp;
+									<div class="schedule-cell">
+										&nbsp;<br />
+										&nbsp;<br />
+										&nbsp;
+									</div>
 								{% else %}
-									{{ course.course }}<br />
-									{{ course.typeOfSession }}<br />
-									{{ course.room }}
+									<div class="schedule-cell course">
+										{{ course.course }}<br />
+										{{ course.typeOfSession }}<br />
+										{{ course.room }}
+									</div>
 								{% endif %}
 							{% endwith %}
 						{% endwith %}
-					</div>
-				{% endfor %}
-			</div>
-			<div class="schedule-column">
-				<div class="schedule-cell schedule-day">
-					{{ 2|schedule_day }}
+					{% endfor %}
 				</div>
-				{% for i in 17|get_range %}
-					<div class="schedule-cell">
-						{% with time=i|get_time %}
-							{% with course=TU|has_course:time %}
-								{% if course == None %}
-									&nbsp;<br />
-									&nbsp;<br />
-									&nbsp;
-								{% else %}
-									{{ course.course }}<br />
-									{{ course.typeOfSession }}<br />
-									{{ course.room }}
-								{% endif %}
-							{% endwith %}
-						{% endwith %}
-					</div>
-				{% endfor %}
-			</div>
-			<div class="schedule-column">
-				<div class="schedule-cell schedule-day">
-					{{ 3|schedule_day }}
-				</div>
-				{% for i in 17|get_range %}
-					<div class="schedule-cell">
-						{% with time=i|get_time %}
-							{% with course=WE|has_course:time %}
-								{% if course == None %}
-									&nbsp;<br />
-									&nbsp;<br />
-									&nbsp;
-								{% else %}
-									{{ course.course }}<br />
-									{{ course.typeOfSession }}<br />
-									{{ course.room }}
-								{% endif %}
-							{% endwith %}
-						{% endwith %}
-					</div>
-				{% endfor %}
-			</div>
-			<div class="schedule-column">
-				<div class="schedule-cell schedule-day">
-					{{ 4|schedule_day }}
-				</div>
-				{% for i in 17|get_range %}
-					<div class="schedule-cell">
-						{% with time=i|get_time %}
-							{% with course=TH|has_course:time %}
-								{% if course == None %}
-									&nbsp;<br />
-									&nbsp;<br />
-									&nbsp;
-								{% else %}
-									{{ course.course }}<br />
-									{{ course.typeOfSession }}<br />
-									{{ course.room }}
-								{% endif %}
-							{% endwith %}
-						{% endwith %}
-					</div>
-				{% endfor %}
-			</div>
-			<div class="schedule-column">
-				<div class="schedule-cell schedule-day">
-					{{ 5|schedule_day }}
-				</div>
-				{% for i in 17|get_range %}
-					<div class="schedule-cell">
-						{% with time=i|get_time %}
-							{% with course=FR|has_course:time %}
-								{% if course == None %}
-									&nbsp;<br />
-									&nbsp;<br />
-									&nbsp;
-								{% else %}
-									{{ course.course }}<br />
-									{{ course.typeOfSession }}<br />
-									{{ course.room }}
-								{% endif %}
-							{% endwith %}
-						{% endwith %}
-					</div>
-				{% endfor %}
-			</div>
+			{% endfor %}
 			<div class="clear"></div>
 		</div>
 		{% endblock %}
