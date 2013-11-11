@@ -10,7 +10,23 @@ function toggleNotifications(obj) {
     }
 }
 
-function selectUploadType(value) {
+function selectUploadType(self, value) {
 	form = document.getElementById('admin-upload-form');
 	form.action = "/csvimport/" + value + "/";
+
+
+	if (self.options[self.selectedIndex].value == "schedule") {
+		document.getElementById('department').style.display = "block";
+		document.getElementById('instructor').style.display = "block";
+		document.getElementById('file').style.display = "block";
+		document.getElementById('submit').style.display = "block";
+	} else if (self.options[self.selectedIndex].value == "course") {
+		document.getElementById('department').style.display = "none";
+		document.getElementById('instructor').style.display = "none";
+	} else {
+		document.getElementById('department').style.display = "none";
+		document.getElementById('instructor').style.display = "none";
+		document.getElementById('file').style.display = "none";
+		document.getElementById('submit').style.display = "none";
+	}
 }

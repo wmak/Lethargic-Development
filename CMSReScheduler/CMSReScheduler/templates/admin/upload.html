@@ -1,9 +1,18 @@
 		{% include "layouts/header.html" with title="Admin Upload" active="admin" %}
 		{% include "layouts/admin-sidebar.html" with active="upload" %}
 		<div class="content fleft">
-			<form method="POST" enctype="multipart/form-data" class="form-left" id="admin-upload-form">
+			<form method="post" enctype="multipart/form-data" class="form-left" id="admin-upload-form">
 				{% csrf_token %}
 				<div class="form-entry">
+					<div class="form-label">Type: </div>
+					<select name="type" class="form-input" onchange="selectUploadType(this, this.value)">
+						<option value="">Select Type</option>
+						<option value="schedule">Schedule</option>
+						<option value="course">Course</option>
+					</select>
+				</div>
+
+				<div class="form-entry hidden" id="department">
 					<div class="form-label">Department: </div>
 					<select name="department" class="form-input">
 						<option value="">Select Department</option>
@@ -13,28 +22,20 @@
 					</select>
 				</div>
 
-				<div class="form-entry">
+				<div class="form-entry hidden" id="instructor">
 					<div class="form-label">Instructor: </div>
 					<select name="instructor" class="form-input">
 						<option value="">Select Instructor</option>
 					</select>
 				</div>
 
-				<div class="form-entry">
-					<div class="form-label">Type: </div>
-					<select name="type" class="form-input" onchange="selectUploadType(this.value)">
-						<option value="">Select Type</option>
-						<option value="schedule">Schedule</option>
-						<option value="course">Course</option>
-					</select>
+				<div class="form-entry hidden" id="file">
+					<div class="form-label">File: </div>
+					{{ form.file.errors }}
+                	{{ form.file }}
 				</div>
 
-				<div class="form-entry">
-					<div class="form-label">Schedule: </div>
-					<input class="form-input" type="file" name="schedule" accept="text/csv">
-				</div>
-
-				<div class="form-entry">
+				<div class="form-entry hidden" id="submit">
 					<input type="submit" value="Upload">
 				</div>
 			</form>

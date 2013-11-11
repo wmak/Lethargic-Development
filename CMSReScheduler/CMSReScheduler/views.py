@@ -62,7 +62,7 @@ def admin(request):
 	return render(request, 'admin/index.html', context)
 
 def admin_upload(request):
-	return render(request, 'admin/upload.html', {"departments": Department.objects.all})
+	return render(request, 'admin/upload.html', {'form': UploadCsv(), "departments": Department.objects.all})
 
 
 '''This view should receive three strings:
