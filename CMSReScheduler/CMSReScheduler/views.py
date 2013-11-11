@@ -9,7 +9,7 @@ from django.shortcuts import render, render_to_response
 from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
 from django.core import serializers
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 
 from forms import UploadCsv
 try:
@@ -25,50 +25,27 @@ GOOD_REQUEST = 200
 BAD_REQUEST = 400
 INTERNAL_ERROR = 500
 
+
 def login_view(request):
-	username = request.POST.get('username', '')
-	password = request.POST.get('password', '')
-	user = auth.authenticate(username=username, password=password)
-	if user is not None and user.is_active:
-		# Correct password, and the user is marked "active"
-		auth.login(request, user)
-		# Redirect to a success page depending on the user's role.
-		#return HttpResponseRedirect("/account/loggedin/")
-		return HttpResponse('Logged in...')
+	if request.POST:
+		username = request.POST.get('username', '')
+		password = request.POST.get('password', '')
+		user = authenticate(username=username, password=password)
+		if user is not None and user.is_active:
+			# Correct password, and the user is marked "active"
+			login(request, user)
+			# Redirect to a success page depending on the user's role.
+			return HttpResponseRedirect("/")
+		else:
+			# Show an error page
+			return HttpResponse('Error.')
 	else:
-		# Show an error page
-		return HttpResponseRedirect('Error.')
+		return render_to_response('login.html', context_instance=RequestContext(request))
 
 def logout_view(request):
-	auth.logout(request)
+	logout(request)
 	# Redirect to a success page.
-	return HttpResponseRedirect("Logged out.")
-
-def csvimport(request, model_type):
-	model_type = model_type.strip().lower()
-	if request.method != 'POST':
-		return render_to_response('csvimport.html', {'form': UploadCsv()}, context_instance=RequestContext(request))
-
-	form = UploadCsv(model_type, request.FILES)
-	if model_type == 'schedule':
-		format = ['course', 'room', 'dayOfWeek', 'startTime', 'endTime', 'typeOfSession']
-		parser_list = csvutils.parse(request.FILES['file'], format, ',')
-		classutils.update_schedule(parser_list)
-	# elif model_type == 'room':
-	# 	format = ['code', 'name', 'building']
-	# 	parser_list = csvutils.parse(request.FILES['file'], format, ',')
-	# 	csvutils.update_rooms(parser_list)
-	elif model_type == 'course':
-		format = ['code', 'name', 'enrolment', 'department']
-		parser_list = csvutils.parse(request.FILES['file'], format, ',')
-		classutils.update_courses(parser_list)
-	# elif model_type == 'department':
-	# 	format = ['code', 'name']
-	# 	parser_list = csvutils.parse(request.FILES['file'], format, ',')
-	# 	csvutils.update_departments(parser_list)
-	else:
-		return HttpResponse('Invalid model_type!')
-	return HttpResponse('The %s file has been uploaded!' % model_type)
+	return HttpResponse("Logged out.")
 
 def index(request):
 	return render(request, 'index.html')
@@ -82,8 +59,38 @@ def admin(request):
 	return render(request, 'admin/index.html', context)
 
 def admin_upload(request):
-	return render(request, 'admin/upload.html', {"departments": Department.objects.all})
+	msg, msg_type = "", ""
+	if request.method == 'POST':
+		try:
+			model_type = request.POST["type"]
+			form = UploadCsv(model_type, request.FILES)
+			if model_type == 'schedule':
+				format = ['course', 'room', 'dayOfWeek', 'startTime', 'endTime', 'typeOfSession']
+				parser_list = csvutils.parse(request.FILES['file'], format, ',')
+				classutils.update_schedule(parser_list)
+			# elif model_type == 'room':
+			# 	format = ['code', 'name', 'building']
+			# 	parser_list = csvutils.parse(request.FILES['file'], format, ',')
+			# 	csvutils.update_rooms(parser_list)
+			elif model_type == 'course':
+				format = ['code', 'name', 'department']
+				parser_list = csvutils.parse(request.FILES['file'], format, ',')
+				classutils.update_courses(parser_list)
+			# elif model_type == 'department':
+			# 	format = ['code', 'name']
+			# 	parser_list = csvutils.parse(request.FILES['file'], format, ',')
+			# 	csvutils.update_departments(parser_list)
+			else:
+				msg = "Invalid type."
+				msg_type = "error"
+		except Exception as e:
+			msg = "Invalid file."
+			msg_type = "error"
 
+		if msg == "":
+			msg = "The %s file has been uploaded." % model_type
+			msg_type = "success"
+	return render_to_response('admin/upload.html', {'form': UploadCsv(), "departments": Department.objects.all, "message": msg, "message_type": msg_type}, context_instance=RequestContext(request))
 
 '''This view should receive three strings:
 1 - which model will be used, shoulb be in the plural for consistency
@@ -150,6 +157,7 @@ def registration(request, user_role):
 		status = GOOD_REQUEST
 	return render_to_response('registration.html', {'form': form}, status=status, context_instance=RequestContext(request))
 '''
+
 def course(request, course, section):
 	''' 
 		Perform an action on a course 
@@ -233,7 +241,7 @@ def course(request, course, section):
 		elif request.method == "GET":
 			current = classutils.get_course(course)
 			if current:
-				info = {"name" : current.name, "enrolment" : current.enrolment, "department" : current.department.name}
+				info = {"name" : current.name, "department" : current.department.name}
 				times = []
 				for time in CourseSchedule.objects.filter(course = current):
 					times.append(time.typeOfSession + ":" + time.time_range)
@@ -268,9 +276,8 @@ def course(request, course, section):
 		status = INTERNAL_ERROR
 	data = json.dumps(info)
 	return HttpResponse(content = data, status = status)
-'''
+
 def instructor_schedule(request, instructor):
 	i = Instructor.objects.get(name=instructor)
 	context = {"courses": i.myCourses, 'instructor': i.name}
-	return render_to_respose('instructor_schedule.html', context, context_instance-RequestContext(request))
-'''
+	return render_to_response('instructor_schedule.html', context, context_instance-RequestContext(request))

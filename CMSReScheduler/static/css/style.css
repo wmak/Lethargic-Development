@@ -74,6 +74,21 @@ a {
 	display: none;
 }
 
+.message {
+	vertical-align: middle;
+	border: 1px solid;
+	padding: 10px;
+	margin-bottom: 10px;
+}
+.message#success {
+	color: #4f8a10;
+	background-color: #dff2bf;
+}
+.message#error {
+	color: #d8000c;
+	background-color: #ffbaba;
+}
+
 header {
 	margin-bottom: 1em;
 }

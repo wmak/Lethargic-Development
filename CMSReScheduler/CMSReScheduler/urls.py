@@ -9,11 +9,11 @@ urlpatterns = patterns('',
     url(r'^$', 'CMSReScheduler.views.index', name='index'),
     url(r'^schedule/(?P<instructor>.*)/$', 'CMSReScheduler.views.instructor_schedule' ),
     #url(r'^registration/(?P<user_role>.*)/$', 'CMSReScheduler.views.registration', name='registration'),
-    url(r'^csvimport/(?P<model_type>.*)/$', 'CMSReScheduler.views.csvimport', name='csvimport'),
     url(r'^admin/$', 'CMSReScheduler.views.admin', name='admin'),
     url(r'^admin/upload/$', 'CMSReScheduler.views.admin_upload', name='admin_upload'),
     url(r'^login/$', 'CMSReScheduler.views.login_view', name='login'),
-    (r'^login/$', 'django.contrib.auth.views.login', {'template_name': 'CMSReScheduler/login.html'}),
+    url(r'^logout/$', 'CMSReScheduler.views.logout_view', name='logout'),
+
     #this regex is not complete yet
     #it should only receive urls like: rooms/filter/capacity-building/50-IC/
     url(r'^(?P<model>.*)/filter/(?P<fields>.*)/(?P<values>.*)/$', 'CMSReScheduler.views.filter', name = 'filter'),
