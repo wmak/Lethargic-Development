@@ -24,32 +24,6 @@ GOOD_REQUEST = 200
 BAD_REQUEST = 400
 INTERNAL_ERROR = 500
 
-def csvimport(request, model_type):
-	model_type = model_type.strip().lower()
-	if request.method != 'POST':
-		return render_to_response('csvimport.html', {'form': UploadCsv()}, context_instance=RequestContext(request))
-
-	form = UploadCsv(model_type, request.FILES)
-	if model_type == 'schedule':
-		format = ['course', 'room', 'dayOfWeek', 'startTime', 'endTime', 'typeOfSession']
-		parser_list = csvutils.parse(request.FILES['file'], format, ',')
-		classutils.update_schedule(parser_list)
-	# elif model_type == 'room':
-	# 	format = ['code', 'name', 'building']
-	# 	parser_list = csvutils.parse(request.FILES['file'], format, ',')
-	# 	csvutils.update_rooms(parser_list)
-	elif model_type == 'course':
-		format = ['code', 'name', 'department']
-		parser_list = csvutils.parse(request.FILES['file'], format, ',')
-		classutils.update_courses(parser_list)
-	# elif model_type == 'department':
-	# 	format = ['code', 'name']
-	# 	parser_list = csvutils.parse(request.FILES['file'], format, ',')
-	# 	csvutils.update_departments(parser_list)
-	else:
-		return HttpResponse('Invalid model_type!')
-	return HttpResponse('The %s file has been uploaded!' % model_type)
-
 def index(request):
 	return render(request, 'index.html')
 
@@ -62,8 +36,32 @@ def admin(request):
 	return render(request, 'admin/index.html', context)
 
 def admin_upload(request):
-	return render(request, 'admin/upload.html', {'form': UploadCsv(), "departments": Department.objects.all})
+	msg = ""
+	if request.method == 'POST':
+		model_type = request.POST["type"]
+		form = UploadCsv(model_type, request.FILES)
+		if model_type == 'schedule':
+			format = ['course', 'room', 'dayOfWeek', 'startTime', 'endTime', 'typeOfSession']
+			parser_list = csvutils.parse(request.FILES['file'], format, ',')
+			classutils.update_schedule(parser_list)
+		# elif model_type == 'room':
+		# 	format = ['code', 'name', 'building']
+		# 	parser_list = csvutils.parse(request.FILES['file'], format, ',')
+		# 	csvutils.update_rooms(parser_list)
+		elif model_type == 'course':
+			format = ['code', 'name', 'department']
+			parser_list = csvutils.parse(request.FILES['file'], format, ',')
+			classutils.update_courses(parser_list)
+		# elif model_type == 'department':
+		# 	format = ['code', 'name']
+		# 	parser_list = csvutils.parse(request.FILES['file'], format, ',')
+		# 	csvutils.update_departments(parser_list)
+		else:
+			msg = "Invalid type!"
 
+		if msg == "":
+			msg = "The %s file has been uploaded!" % model_type
+	return render_to_response('admin/upload.html', {'form': UploadCsv(), "departments": Department.objects.all, "message": msg}, context_instance=RequestContext(request))
 
 '''This view should receive three strings:
 1 - which model will be used, shoulb be in the plural for consistency

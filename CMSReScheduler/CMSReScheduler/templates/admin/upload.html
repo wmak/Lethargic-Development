@@ -1,7 +1,8 @@
 		{% include "layouts/header.html" with title="Admin Upload" active="admin" %}
 		{% include "layouts/admin-sidebar.html" with active="upload" %}
 		<div class="content fleft">
-			<form method="post" enctype="multipart/form-data" class="form-left" id="admin-upload-form">
+			{{ message }}
+			<form action="." method="post" enctype="multipart/form-data" class="form-left" id="admin-upload-form">
 				{% csrf_token %}
 				<div class="form-entry">
 					<div class="form-label">Type: </div>
