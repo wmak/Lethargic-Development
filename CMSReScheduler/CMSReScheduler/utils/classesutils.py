@@ -30,7 +30,7 @@ def add_course(item, create_department = False):
 			room = Room.objects.get(code = item["room"])
 		else:
 			return "Error Department doesn't exist"
-		course = Course(code=item["code"], name=item["name"], enrolment=item["enrolment"], department=department)
+		course = Course(code=item["code"], name=item["name"], department=department)
 		course.save()
 		return course
 	except Exception as e:
@@ -44,20 +44,7 @@ def add_schedule(item, create_room = True, create_course = True):
 	course = None
 	dayOfWeek = item['dayOfWeek']
 	try:
-		if create_room and Room.objects.filter(code=item["room"]).count() == 0:
-			room = Room(code = item["room"], capacity=0)
-			room.save() 
-		elif (Room.objects.filter(code=item["room"]).count() == 1):
-			room = Room.objects.get(code = item["room"])
-		else:
-			return "Error: room doesn't exist"
-		if create_course and Course.objects.filter(code=item["course"]).count() == 0:
-			course = add_course({"code" : item["course"], "name" : "Default Name", "enrolment" : 0, "department" : "Default Department"}, create_department = True)
-		elif Course.objects.filter(code=item["course"]).count() == 1:
-			course = Course.objects.get(code=item["course"])
-		else:
-			return "Error: room doesn't exist"
-		CourseSchedule(course=course, room=room, dayOfWeek=dayOfWeek, startTime=startTime, endTime=endTime, typeOfSession=item["typeOfSession"]).save()
+		CourseSchedule(course=item["course"], room=item["room"], enrolment = 0, dayOfWeek=dayOfWeek, startTime=startTime, endTime=endTime, typeOfSession=item["typeOfSession"]).save()
 	except Exception as e:
 		print "EXCEPTION" + str(e)
 		return e

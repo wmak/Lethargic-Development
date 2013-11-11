@@ -39,7 +39,7 @@ def csvimport(request, model_type):
 	# 	parser_list = csvutils.parse(request.FILES['file'], format, ',')
 	# 	csvutils.update_rooms(parser_list)
 	elif model_type == 'course':
-		format = ['code', 'name', 'enrolment', 'department']
+		format = ['code', 'name', 'department']
 		parser_list = csvutils.parse(request.FILES['file'], format, ',')
 		classutils.update_courses(parser_list)
 	# elif model_type == 'department':
