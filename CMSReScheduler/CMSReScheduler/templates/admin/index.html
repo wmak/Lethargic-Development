@@ -23,17 +23,17 @@
 						{% with time=j|get_time:False %}
 							{% with course=i|get_courses_by_day|get_course:time %}
 								{% if course == None %}
-									<div class="schedule-cell">
+									<a class="schedule-cell">
 										&nbsp;<br />
 										&nbsp;<br />
 										&nbsp;
-									</div>
+									</a>
 								{% else %}
-									<div class="schedule-cell course">
-										{{ course.course }}<br />
-										{{ course.typeOfSession }}<br />
-										{{ course.room }}
-									</div>
+									<a class="schedule-cell course" href="#">
+										<div id="course">{{ course.course }}</div>
+										<div id="typeOfSession">{{ course.typeOfSession }}</div>
+										<div id="room">{{ course.room }}</div>
+									</a>
 								{% endif %}
 							{% endwith %}
 						{% endwith %}
