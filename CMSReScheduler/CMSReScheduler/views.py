@@ -257,3 +257,21 @@ def instructor_schedule(request, instructor):
 	i = Instructor.objects.get(name=instructor)
 	context = {"courses": i.myCourses, 'instructor': i.name}
 	return render_to_respose('instructor_schedule.html', context, context_instance-RequestContext(request))
+
+def room_capacities(request):
+	''' Takes in a request and returns all of the rooms, ordered by their code, and their capacities to a webpage 
+	'''
+	room_objects = Room.object.all().order_by('code')
+	rooms = []
+	capacities = []
+
+	for item in room_objects:
+		rooms.append(item.code)
+		capacities.append(item.capacity)
+
+	context = {'rooms': rooms, 'capacities': capacities}
+
+	return render_to_respose('room_capacities.html', context, context_instance-RequestContext(request))
+
+
+
