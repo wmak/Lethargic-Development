@@ -10,6 +10,8 @@ from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
 from django.core import serializers
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.decorators import login_required
 
 from forms import UploadCsv
 try:
@@ -25,20 +27,19 @@ GOOD_REQUEST = 200
 BAD_REQUEST = 400
 INTERNAL_ERROR = 500
 
-
+# Log in the user or raise an error if information given is wrong
 def login_view(request):
 	if request.POST:
 		username = request.POST.get('username', '')
 		password = request.POST.get('password', '')
 		user = authenticate(username=username, password=password)
-		if user is not None and user.is_active:
-			# Correct password, and the user is marked "active"
+		if user is not None and user.is_active: # Miss checking if user is active
 			login(request, user)
 			# Redirect to a success page depending on the user's role.
 			return HttpResponseRedirect("/")
 		else:
 			# Show an error page
-			return HttpResponse('Error.')
+			return HttpResponse('Your user is inactive or doesn\'t exist.')
 	else:
 		return render_to_response('login.html', context_instance=RequestContext(request))
 
@@ -47,9 +48,22 @@ def logout_view(request):
 	# Redirect to a success page.
 	return HttpResponse("Logged out.")
 
+def register(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            new_user = form.save()
+            return HttpResponseRedirect('/')
+    else:
+        form = UserCreationForm()
+    c = {'form': form}
+    return render_to_response("register.html", c, context_instance=RequestContext(request))
+
+@login_required
 def index(request):
 	return render(request, 'index.html')
 
+@login_required
 def admin(request):
 	# TODO: Filter the results by instructor
 	daysOfWeek = ["MO", "TU", "WE", "TH", "FR"]

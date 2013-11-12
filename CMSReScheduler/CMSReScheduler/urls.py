@@ -8,7 +8,7 @@ urlpatterns = patterns('',
     # Examples:
     url(r'^$', 'CMSReScheduler.views.index', name='index'),
     url(r'^schedule/(?P<instructor>.*)/$', 'CMSReScheduler.views.instructor_schedule' ),
-    #url(r'^registration/(?P<user_role>.*)/$', 'CMSReScheduler.views.registration', name='registration'),
+    url(r'^register/$', 'CMSReScheduler.views.register', name='register'),
     url(r'^admin/$', 'CMSReScheduler.views.admin', name='admin'),
     url(r'^admin/upload/$', 'CMSReScheduler.views.admin_upload', name='admin_upload'),
     url(r'^login/$', 'CMSReScheduler.views.login_view', name='login'),

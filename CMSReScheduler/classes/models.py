@@ -55,23 +55,17 @@ class UserManager(models.Manager):
 	def getSchedule():
 		return CourseSchedule.objects.filter(room = self)
 
-class User(models.Model):
-		name = models.CharField(max_length=30)
-		address = models.CharField(max_length=50)
-		email = models.EmailField()
-		department = models.ForeignKey(Department)
-
-		def __unicode__(self):
-				return self.name
-
-
+#Profile connected to each User created. Fields are not required because
+#for each user created, a profile is automatically created also.
+#The user registration doesn't include department, courses and so on
 class UserProfile(models.Model):
 	user = models.OneToOneField('auth.User', related_name='profile', primary_key=True)
-	department = models.ForeignKey(Department)
+	department = models.ForeignKey(Department, null=True, blank=True)
 	address = models.CharField(max_length=50)
-	room = models.ForeignKey(Room)
-	myCourses = models.ManyToManyField(Course)
+	room = models.ForeignKey(Room, null=True, blank=True)
+	myCourses = models.ManyToManyField(Course, null=True, blank=True)
 	role = models.CharField(max_length = 10) # Instructor, admin or chair
+	#Every user, when created, is inactive.
 	active = models.BooleanField(default=False)
 
 
@@ -81,6 +75,9 @@ class UserProfile(models.Model):
 	def create_user_profile(sender, instance, created, **kwargs):  
 		if created:  
 			profile, created = UserProfile.objects.get_or_create(user=instance)
+
+	def is_active():
+		return active
 
 	def getSchedule():
 		schedule = []
@@ -105,7 +102,7 @@ class UserProfile(models.Model):
 		return schedule
 
 	def listClassrooms():
-				return Room.objects.get(~Q(capacity = 1))
+		return Room.objects.get(~Q(capacity = 1))
 
 	def getChairs():
 			return Chair.objects.all

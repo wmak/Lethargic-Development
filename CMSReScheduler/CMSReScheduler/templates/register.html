@@ -2,19 +2,19 @@
 <html>
         <head>
                 <meta charset="utf-8">
-                <title>Instructor Registration</title>        
+                <title>Registration</title>        
         </head>
 
         <body>
                 <h1>
-                        Instructor Registration
+                        User Registration
                 </h1>
 
                 <p>
                         Fill all fields and click on "Register".
                 </p>
                 
-                <form action="/registration/instructor/" method="post">
+                <form action="/register/" method="post">
                         {% csrf_token %}
                         
                         {{ form.as_p }}
