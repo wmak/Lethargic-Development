@@ -7,11 +7,11 @@ class DepartmentManager(models.Manager):
 		return department
 
 class Department(models.Model):
-		name = models.CharField(max_length=30)
-		numberOfLecturers = models.IntegerField()
+	name = models.CharField(max_length=30)
+	numberOfLecturers = models.IntegerField()
 
-		def __unicode__(self):
-				return self.name
+	def __unicode__(self):
+			return self.name
 
 class CourseManager(models.Manager):
 	def create_course(self, name, code, department):
@@ -20,12 +20,12 @@ class CourseManager(models.Manager):
 
 class Course(models.Model):
 
-		code = models.CharField(max_length=9) #ex. CSCC01H3F
-		name = models.CharField(max_length=50)
-		department = models.ForeignKey(Department)
+	code = models.CharField(max_length=9) #ex. CSCC01H3F
+	name = models.CharField(max_length=50)
+	department = models.ForeignKey(Department)
 
-		def __unicode__(self):
-				return u'%s - %s' % (self.code, self.name)
+	def __unicode__(self):
+			return u'%s - %s' % (self.code, self.name)
 
 class RoomManager(models.Manager):
 
@@ -34,14 +34,14 @@ class RoomManager(models.Manager):
 		return rooom
 
 class Room(models.Model):
-		code = models.CharField(max_length=10) #ex. IC220
-		capacity = models.IntegerField()
+	code = models.CharField(max_length=10) #ex. IC220
+	capacity = models.IntegerField()
 
-		def __unicode__(self):
-				return self.code
+	def __unicode__(self):
+			return self.code
 
-		def getSchedule():
-				return CourseSchedule.objects.filter(room = self)
+	def getSchedule():
+			return CourseSchedule.objects.filter(room = self)
 
 
 class UserManager(models.Manager):
@@ -54,27 +54,27 @@ class UserManager(models.Manager):
 
 
 class User(models.Model):
-		name = models.CharField(max_length=30)
-		address = models.CharField(max_length=50)
-		email = models.EmailField()
-		department = models.ForeignKey(Department)
+	name = models.CharField(max_length=30)
+	address = models.CharField(max_length=50)
+	email = models.EmailField()
+	department = models.ForeignKey(Department)
 
-		def __unicode__(self):
-				return self.name
+	def __unicode__(self):
+			return self.name
 
 
 class Instructor(User):                        #incomplete
-		room = models.ForeignKey(Room)
-		myCourses = models.ManyToManyField(Course)
+	room = models.ForeignKey(Room)
+	myCourses = models.ManyToManyField(Course)
 
-		def __unicode__(self):
-				return u'Professor %s' % (self.name)
+	def __unicode__(self):
+			return u'Professor %s' % (self.name)
 
-		def getSchedule():
-				schedule = []
-				for c in myCourses:
-						schedule.append(CourseSchedule.objects.filter(course = c))
-				return schedule
+	def getSchedule():
+			schedule = []
+			for c in myCourses:
+					schedule.append(CourseSchedule.objects.filter(course = c))
+			return schedule
 
 class Chair(Instructor):
 		

@@ -6,7 +6,7 @@ from classes.models import Room
 
 def handleLength(qSet, dt):
 	for r in qSet:
-		csSet = CourseSchedule.filter(room = r)
+		csSet = CourseSchedule.filter(room = r.code)
 		for cs in csSet:
 			if cs.starTime < dt.hour:
 				hOffset = cs.length / 60
@@ -22,7 +22,7 @@ def handleLength(qSet, dt):
 
 def checkLengthOfAvailability(qSet, length):
 	for r in qSet:
-		csSet = CourseSchedule.filter(room = r).orderby(dayOfWeek, starTime)
+		csSet = CourseSchedule.filter(room = r.code).orderby(dayOfWeek, starTime)
 		available = false
 		for i in range (0, csSet.length):
 			if i + 1 == csSet.length:
@@ -68,7 +68,6 @@ def filterRooms(fList, vList):
 
 
 #For Courses we are considering the following fields:
-# - enrolment: an integer indicating the minimum enrolment the returned courses should have
 # - roomcode: will be used to return courses that have sessions in this room
 # - starttime: will be used to return all the courses that have sessions that start at the given time
 # - building: two characters indicating the code for a building (IC, for example).
@@ -79,9 +78,7 @@ def filterRooms(fList, vList):
 def filterCourses(fList, vList):
     qSet = Course.objects.all()
     for i in range (0, fList.length):
-        if fList[i] == "enrolment":
-            qSet = qSet.filter(enrolment__gte = int(vList[i]))
-        elif fList[i] == "roomcode":
+        if fList[i] == "roomcode":
             qSet = qSet.exclude(courseschedule__room__code = vList[i])
         elif fList[i] == "starttime":
             t = time.strptime(vList[i], "%H:%M")
