@@ -261,8 +261,7 @@ def department_schedule(request, department_name, instructor_name):
 	department = Department.objects.get(name=department_name)
 	instructor - Instructor.object.get(name=instructor_name)
 	chair = Chair.object.get(deartment=department_name)
-	c = instructor.getSchedule()
-	courses = []
+	courses = instructor.getSchedule()
 	course_list = []
 	class_type = []
 	days = []

@@ -1,8 +1,8 @@
 {% extends "layouts/header.html" %}
 {% block content %}
         <div id="departments">
-                <h1> Department: {{department} }</h1>
-                {% for i in range(len(courses)) %}
+                <h1> Department: {{department}}</h1>
+                {% for i in range(len(courses) - 1) %}
                 	<h2> {{courses[i][0]}} {{type}} - {{courses[i][1]}} </h2>
                		<p> Day: {{days[i]}},  Time: {{start_times[i]}} - {{end_times[i]}}, Room: {{room[i]}}</p>
                 {% endfor %}
