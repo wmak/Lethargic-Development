@@ -62,7 +62,6 @@ class UserProfile(models.Model):
 	user = models.OneToOneField('auth.User', related_name='profile', primary_key=True)
 	department = models.ForeignKey(Department, null=True, blank=True)
 	address = models.CharField(max_length=50)
-	room = models.ForeignKey(Room, null=True, blank=True)
 	myCourses = models.ManyToManyField(Course, null=True, blank=True)
 	role = models.CharField(max_length = 10) # Instructor, admin or chair
 	#Every user, when created, is inactive.
