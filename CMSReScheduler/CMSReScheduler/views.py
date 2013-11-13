@@ -87,9 +87,11 @@ def filter(request, model):
 	if request.method == "GET":
 		try:
 			if model == "rooms":
-				qSet = filterRooms(body)
+				qSet = filter_rooms(body)
 			elif model == "courses":
-				qSet = filterCourses(body)
+				qSet = filter_courses(body)
+			elif model == "schedules":
+				qSet = filter_schedules(body)
 			else:
 				info = {"Unable to filter. No such model named %s" % (model))}
 				status = BAD_REQUEST
