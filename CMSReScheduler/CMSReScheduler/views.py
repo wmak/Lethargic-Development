@@ -93,7 +93,7 @@ def filter(request, model):
 			elif model == "schedules":
 				qSet = filter_schedules(body)
 			else:
-				info = {"Unable to filter. No such model named %s" % (model))}
+				info = {"Unable to filter. No such model named " + model)}
 				status = BAD_REQUEST
 			JSONSerializer = serializers.get_serializer("json")
 			s = JSONSerializer()
