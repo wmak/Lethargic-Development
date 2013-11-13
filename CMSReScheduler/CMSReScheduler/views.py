@@ -69,32 +69,30 @@ def admin_upload(request):
 			msg_type = "success"
 	return render_to_response('admin/upload.html', {'form': UploadCsv(), "departments": Department.objects.all, "message": msg, "message_type": msg_type}, context_instance=RequestContext(request))
 
-'''This view should receive three strings:
+'''This view should receive one string:
 1 - which model will be used, shoulb be in the plural for consistency
-2 - fields on which we should filter
-3 - values for each of the fields passed in 1.
 The strings must be separated by '-'s.
 The order of the fields does not matter as long as the values are 
 in the same order.'''
-def filter(request, model, fields, values): 
-	if request.method == "GET":
-		status = GOOD_REQUEST
+def filter(request, model):
+	body = ""
+	info = ""
+	status = GOOD_REQUEST
+	if request.body:
 		try:
-			fList = fields.split('-')
-			vList = values.split('-')
-			qSet = []
-			if(fList.length != vList.length):
-				data = json.dumps("Unable to filter. Number of fields does not match the number of values.")
-				status = BAD_REQUEST
-				return HttpResponse(content = data, status = status)
+			body = json.loads(request.body)
+		except:
+			info = {"Error" : "Badly formatted Json"}
+			body = None
+	if request.method == "GET":
+		try:
 			if model == "rooms":
-				qSet = filterRooms(fList, vList)
+				qSet = filterRooms(body)
 			elif model == "courses":
-				qSet = filterCourses(fList, vList)
+				qSet = filterCourses(body)
 			else:
-				data = json.dumps("Unable to filter. No such model named %s" % (model))
+				info = {"Unable to filter. No such model named %s" % (model))}
 				status = BAD_REQUEST
-				return HttpResponse(content = data, status = status)
 			JSONSerializer = serializers.get_serializer("json")
 			s = JSONSerializer()
 			s.serialize(qSet)
@@ -102,13 +100,14 @@ def filter(request, model, fields, values):
 			status = GOOD_REQUEST
 			return HttpResponse(content = data, status = status)
 		except Exception as e:
-			data = json.dumps("Error while filtering")
+			info = {"Error while filtering: " + str(e)}
 			status = INTERNAL_ERROR
-			return HttpResponse(content = data, status = status)
 	else:
-		data = json.dumps("Unable to filter.")
+		info = {"Unable to filter."}
 		status = INTERNAL_ERROR
-		return HttpResponse(content = data, status = status)
+	data = json.dumps(info)
+	return HttpResponse(content = data, status = status)
+
 
 '''The registration will consider the user role 
 because there are 3 differente classes to deal with users'''
