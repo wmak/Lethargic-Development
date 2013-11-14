@@ -12,8 +12,8 @@ from django.core import serializers
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
+from forms import UploadCsv, RegisterForm
 
-from forms import UploadCsv
 try:
 	import json
 except ImportError:
@@ -33,16 +33,20 @@ def login_view(request):
 		username = request.POST.get('username', '')
 		password = request.POST.get('password', '')
 		user = authenticate(username=username, password=password)
-		# Gets user profile by user id
-		p = UserProfile.objects.get(pk=user.id)
-		if user is not None and p.active or p.role == 'admin':
+		# Gets user profile by user id if username and password given match
+		if user is not None:
 			p = UserProfile.objects.get(pk=user.id)
-			login(request, user)
-			# Redirect to a success page depending on the user's role.
-			return HttpResponseRedirect("/")
+			# Verifies if the user's profile is active or the role is 'admin'
+			if p.active or p.role == 'admin':
+				login(request, user)
+				# Redirect to a success page depending on the user's role.
+				return HttpResponseRedirect("/")
+			else:
+				# Show an error page
+				return HttpResponse('Your user is inactive or doesn\'t exist.')
 		else:
-			# Show an error page
-			return HttpResponse('Your user is inactive or doesn\'t exist.')
+			# Username and password given don't match or user doesn't exist.
+			return HttpResponse('Wrong username or password.')
 	else:
 		return render_to_response('login.html', context_instance=RequestContext(request))
 
@@ -52,15 +56,15 @@ def logout_view(request):
 	return HttpResponse("Logged out.")
 
 def register(request):
-    if request.method == 'POST':
-        form = UserCreationForm(request.POST)
-        if form.is_valid():
-            new_user = form.save()
-            return HttpResponseRedirect('/')
-    else:
-        form = UserCreationForm()
-    c = {'form': form}
-    return render_to_response("register.html", c, context_instance=RequestContext(request))
+	if request.method == 'POST':
+		form = RegisterForm(request.POST)
+		if form.is_valid():
+			new_user = form.save()
+			return HttpResponseRedirect('/')
+	else:
+		form = RegisterForm()
+	c = {'form': form}
+	return render_to_response("register.html", c, context_instance=RequestContext(request))
 
 #@login_required
 def index(request):
