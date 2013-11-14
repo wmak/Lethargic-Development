@@ -20,7 +20,7 @@ except ImportError:
 	# Python 2.5
 	import simplejson as json
 
-from classes.models import Course, Department, CourseSchedule
+from classes.models import Course, Department, CourseSchedule, UserProfile
 
 '''Constant declaration'''
 GOOD_REQUEST = 200
@@ -33,7 +33,10 @@ def login_view(request):
 		username = request.POST.get('username', '')
 		password = request.POST.get('password', '')
 		user = authenticate(username=username, password=password)
-		if user is not None and user.is_active: # Miss checking if user is active
+		# Gets user profile by user id
+		p = UserProfile.objects.get(pk=user.id)
+		if user is not None and p.active or p.role == 'admin':
+			p = UserProfile.objects.get(pk=user.id)
 			login(request, user)
 			# Redirect to a success page depending on the user's role.
 			return HttpResponseRedirect("/")

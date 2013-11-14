@@ -113,7 +113,7 @@ TEMPLATE_DIRS = (
     os.path.join(os.path.dirname(__file__), 'templates').replace('\\','/'),
 )
 
-AUTH_PROFILE_MODULE = 'CMSReScheduler.UserProfile' 
+AUTH_PROFILE_MODULE = 'CMSReScheduler.userprofile' 
 
 INSTALLED_APPS = (
     'django.contrib.auth',
