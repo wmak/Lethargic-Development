@@ -62,11 +62,11 @@ def register(request):
     c = {'form': form}
     return render_to_response("register.html", c, context_instance=RequestContext(request))
 
-@login_required
+#@login_required
 def index(request):
 	return render(request, 'index.html')
 
-@login_required
+#@login_required
 def admin(request):
 	# TODO: Filter the results by instructor
 	daysOfWeek = ["MO", "TU", "WE", "TH", "FR"]
