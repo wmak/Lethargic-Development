@@ -12,7 +12,10 @@ def update_courses(items):
 
 def update_schedule(items):
 	for item in items:
-		add_schedule(item, True)
+		status = add_schedule(item, True)
+		if not status:
+			return status
+	return "Successfully Updated"
 
 def get_course(code):
 	courses = Course.objects.filter(code=code)
@@ -24,14 +27,14 @@ def get_course(code):
 def add_course(item, create_department = False):
 	try:
 		department = Department.objects.get(name = item["department"])
-		course = Course(code=item["code"], name=item["name"], enrolment=item["enrolment"], department=department)
+		course = Course(code=item["code"], name=item["name"], department=department)
 		course.save()
 		return course
 	except Exception as e:
 		if create_department:
 			Department(name = item["department"], numberOfLecturers=0).save()
 			department = Department.objects.get(name = item["department"])
-			course = Course(code=item["code"], name=item["name"], enrolment=item["enrolment"], department=department)
+			course = Course(code=item["code"], name=item["name"], department=department)
 			course.save()
 			return course
 		else:
@@ -52,12 +55,13 @@ def add_schedule(item, create_room = True, create_course = True):
 		else:
 			return "Error: room doesn't exist"
 		if create_course and Course.objects.filter(code=item["course"]).count() == 0:
-			course = add_course({"code" : item["course"], "name" : "Default Name", "enrolment" : 0, "department" : "Default Department"}, create_department = True)
+			course = add_course({"code" : item["course"], "name" : "Default Name", "department" : "Default Department"}, create_department = True)
 		elif Course.objects.filter(code=item["course"]).count() == 1:
 			course = Course.objects.get(code=item["course"])
 		else:
 			return "Error: room doesn't exist"
-		CourseSchedule(course=course, room=room, dayOfWeek=dayOfWeek, startTime=startTime, endTime=endTime, typeOfSession=item["typeOfSession"]).save()
+		CourseSchedule(course=course, room=room, dayOfWeek=dayOfWeek, startTime=startTime, endTime=endTime, typeOfSession=item["typeOfSession"], enrolment = 0).save()
+		return True
 	except Exception as e:
 		print "EXCEPTION" + str(e)
 		return e

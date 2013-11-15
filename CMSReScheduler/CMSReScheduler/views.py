@@ -33,13 +33,15 @@ def csvimport(request, model_type):
 	if model_type == 'schedule':
 		format = ['course', 'room', 'dayOfWeek', 'startTime', 'endTime', 'typeOfSession']
 		parser_list = csvutils.parse(request.FILES['file'], format, ',')
-		classutils.update_schedule(parser_list)
+		status = classutils.update_schedule(parser_list)
+		if not status:
+			return HttpResponse(status, status = INTERNAL_ERROR)
 	# elif model_type == 'room':
 	# 	format = ['code', 'name', 'building']
 	# 	parser_list = csvutils.parse(request.FILES['file'], format, ',')
 	# 	csvutils.update_rooms(parser_list)
 	elif model_type == 'course':
-		format = ['code', 'name', 'enrolment', 'department']
+		format = ['code', 'name', 'department']
 		parser_list = csvutils.parse(request.FILES['file'], format, ',')
 		classutils.update_courses(parser_list)
 	# elif model_type == 'department':
@@ -176,13 +178,6 @@ def course(request, course, section):
 						info.setdefault("name", "Error: " + str(e))
 				else:
 					info.setdefault("name", "Error: name entry was blank")
-			# same Applies to enrolment
-			if body.has_key("enrolment"):
-				try:
-					current.enrolment = body["enrolment"]
-					info.setdefault("enrolment", "Updated")
-				except Exception as e:
-					info.setdefault("enrolment", "Error: " + str(e))
 			# and as well with department, these are separate if statements if the user wants to make multiple changes in one request
 			if body.has_key("department"):
 				try:
@@ -213,7 +208,7 @@ def course(request, course, section):
 		elif request.method == "GET":
 			current = classutils.get_course(course)
 			if current:
-				info = {"name" : current.name, "enrolment" : current.enrolment, "department" : current.department.name}
+				info = {"name" : current.name, "department" : current.department.name}
 				times = []
 				for time in CourseSchedule.objects.filter(course = current):
 					times.append(time.typeOfSession + ":" + time.time_range)
