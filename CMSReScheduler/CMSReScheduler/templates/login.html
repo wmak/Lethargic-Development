@@ -1,0 +1,13 @@
+{% block content %}
+    {{ state }}
+    <form action="/login/" method="post" >
+        {% csrf_token %}
+        Username:
+        <input type="text" name="username" value="{{ username }}" /><br />
+        Password:
+        <input type="password" name="password" value="" /><br />
+
+        <input type="submit" value="Login"/>
+        <input type="hidden" name="next" value="{{ next }}" />
+    </form>
+{% endblock %}
