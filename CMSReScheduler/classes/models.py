@@ -54,6 +54,9 @@ class UserManager(models.Manager):
 	def getSchedule():
 		return CourseSchedule.objects.filter(room = self)
 
+class Notifications(models.Model):
+	data = models.CharField(max_length=128)#Change to width of the text box
+
 #Profile connected to each User created. Fields are not required because
 #for each user created, a profile is automatically created also.
 #The user registration doesn't include department, courses and so on
@@ -63,7 +66,9 @@ class UserProfile(models.Model):
 	address = models.CharField(max_length=50)
 	myCourses = models.ManyToManyField(Course, null=True, blank=True)
 	role = models.CharField(max_length = 10) # Instructor, admin or chair
+	notifications = models.ManyToManyField(Notifications)
 	#Every user, when created, is inactive.
+	notify = models.BooleanField(default=True)
 	active = models.BooleanField(default=False)
 
 

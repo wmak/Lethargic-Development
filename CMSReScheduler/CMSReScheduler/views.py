@@ -20,7 +20,7 @@ except ImportError:
 	# Python 2.5
 	import simplejson as json
 
-from classes.models import Course, Department, CourseSchedule, UserProfile
+from classes.models import Course, Department, CourseSchedule, UserProfile, Notifications
 
 '''Constant declaration'''
 GOOD_REQUEST = 200
@@ -154,31 +154,6 @@ def filter(request, model, fields, values):
 		status = INTERNAL_ERROR
 		return HttpResponse(content = data, status = status)
 
-'''The registration will consider the user role 
-because there are 3 differente classes to deal with users
-def registration(request, user_role):
-	if request.method == 'POST':
-		# Depending on the role, the appropriate form will be rendered
-		if user_role == 'instructor':
-			form = InstructorRegistrationForm(request.POST)
-			if form.is_valid():
-				new_user = form.save()
-				info = 'User registered successfully.'
-				status = GOOD_REQUEST
-			else:
-				info = 'Invalid form.'
-				status = BAD_REQUEST
-		else:
-			# There is no "neutral user", so every registration has to include the role
-			info = 'Select one of the roles available.'
-			status = BAD_REQUEST
-		return render_to_response(content=info, status=status)
-	else:
-		form = InstructorRegistrationForm()
-		status = GOOD_REQUEST
-	return render_to_response('registration.html', {'form': form}, status=status, context_instance=RequestContext(request))
-'''
-
 def course(request, course, section):
 	''' 
 		Perform an action on a course 
@@ -247,6 +222,8 @@ def course(request, course, section):
 				except Exception as e:
 					info.setdefault("department", "Error: " + str(e))
 			if info:
+				notification = "%s has been modified" % course
+				classutils.new_notification(notification)
 				current.save()
 				status = GOOD_REQUEST
 			else:
@@ -290,6 +267,27 @@ def course(request, course, section):
 		status = INTERNAL_ERROR
 	data = json.dumps(info)
 	return HttpResponse(content = data, status = status)
+
+def user(request, user_id):
+	info = {"Error" : "Nothing happened somehow"}
+	status = INTERNAL_ERROR
+	body = ""
+	# If the request has a body, assume that it is json. And parse it.
+	if request.body:
+		try:
+			body = json.loads(request.body)
+		except:
+			info = {"Error" : "Badly formatted Json"}
+			body = None
+	try:
+		if request.method == "GET":
+			info = {"notifications" : json.dumps(classutils.get_notifications(user_id))}
+			status = GOOD_REQUEST
+	except Exception as e:
+		info.setdefault("department", "Error: " + str(e))
+	data = json.dumps(info)
+	return HttpResponse(content = data, status = status)
+
 
 def instructor_schedule(request, instructor):
 	i = Instructor.objects.get(name=instructor)

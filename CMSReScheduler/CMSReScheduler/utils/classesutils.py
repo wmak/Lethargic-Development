@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
-from classes.models import Course, Department, CourseSchedule, Room
+from classes.models import Course, Department, CourseSchedule, Room, UserProfile
 from datetime import datetime
 
 def update_courses(items):
@@ -58,3 +58,22 @@ def add_schedule(item, create_room = True, create_course = True):
 	except Exception as e:
 		print "EXCEPTION " + str(e)
 		return e
+
+def new_notification(text):
+	#TODO, filter by instructors who own the course
+	notification = Notifications(data = text)
+	notification.save()
+	users = UserProfile.objects.filter(notify = True)
+	for user in users:
+		user.notifications.add(notification)
+		user.save()
+
+def get_notifications(user_id):
+	user = UserProfile.objects.get(pk = user_id)
+	notifications = user.notifications.all()
+	final = []
+	for notification in notifications:
+		final.append(str(notification.data))
+	print final
+	return final
+
