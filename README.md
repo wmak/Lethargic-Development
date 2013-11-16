@@ -21,3 +21,17 @@ _For the first run_
 _For future runs_
 - `python manage.py runserver`
 Now the CMSReScheduler will be running on your local environment on port 8000
+
+Automation Test Suite
+=====================
+## Setting up your automative suite (Assuming you have either knowledge of screen or a terminal with tabbing. As well as Firefox 25.0)
+
+1. Install the test suite
+	- `pip install py.saunter`
+2. Change to the automation directory
+	- `cd automation`
+3. If you know how to use screens, start a new one and run the following command. Otherwise run this then open a new tab
+	- `java -jar selenium-server-standalone.jar`
+4. Make sure that within conf/saunter.ini that the base_url setting matches the location of the currently running server
+5. Now you have selenium running start the autmoation test suite. Please don't use your computer while it is running as this may cause conflicting actions
+	- `pysaunter -s -v -m regression`
