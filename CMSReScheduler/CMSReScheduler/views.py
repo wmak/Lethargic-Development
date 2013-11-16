@@ -154,31 +154,7 @@ def filter(request, model, fields, values):
 		status = INTERNAL_ERROR
 		return HttpResponse(content = data, status = status)
 
-'''The registration will consider the user role 
-because there are 3 differente classes to deal with users
-def registration(request, user_role):
-	if request.method == 'POST':
-		# Depending on the role, the appropriate form will be rendered
-		if user_role == 'instructor':
-			form = InstructorRegistrationForm(request.POST)
-			if form.is_valid():
-				new_user = form.save()
-				info = 'User registered successfully.'
-				status = GOOD_REQUEST
-			else:
-				info = 'Invalid form.'
-				status = BAD_REQUEST
-		else:
-			# There is no "neutral user", so every registration has to include the role
-			info = 'Select one of the roles available.'
-			status = BAD_REQUEST
-		return render_to_response(content=info, status=status)
-	else:
-		form = InstructorRegistrationForm()
-		status = GOOD_REQUEST
-	return render_to_response('registration.html', {'form': form}, status=status, context_instance=RequestContext(request))
-'''
-
+@csrf_exempt
 def course(request, course, section):
 	''' 
 		Perform an action on a course 
@@ -201,8 +177,8 @@ def course(request, course, section):
 				"department" : "new value",
 			}
 	'''
-	info = {"Error" : "Nothing happened somehow"}
-	status = INTERNAL_ERROR
+	info = {"Error" : "Unknown error occured"}
+	status = GOOD_REQUEST
 	body = ""
 	# If the request has a body, assume that it is json. And parse it.
 	if request.body:
@@ -214,43 +190,49 @@ def course(request, course, section):
 	try:
 		# Modifying a course if its a put request
 		if request.method == "PUT":
-			current = classutils.get_course(course)
-			# if the body has a name key, then it's a request for changing the name
-			if body.has_key("name"):
-				if body["name"]:
+			if body:
+				current = classutils.get_course(course)
+				# get fields for course:
+				fields = ["code", "name"]
+				for field in fields:
 					try:
-						current.enrolment = body["name"] 
-						info.setdefault("name", "Updated")
+						if body.has_key(field):
+							value = body.get(field)
+							if value:
+								exec("current." + field + " = value")
+								info.setdefault(field, "Updated")
+							else:
+								info.setdefault(field, "Error: name entry was blank")
 					except Exception as e:
-						info.setdefault("name", "Error: " + str(e))
-				else:
-					info.setdefault("name", "Error: name entry was blank")
-			# and as well with department, these are separate if statements if the user wants to make multiple changes in one request
-			if body.has_key("department"):
-				try:
-					current.department = department.objects.get(name = body["department"])
-					info.setdefault("department", "Updated")
-				except Exception as e:
-					info.setdefault("department", "Error: " + str(e))
-			# Special key switch will switch all details but course and typeOfSession between two CourseSchedules
-			if section and body.has_key("switch"):
-				try:
-					current = CourseSchedule.objects.filter(course = current, typeOfSession = section)[0]
-					to_switch = classutils.get_course(body["switch"]["code"])
-					next = CourseSchedule.objects.filter(course = to_switch, typeOfSession = body["switch"]["section"])[0]
-					current.course, next.course = next.course, current.course
-					current.typeOfSession, next.typeOfSession = next.typeOfSession, current.typeOfSession
+						info["Error"] = "Error updating"
+						info.setdefault(field, "Error: " + str(e))
+						status = BAD_REQUEST
+				# if body.has_key("department"): TODO, need add_department function
+				# 	value = body.get("department")
+				# 	if value:
+				# 		current.department = )
+				# 		info.setdefault(field, "Updated")
+				# 	else:
+				# 		info.setdefault(field, "Error: name entry was blank")
+				# Special key switch will switch all details but course and typeOfSession between two CourseSchedules
+				if section and body.has_key("switch"):
+					try:
+						current = CourseSchedule.objects.filter(course = current, typeOfSession = section)[0]
+						to_switch = classutils.get_course(body["switch"]["code"])
+						next = CourseSchedule.objects.filter(course = to_switch, typeOfSession = body["switch"]["section"])[0]
+						current.course, next.course = next.course, current.course
+						current.typeOfSession, next.typeOfSession = next.typeOfSession, current.typeOfSession
+						current.save()
+						next.save()
+						info = {"info" : course + section + " and " + body["switch"]["code"] + body["switch"]["section"] + " switched"}
+						status  = GOOD_REQUEST
+					except Exception as e:
+						status = BAD_REQUEST
+						info.setdefault("department", "Error: " + str(e))
+				if status == GOOD_REQUEST:
 					current.save()
-					next.save()
-					info = {"info" : course + section + " and " + body["switch"]["code"] + body["switch"]["section"] + " switched"}
-					status  = GOOD_REQUEST
-				except Exception as e:
-					info.setdefault("department", "Error: " + str(e))
-			if info:
-				current.save()
-				status = GOOD_REQUEST
 			else:
-				info = {"Error" : "Nothing updated"}
+				info = {"Error" : "No body with request"}
 				status = BAD_REQUEST
 		elif request.method == "GET":
 			current = classutils.get_course(course)
