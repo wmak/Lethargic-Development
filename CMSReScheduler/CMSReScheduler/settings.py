@@ -113,6 +113,8 @@ TEMPLATE_DIRS = (
     os.path.join(os.path.dirname(__file__), 'templates').replace('\\','/'),
 )
 
+AUTH_PROFILE_MODULE = 'CMSReScheduler.userprofile' 
+
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -127,6 +129,12 @@ INSTALLED_APPS = (
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
 )
+
+LOGIN_REDIRECT_URL = '/'
+
+LOGIN_URL = '/login'
+
+LOGOUT_URL = '/logout'
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to

@@ -9,24 +9,68 @@ from django.shortcuts import render, render_to_response
 from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
 from django.core import serializers
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.decorators import login_required
+from forms import UploadCsv, RegisterForm
 
-from forms import UploadCsv, InstructorRegistrationForm
 try:
 	import json
 except ImportError:
 	# Python 2.5
 	import simplejson as json
 
-from classes.models import Course, Department, CourseSchedule
+from classes.models import Course, Department, CourseSchedule, UserProfile
 
 '''Constant declaration'''
 GOOD_REQUEST = 200
 BAD_REQUEST = 400
 INTERNAL_ERROR = 500
 
+# Log in the user or raise an error if information given is wrong
+def login_view(request):
+	if request.POST:
+		username = request.POST.get('username', '')
+		password = request.POST.get('password', '')
+		user = authenticate(username=username, password=password)
+		# Gets user profile by user id if username and password given match
+		if user is not None:
+			p = UserProfile.objects.get(pk=user.id)
+			# Verifies if the user's profile is active or the role is 'admin'
+			if p.active or p.role == 'admin':
+				login(request, user)
+				# Redirect to a success page depending on the user's role.
+				return HttpResponseRedirect("/")
+			else:
+				# Show an error page
+				return HttpResponse('Your user is inactive or doesn\'t exist.')
+		else:
+			# Username and password given don't match or user doesn't exist.
+			return HttpResponse('Wrong username or password.')
+	else:
+		return render_to_response('login.html', context_instance=RequestContext(request))
+
+def logout_view(request):
+	logout(request)
+	# Redirect to a success page.
+	return HttpResponse("Logged out.")
+
+def register(request):
+	if request.method == 'POST':
+		form = RegisterForm(request.POST)
+		if form.is_valid():
+			new_user = form.save()
+			return HttpResponseRedirect('/')
+	else:
+		form = RegisterForm()
+	c = {'form': form}
+	return render_to_response("register.html", c, context_instance=RequestContext(request))
+
+#@login_required
 def index(request):
 	return render(request, 'index.html')
 
+#@login_required
 def admin(request):
 	# TODO: Filter the results by instructor
 	daysOfWeek = ["MO", "TU", "WE", "TH", "FR"]
@@ -111,7 +155,7 @@ def filter(request, model, fields, values):
 		return HttpResponse(content = data, status = status)
 
 '''The registration will consider the user role 
-because there are 3 differente classes to deal with users'''
+because there are 3 differente classes to deal with users
 def registration(request, user_role):
 	if request.method == 'POST':
 		# Depending on the role, the appropriate form will be rendered
@@ -133,6 +177,7 @@ def registration(request, user_role):
 		form = InstructorRegistrationForm()
 		status = GOOD_REQUEST
 	return render_to_response('registration.html', {'form': form}, status=status, context_instance=RequestContext(request))
+'''
 
 def course(request, course, section):
 	''' 
@@ -249,4 +294,4 @@ def course(request, course, section):
 def instructor_schedule(request, instructor):
 	i = Instructor.objects.get(name=instructor)
 	context = {"courses": i.myCourses, 'instructor': i.name}
-	return render_to_respose('instructor_schedule.html', context, context_instance-RequestContext(request))
+	return render_to_response('instructor_schedule.html', context, context_instance-RequestContext(request))
