@@ -46,3 +46,7 @@
 			<div class="clear"></div>
 			<hr></hr>
 		</header>
+
+		{% if message_type != None and message_type != "" %}
+			<div class="message" id="{{ message_type }}">{{ message }}</div>
+		{% endif %}

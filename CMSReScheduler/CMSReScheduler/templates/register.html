@@ -1,27 +1,15 @@
-<!DOCTYPE html>
-<html>
-        <head>
-                <meta charset="utf-8">
-                <title>Registration</title>        
-        </head>
-
-        <body>
-                <h1>
-                        User Registration
-                </h1>
-
-                <p>
-                        Fill all fields and click on "Register".
-                </p>
-                
-                <form action="/register/" method="post">
-                        {% csrf_token %}
-                        
-                        {{ form.as_p }}
-
-                        <p><input type="submit" value="Register" /></p>
-                </form>
-                
-        </body>
-
-</html> 
+        {% include "layouts/header.html" with title="Register" %}
+        <form class="center" id="registration" action="/register/" method="post">
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="form-entry">
+                    {{ field.errors }}
+                    <div class="form-label">{{ field.label_tag }}: </div>
+                    <div class="form-input">{{ field }}</div>
+                </div>
+            {% endfor %}
+            <div class="form-entry left" id="submit">
+                <input type="submit" value="Register">
+            </div>
+        </form>
+        {% include "layouts/footer.html" %}

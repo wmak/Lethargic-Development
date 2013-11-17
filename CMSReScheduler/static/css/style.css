@@ -258,19 +258,19 @@ footer {
 	}
 
 /* Forms */
-.form-left > .form-entry {
+.form-entry {
 	padding-bottom: 1em;
 }
-	.form-left > .form-entry > .form-label {
+	.form-entry > .form-label {
 		width: 6em;
 		margin-right: 5px;
 		display: inline-block;
 	}
-	.form-left > .form-entry > .form-input {
+	.form-entry > .form-input {
 		margin-left: 5px;
 		display: inline-block;
 	}
-	.form-left > .form-entry > input[type='submit'] {
+	.form-entry > input[type='submit'] {
 		margin: 0;
 		padding: 5px;
 		font-size: 1em;
@@ -279,9 +279,45 @@ footer {
 		background: #eee;
 		cursor: pointer;
 	}
-	.form-left > .form-entry > input[type='submit']:hover {
+	.form-entry > input[type='submit']:hover {
 		background: rgba(30, 144, 255, 0.3);
 	}
+
+#registration {
+	font-size: 1.2em;
+}
+	#registration > .form-entry {
+		width: 50%;
+		margin: 0 auto;
+	}
+		#registration > .form-entry > ul.errorlist {
+			width: 100%;
+		}
+			.form-entry > ul.errorlist > li {
+				list-style: none;
+				text-align: right;
+				color: #d8000c;
+				font-size: 0.8em;
+			}
+		#registration > .form-entry > .form-label {
+			width: 28%;
+			margin-right: 1%;
+			display: inline-block;
+			text-align: left;
+		}
+		#registration > .form-entry > .form-input {
+			width: 69%;
+			margin-left: 1%;
+			display: inline-block;
+		}
+			#registration > .form-entry > .form-input > input {
+				width: 100%;
+				padding: 5px;
+				font-size: 1.2em;
+				-webkit-box-sizing: border-box;
+			    -moz-box-sizing: border-box;
+			    box-sizing: border-box;
+			}
 
 #footer {
 	font-size: 0.8em;

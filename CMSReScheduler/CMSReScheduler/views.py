@@ -60,11 +60,12 @@ def register(request):
 		form = RegisterForm(request.POST)
 		if form.is_valid():
 			new_user = form.save()
-			return HttpResponseRedirect('/')
+			return HttpResponseRedirect("/")
+		else:
+			return render_to_response("register.html", {"form": form}, context_instance=RequestContext(request))
 	else:
 		form = RegisterForm()
-	c = {'form': form}
-	return render_to_response("register.html", c, context_instance=RequestContext(request))
+	return render_to_response("register.html", {"form": form}, context_instance=RequestContext(request))
 
 #@login_required
 def index(request):
