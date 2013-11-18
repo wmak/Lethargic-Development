@@ -40,7 +40,7 @@ def login_view(request):
 			if p.active or p.role == 'admin':
 				login(request, user)
 				# Redirect to a success page depending on the user's role.
-				return HttpResponseRedirect("/")
+				return HttpResponseRedirect("/?login=success")
 			else:
 				# Show an error page
 				return render_to_response("login.html", {"username": username, "message": "The user %s is pending validation." % username, "message_type": "error"}, context_instance=RequestContext(request))
@@ -48,19 +48,22 @@ def login_view(request):
 			# Username and password given don't match or user doesn't exist.
 			return render_to_response("login.html", {"username": username, "message": "Incorrect username or password.", "message_type": "error"}, context_instance=RequestContext(request))
 	else:
-		return render_to_response('login.html', context_instance=RequestContext(request))
+		msg, msg_type = "", ""
+		if request.GET and "logout" in request.GET:
+			msg = "You have logged out successfully."
+			msg_type = "success"
+		return render_to_response('login.html', {"message": msg, "message_type": msg_type}, context_instance=RequestContext(request))
 
 def logout_view(request):
 	logout(request)
-	# Redirect to a success page.
-	return HttpResponse("Logged out.")
+	return HttpResponseRedirect("/login?logout=success")
 
 def register(request):
 	if request.method == 'POST':
 		form = RegisterForm(request.POST)
 		if form.is_valid():
 			new_user = form.save()
-			return HttpResponseRedirect("/")
+			return HttpResponseRedirect("/?registration=success")
 		else:
 			return render_to_response("register.html", {"form": form}, context_instance=RequestContext(request))
 	else:
@@ -69,7 +72,15 @@ def register(request):
 
 #@login_required
 def index(request):
-	return render(request, 'index.html')
+	msg, msg_type = "", ""
+	if request.GET:
+		if "login" in request.GET:
+			msg = "You have successfully been logged in."
+			msg_type = "success"
+		elif "registration" in request.GET:
+			msg = "You have successfully been registered."
+			msg_type = "success"
+	return render(request, 'index.html', {"message": msg, "message_type": msg_type})
 
 #@login_required
 def admin(request):
