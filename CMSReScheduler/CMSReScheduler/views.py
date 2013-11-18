@@ -258,6 +258,7 @@ def department_schedule(request, department_name, instructor_name):
 	''' Takes in a request object as well as two strings for the name of the department and the name
 		of the instructor. Returns this a schedule of the instructor to departments.html.
 	'''
+
 	department = Department.objects.get(name=department_name)
 	instructor - Instructor.object.get(name=instructor_name)
 	chair = Chair.object.get(deartment=department_name)
@@ -265,9 +266,9 @@ def department_schedule(request, department_name, instructor_name):
 	course_list = []
 	class_type = []
 	days = []
-	room []
+	room = []
 
-	for c in courses in :
+	for c in courses :
 		course = Course.objects.get(code=c.course)
 		course_list.append([course.code, course.name])
 		start_times.append(c.startTime)
