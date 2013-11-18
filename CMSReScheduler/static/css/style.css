@@ -283,34 +283,35 @@ footer {
 		background: rgba(30, 144, 255, 0.3);
 	}
 
-#registration {
+.registration-and-login {
+	text-align: center;
 	font-size: 1.2em;
 }
-	#registration > .form-entry {
+	.registration-and-login > .form-entry {
 		width: 50%;
 		margin: 0 auto;
 	}
-		#registration > .form-entry > ul.errorlist {
+		.registration-and-login > .form-entry > ul.errorlist {
 			width: 100%;
 		}
-			.form-entry > ul.errorlist > li {
+			.registration-and-login > .form-entry > ul.errorlist > li {
 				list-style: none;
 				text-align: right;
 				color: #d8000c;
 				font-size: 0.8em;
 			}
-		#registration > .form-entry > .form-label {
+		.registration-and-login > .form-entry > .form-label {
 			width: 28%;
 			margin-right: 1%;
 			display: inline-block;
 			text-align: left;
 		}
-		#registration > .form-entry > .form-input {
+		.registration-and-login > .form-entry > .form-input {
 			width: 69%;
 			margin-left: 1%;
 			display: inline-block;
 		}
-			#registration > .form-entry > .form-input > input {
+			.registration-and-login > .form-entry > .form-input > input {
 				width: 100%;
 				padding: 5px;
 				font-size: 1.2em;

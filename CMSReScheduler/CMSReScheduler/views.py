@@ -43,10 +43,10 @@ def login_view(request):
 				return HttpResponseRedirect("/")
 			else:
 				# Show an error page
-				return HttpResponse('Your user is inactive or doesn\'t exist.')
+				return render_to_response("login.html", {"username": username, "message": "The user %s is pending validation." % username, "message_type": "error"}, context_instance=RequestContext(request))
 		else:
 			# Username and password given don't match or user doesn't exist.
-			return HttpResponse('Wrong username or password.')
+			return render_to_response("login.html", {"username": username, "message": "Incorrect username or password.", "message_type": "error"}, context_instance=RequestContext(request))
 	else:
 		return render_to_response('login.html', context_instance=RequestContext(request))
 
