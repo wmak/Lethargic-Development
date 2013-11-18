@@ -4,7 +4,7 @@
 import utils.csvutils as csvutils
 import utils.classesutils as classutils
 
-from django.http import HttpResponse, HttpResponseRedirect, QueryDict
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, QueryDict
 from django.shortcuts import render, render_to_response
 from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
@@ -258,28 +258,36 @@ def department_schedule(request, department_name, instructor_name):
 	''' Takes in a request object as well as two strings for the name of the department and the name
 		of the instructor. Returns this a schedule of the instructor to departments.html.
 	'''
+	try:
+		department = Department.objects.get(name=department_name)
+		instructor = Instructor.object.get(name=instructor_name)
 
-	department = Department.objects.get(name=department_name)
-	instructor - Instructor.object.get(name=instructor_name)
-	chair = Chair.object.get(deartment=department_name)
-	courses = instructor.getSchedule()
-	course_list = []
-	class_type = []
-	days = []
-	room = []
+		if department and  instructor:
+			chair = Chair.object.get(deartment=department_name)
+			courses = instructor.getSchedule()
+			course_list = []
+			class_type = []
+			days = []
+			room = []
 
-	for c in courses :
-		course = Course.objects.get(code=c.course)
-		course_list.append([course.code, course.name])
-		start_times.append(c.startTime)
-		end_times.append(c.endTime)
-		class_type.append(c.typeOfSession)
-		days.append(c.dayOfWeek)
-		room.append(c.room)
+			for c in courses :
+				course = Course.objects.get(code=c.course)
+				course_list.append([course.code, course.name])
+				start_times.append(c.startTime)
+				end_times.append(c.endTime)
+				class_type.append(c.typeOfSession)
+				days.append(c.dayOfWeek)
+				room.append(c.room)
 
 
-	context = {'room': room, 'courses': course_list, 'start_times': start_times, 'end_times': end_times, 'type': class_type, \
-				'department': department.name, 'Chair': chair.name, 'instructor': instructor.name, 'days': days}
+			context = {'room': room, 'courses': course_list, 'start_times': start_times, 'end_times': end_times, 'type': class_type, \
+						'department': department.name, 'Chair': chair.name, 'instructor': instructor.name, 'days': days}
 
-	return render_to_respose(departments.html, context, context_instance-RequestContext(request))
+			return render_to_respose(departments.html, context, context_instance-RequestContext(request))
+		else:
+			return HttpResponseNotFound('<h1>Page not found. Invalid department or instructor name </h1>')
+			
+	except Exception:
+		return HttpResponseNotFound('<h1>Page not found. Invalid department or instructor name </h1>')
+
 
