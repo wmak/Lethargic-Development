@@ -110,8 +110,6 @@ def admin(request):
 	for day in daysOfWeek:
 		context[day] = CourseSchedule.objects.filter(dayOfWeek=day).order_by("startTime")
 	context["user"] = request.user
-	context["message"] = msg
-	context["message_type"] = msg_type
 	return render(request, 'admin/index.html', context)
 
 def admin_upload(request):
