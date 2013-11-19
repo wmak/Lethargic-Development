@@ -57,7 +57,7 @@ def add_schedule(item, create_room = True, create_course = True):
 			course = Course.objects.get(code=item["course"])
 		else:
 			return "Error: course doesn't exist"
-		CourseSchedule(course=course, room=room, dayOfWeek=item["dayOfWeek"], startTime=startTime, endTime=endTime, typeOfSession=item["typeOfSession"], enrolment = 0).save()
+		CourseSchedule(course=course.code, room=room, dayOfWeek=item["dayOfWeek"], startTime=startTime, endTime=endTime, typeOfSession=item["typeOfSession"], enrolment = 0).save()
 		return True
 	except Exception as e:
 		print "EXCEPTION " + str(e)
