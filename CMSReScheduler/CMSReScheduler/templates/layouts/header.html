@@ -20,15 +20,17 @@
 			<div id="header-nav">
 				<div class="right fullwidth">
 					<ul>
-						<li><a class="{% if active == "profile" %}active{% endif %}" href="#">Profile</a></li>
-						<li><a class="{% if active == "schedule" %}active{% endif %}" href="#">Schedule</a></li>
-						<li><a class="{% if active == "admin" %}active{% endif %}" href="{% url "admin" %}">Admin</a></li>
-						<!-- TODO: Show appropriate links based on whether user is logged in or not -->
-						<li><a href="{% url "register" %}">Register</a></li>
-						<li><a href="{% url "login" %}">Log In</a></li>
-						<li><a href="{% url "logout" %}">Log Out</a></li>
-						<!-- Replace "if true == true" check for notifications, and if they exist, whether there are any unread -->
-						<li><a class="{% if true == 1 %}active{% endif %}" id="notifications" href="#" onclick="toggleNotifications(this);">&nbsp;!&nbsp;</a></li>
+						{% if not user.is_authenticated %}
+							<li><a href="{% url "register" %}">Register</a></li>
+							<li><a href="{% url "login" %}">Log In</a></li>
+						{% else %}
+							<li><a class="{% if active == "profile" %}active{% endif %}" href="#">Profile</a></li>
+							<li><a class="{% if active == "schedule" %}active{% endif %}" href="#">Schedule</a></li>
+							<li><a class="{% if active == "admin" %}active{% endif %}" href="{% url "admin" %}">Admin</a></li>
+							<li><a href="{% url "logout" %}">Log Out</a></li>
+							<!-- Replace "if true == true" check for notifications, and if they exist, whether there are any unread -->
+							<li><a class="{% if true == 1 %}active{% endif %}" id="notifications" href="#" onclick="toggleNotifications(this);">&nbsp;!&nbsp;</a></li>
+						{% endif %}
 					</ul>
 				</div>
 				<!-- Replace "Noticication #" with for loop that iterates through notifications, displaying them -->
