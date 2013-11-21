@@ -13,7 +13,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
-from forms import UploadCsv, RegisterForm
+from forms import UploadCsv, RegisterForm, ProfileForm
 
 try:
 	import json
@@ -67,6 +67,19 @@ def register(request):
 	c = {'form': form}
 	return render_to_response("register.html", c, context_instance=RequestContext(request))
 
+def edit_profile(request):
+	if request.user.is_authenticated():
+		if request.method == 'POST':
+			form = ProfileForm(request.POST)
+			if form.is_valid():
+				profile = form.save()
+				return HttpResponseRedirect('/')
+		else:
+			profile = UserProfile.objects.get(pk=request.user.id)
+			form = ProfileForm(instance=profile)
+		c = {'form': form}
+		return render_to_response("profile.html", c, context_instance=RequestContext(request))
+
 def list_users(request):
 	if request.user.is_authenticated():
 		p = UserProfile.objects.get(pk=request.user.id)
@@ -74,13 +87,13 @@ def list_users(request):
 		# Verifies if the user's profile is active or the role is 'admin'
 		if p.active and p.role == 'admin':
 			users = User.objects.all()
-			return render_to_response("users_list.html", {"username": username, "users": users, "user": request.user}, context_instance=RequestContext(request))
+			return render_to_response("admin/users_list.html", {"username": username, "users": users, "user": request.user}, context_instance=RequestContext(request))
 		else:
 			message = 'Your user is not active or you are not an administrator.'
-			return render_to_response("users_list.html", {"username": username, "message": message, "user": request.user}, context_instance=RequestContext(request))
+			return render_to_response("admin/users_list.html", {"username": username, "message": message, "user": request.user}, context_instance=RequestContext(request))
 	else:
 		message = 'This page is only accessible after logging in. Please log in.'
-		return render_to_response("users_list.html", {"message": message, "user": request.user}, context_instance=RequestContext(request))		
+		return render_to_response("admin/users_list.html", {"message": message, "user": request.user}, context_instance=RequestContext(request))		
 
 #@login_required
 def index(request):

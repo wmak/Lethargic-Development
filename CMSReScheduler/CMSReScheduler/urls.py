@@ -14,6 +14,7 @@ urlpatterns = patterns('',
     url(r'^admin/users/all$', 'CMSReScheduler.views.list_users', name='list_users'),
     url(r'^login/$', 'CMSReScheduler.views.login_view', name='login'),
     url(r'^logout/$', 'CMSReScheduler.views.logout_view', name='logout'),
+    url(r'^profile/$', 'CMSReScheduler.views.edit_profile', name='profile'),
 
     #this regex is not complete yet
     #it should only receive urls like: rooms/filter/capacity-building/50-IC/
