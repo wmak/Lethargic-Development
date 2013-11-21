@@ -11,6 +11,7 @@ urlpatterns = patterns('',
     url(r'^register/$', 'CMSReScheduler.views.register', name='register'),
     url(r'^admin/$', 'CMSReScheduler.views.admin', name='admin'),
     url(r'^admin/upload/$', 'CMSReScheduler.views.admin_upload', name='admin_upload'),
+    url(r'^admin/users/all$', 'CMSReScheduler.views.list_users', name='list_users'),
     url(r'^login/$', 'CMSReScheduler.views.login_view', name='login'),
     url(r'^logout/$', 'CMSReScheduler.views.logout_view', name='logout'),
 
