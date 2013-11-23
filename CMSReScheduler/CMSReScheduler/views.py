@@ -69,13 +69,14 @@ def register(request):
 
 def edit_profile(request):
 	if request.user.is_authenticated():
+		# Gets profile of the current user logged in the system
+		profile = UserProfile.objects.get(pk=request.user.id)
 		if request.method == 'POST':
-			form = ProfileForm(request.POST)
+			form = ProfileForm(request.POST, instance=profile)
 			if form.is_valid():
-				profile = form.save()
+				form.save()
 				return HttpResponseRedirect('/')
 		else:
-			profile = UserProfile.objects.get(pk=request.user.id)
 			form = ProfileForm(instance=profile)
 		c = {'form': form}
 		return render_to_response("profile.html", c, context_instance=RequestContext(request))

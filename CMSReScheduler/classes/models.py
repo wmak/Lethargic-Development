@@ -114,7 +114,7 @@ class UserProfile(models.Model):
 
 def create_user_profile(sender, instance, created, **kwargs):
 	if created:
-		UserProfile.objects.create(user=instance)
+		profile, created = UserProfile.objects.get_or_create(user=instance)
 post_save.connect(create_user_profile, sender=User)
 
 class CourseScheduleManager(models.Manager):
