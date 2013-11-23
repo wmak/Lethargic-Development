@@ -4,12 +4,11 @@
 import utils.csvutils as csvutils
 import utils.classesutils as classutils
 
-from django.http import HttpResponse, HttpResponseRedirect, QueryDict
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, QueryDict
 from django.shortcuts import render, render_to_response
 from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
 from django.core import serializers
-
 from forms import UploadCsv, InstructorRegistrationForm
 try:
 	import json
@@ -17,7 +16,7 @@ except ImportError:
 	# Python 2.5
 	import simplejson as json
 
-from classes.models import Course, Department, CourseSchedule
+from classes.models import Course, Department, CourseSchedule, Room
 
 '''Constant declaration'''
 GOOD_REQUEST = 200
@@ -261,17 +260,26 @@ def instructor_schedule(request, instructor):
 def room_capacities(request):
 	''' Takes in a request and returns all of the rooms, ordered by their code, and their capacities to a webpage 
 	'''
-	room_objects = Room.object.all().order_by('code')
-	rooms = []
-	capacities = []
 
-	for item in room_objects:
-		rooms.append(item.code)
-		capacities.append(item.capacity)
+	try:
+		room_objects = Room.objects.order_by('code')
 
-	context = {'rooms': rooms, 'capacities': capacities}
+		if room_objects:
+			rooms = []
+			capacities = []
 
-	return render_to_respose('room_capacities.html', context, context_instance-RequestContext(request))
+			for item in room_objects:
+				rooms.append(item.code)
+				capacities.append(item.capacity)
+
+			context = {'rooms': rooms, 'capacities': capacities}
+
+			return render_to_respose('room_capacities.html', context, context_instance-RequestContext(request))
+		else:
+			return HttpResponseNotFound('<h1>Page not found. No Rooms. </h1>')
+
+	except Exception:
+		return HttpResponseNotFound('<h1>Page not found. EXCEPTION! </h1>')
 
 
 
