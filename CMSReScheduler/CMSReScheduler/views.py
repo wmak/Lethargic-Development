@@ -4,7 +4,7 @@
 import utils.csvutils as csvutils
 import utils.classesutils as classutils
 
-from django.http import HttpResponse, HttpResponseRedirect, QueryDict
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, QueryDict
 from django.shortcuts import render, render_to_response
 from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
@@ -262,26 +262,30 @@ def room_schedule(request, room_code):
 	''' takes in a request object and the room from the url and makes a query to the database to find all the courses
 		that use that room and returns them to a webpage  
 	'''
-	room = Room.objects.get(code=room_code)
-	c = CourseSchedule.object.al().filter(room=room)
-	courses = []
-	start_times = []
-	end_times = []
-	class_type = []
-	days = []
+	try:
+		c = CourseSchedule.objects.filter(room=room_code)
 
-	for course in c:
-		# finding the course object that corresponds with the course name
-		new_course = Course.objects.get(code=course.course) 
-		courses.append([new_course.code, new_course.name])
-		start_times.append(course.startTime)
-		end_times.append(course.endTime)
-		class_type.append(course.typeOfSession)
-		days.append(course.dayOfWeek)
+		if c:
+			courses = []
+			start_times = []
+			end_times = []
+			class_type = []
+			days = []
 
-	context = {'room': room.code, 'courses': courses, 'start_times': start_times, 'end_times': end_times, \
-				'type': class_type, 'days': days}
-	return render_to_respose(room_schedule.html, context, context_instance-RequestContext(request))
+			for course in c:
+				courses.append([new_course.code, new_course.name])
+				start_times.append(course.startTime)
+				end_times.append(course.endTime)
+				class_type.append(course.typeOfSession)
+				days.append(course.dayOfWeek)
+
+			context = {'room': room.code, 'courses': courses, 'start_times': start_times, 'end_times': end_times, \
+						'type': class_type, 'days': days}
+			return render_to_respose(room_schedule.html, context, context_instance-RequestContext(request))
+		else:
+			return HttpResponseNotFound('<h1>Page not found. Invalid Room </h1>')
+	except Exception:
+		return HttpResponseNotFound('<h1>Page not found. EXCEPTION </h1>')
 
 
 
