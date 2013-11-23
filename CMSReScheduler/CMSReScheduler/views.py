@@ -13,7 +13,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
-from forms import UploadCsv, RegisterForm, ProfileForm
+from forms import UploadCsv, RegisterForm, ProfileEditForm, UserEditForm
 
 try:
 	import json
@@ -72,14 +72,27 @@ def edit_profile(request):
 		# Gets profile of the current user logged in the system
 		profile = UserProfile.objects.get(pk=request.user.id)
 		if request.method == 'POST':
-			form = ProfileForm(request.POST, instance=profile)
+			form = ProfileEditForm(request.POST, instance=profile)
 			if form.is_valid():
 				form.save()
 				return HttpResponseRedirect('/')
 		else:
-			form = ProfileForm(instance=profile)
+			form = ProfileEditForm(instance=profile)
 		c = {'form': form}
 		return render_to_response("profile.html", c, context_instance=RequestContext(request))
+
+def edit_user(request):
+	if request.user.is_authenticated():
+		# Gets profile of the current user logged in the system
+		if request.method == 'POST':
+			form = UserEditForm(request.POST, instance=request.user)
+			if form.is_valid():
+				form.save()
+				return HttpResponseRedirect('/')
+		else:
+			form = UserEditForm(instance=request.user)
+		c = {'form': form}
+		return render_to_response("edit_user.html", c, context_instance=RequestContext(request))
 
 def list_users(request):
 	if request.user.is_authenticated():

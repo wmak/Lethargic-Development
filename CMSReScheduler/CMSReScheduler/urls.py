@@ -14,8 +14,9 @@ urlpatterns = patterns('',
     url(r'^admin/users/all$', 'CMSReScheduler.views.list_users', name='list_users'),
     url(r'^login/$', 'CMSReScheduler.views.login_view', name='login'),
     url(r'^logout/$', 'CMSReScheduler.views.logout_view', name='logout'),
-    url(r'^profile/$', 'CMSReScheduler.views.edit_profile', name='profile'),
-
+    url(r'^profile/$', 'CMSReScheduler.views.edit_profile', name='edit_profile'),
+    url(r'^user/edit/$', 'CMSReScheduler.views.edit_user', name='edit_user'),
+    url(r'^password_change/$', 'django.contrib.auth.views.password_change'),
     #this regex is not complete yet
     #it should only receive urls like: rooms/filter/capacity-building/50-IC/
     url(r'^(?P<model>.*)/filter/(?P<fields>.*)/(?P<values>.*)/$', 'CMSReScheduler.views.filter', name = 'filter'),

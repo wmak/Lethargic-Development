@@ -11,10 +11,16 @@ class UploadCsv(forms.Form):
 	title = forms.CharField(max_length=100)
 	file = forms.FileField()
 
-class ProfileForm(ModelForm):
+class ProfileEditForm(ModelForm):
 	class Meta:
 		model = UserProfile
 		exclude = ['user']
+
+class UserEditForm(ModelForm):
+	class Meta:
+		model = User
+		exclude = ['username', 'password1', 'password2']
+		fields = ['first_name', 'last_name', 'email']
 
 class RegisterForm(UserCreationForm):
 	email = forms.EmailField(label = "Email address")
