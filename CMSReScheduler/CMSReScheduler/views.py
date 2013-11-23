@@ -260,7 +260,7 @@ def department_schedule(request, department_name, instructor_name):
 	'''
 	try:
 		department = Department.objects.get(name=department_name)
-		instructor = Instructor.object.get(name=instructor_name)
+		instructor = Instructor.objects.get(name=instructor_name)
 
 		if department and  instructor:
 			chair = Chair.object.get(deartment=department_name)
@@ -288,6 +288,6 @@ def department_schedule(request, department_name, instructor_name):
 			return HttpResponseNotFound('<h1>Page not found. Invalid department or instructor name </h1>')
 			
 	except Exception:
-		return HttpResponseNotFound('<h1>Page not found. Invalid department or instructor name </h1>')
+		return HttpResponseNotFound('<h1>Page not found. EXCEPTION </h1>')
 
 
