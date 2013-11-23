@@ -207,7 +207,7 @@ def course(request, course, section):
 						info["Error"] = "Error updating"
 						info.setdefault(field, "Error: " + str(e))
 						status = BAD_REQUEST
-				if body.has_key("department"): TODO, need add_department function
+				if body.has_key("department"):
 					value = body.get("department")
 					if value:
 						department = current.department
@@ -234,18 +234,10 @@ def course(request, course, section):
 					except Exception as e:
 						status = BAD_REQUEST
 						info.setdefault("department", "Error: " + str(e))
-				if status == GOOD_REQUEST:
-					current.save()
-					next.save()
-					info = {"info" : course + section + " and " + body["switch"]["code"] + body["switch"]["section"] + " switched"}
-					status  = GOOD_REQUEST
-				except Exception as e:
-					info.setdefault("department", "Error: " + str(e))
 			if status == GOOD_REQUEST:
 				notification = "%s has been modified" % course
 				classutils.new_notification(notification)
 				current.save()
-				status = GOOD_REQUEST
 			else:
 				info = {"Error" : "No body with request"}
 				status = BAD_REQUEST
@@ -301,10 +293,14 @@ def user(request, user_id):
 			body = None
 	try:
 		if request.method == "GET":
-			info = {"notifications" : json.dumps(classutils.get_notifications(user_id))}
+			data = classutils.get_notifications(user_id)
+			if data:
+				info = {"notifications" : json.dumps(data)}
+			else:
+				info = {"notifications" : ""}
 			status = GOOD_REQUEST
 	except Exception as e:
-		info.setdefault("department", "Error: " + str(e))
+		info = {"Error" : str(e)}
 	data = json.dumps(info)
 	return HttpResponse(content = data, status = status)
 
