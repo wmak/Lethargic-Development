@@ -20,7 +20,7 @@ except ImportError:
 	# Python 2.5
 	import simplejson as json
 
-from classes.models import Course, Department, CourseSchedule, UserProfile
+from classes.models import Course, Department, CourseSchedule, UserProfile, Notifications
 
 '''Constant declaration'''
 GOOD_REQUEST = 200
@@ -178,7 +178,7 @@ def course(request, course, section):
 			}
 	'''
 	info = {"Error" : "Unknown error occured"}
-	status = GOOD_REQUEST
+	status = INTERNAL_ERROR
 	body = ""
 	# If the request has a body, assume that it is json. And parse it.
 	if request.body:
@@ -207,13 +207,20 @@ def course(request, course, section):
 						info["Error"] = "Error updating"
 						info.setdefault(field, "Error: " + str(e))
 						status = BAD_REQUEST
-				# if body.has_key("department"): TODO, need add_department function
-				# 	value = body.get("department")
-				# 	if value:
-				# 		current.department = )
-				# 		info.setdefault(field, "Updated")
-				# 	else:
-				# 		info.setdefault(field, "Error: name entry was blank")
+				if body.has_key("department"):
+					value = body.get("department")
+					if value:
+						department = current.department
+						if (Department.objects.filter(name = body["department"]).count == 1):
+							department = Department.objects.get(name = body["department"])
+						else:
+							department = Department(name = body["department"], numberOfLecturers=0)
+							department.save()
+						current.department = department
+						info.setdefault("department", "Updated")
+						status = GOOD_REQUEST
+					else:
+						info.setdefault(field, "Error: name entry was blank")
 				# Special key switch will switch all details but course and typeOfSession between two CourseSchedules
 				if section and body.has_key("switch"):
 					try:
@@ -229,8 +236,10 @@ def course(request, course, section):
 					except Exception as e:
 						status = BAD_REQUEST
 						info.setdefault("department", "Error: " + str(e))
-				if status == GOOD_REQUEST:
-					current.save()
+			if status == GOOD_REQUEST:
+				notification = "%s has been modified" % course
+				classutils.new_notification(notification)
+				current.save()
 			else:
 				info = {"Error" : "No body with request"}
 				status = BAD_REQUEST
@@ -272,6 +281,38 @@ def course(request, course, section):
 		status = INTERNAL_ERROR
 	data = json.dumps(info)
 	return HttpResponse(content = data, status = status)
+
+@csrf_exempt
+def user(request, user_id):
+	info = {"Error" : "Nothing happened somehow"}
+	status = INTERNAL_ERROR
+	body = ""
+	# If the request has a body, assume that it is json. And parse it.
+	if request.body:
+		try:
+			body = json.loads(request.body)
+		except:
+			info = {"Error" : "Badly formatted Json"}
+			body = None
+	try:
+		if request.method == "GET":
+			info = classutils.get_notifications(user_id)
+			status = GOOD_REQUEST
+		elif request.method == "PUT":
+			data = classutils.get_notifications(user_id)
+			status = BAD_REQUEST
+			if body.has_key("read"):
+				if type(body["read"]) == list:
+					if classutils.update_notifications(user_id, body["read"]):
+						status = GOOD_REQUEST
+						info = {"Status" : "Updated successfully"}
+					else:
+						status = INTERNAL_ERROR
+	except Exception as e:
+		info = {"Error" : str(e)}
+	data = json.dumps(info)
+	return HttpResponse(content = data, status = status)
+
 
 def instructor_schedule(request, instructor):
 	i = Instructor.objects.get(name=instructor)
