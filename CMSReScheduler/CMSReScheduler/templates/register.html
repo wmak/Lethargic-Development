@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+        <head>
+                <meta charset="utf-8">
+                <title>Registration</title>        
+        </head>
+
+        <body>
+                <h1>
+                        User Registration
+                </h1>
+
+                <p>
+                        Fill all fields and click on "Register".
+                </p>
+                
+                <form action="/register/" method="post">
+                        {% csrf_token %}
+                        
+                        {{ form.as_p }}
+
+                        <p><input type="submit" value="Register" /></p>
+                </form>
+                
+        </body>
+
+</html> 
