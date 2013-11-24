@@ -67,6 +67,7 @@ class UserProfile(models.Model):
 	myCourses = models.ManyToManyField(Course, null=True, blank=True)
 	role = models.CharField(max_length = 10) # Instructor, admin or chair
 	notifications = models.ManyToManyField(Notifications)
+	read_notifications = models.ManyToManyField(Notifications, related_name='notifications')
 	#Every user, when created, is inactive.
 	notify = models.BooleanField(default=True)
 	active = models.BooleanField(default=False)

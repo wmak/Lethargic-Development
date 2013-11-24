@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
-from classes.models import Course, Department, CourseSchedule, Room, UserProfile
+from classes.models import Course, Department, CourseSchedule, Room, UserProfile, Notifications
 from datetime import datetime
 
 def update_courses(items):
@@ -75,9 +75,25 @@ def new_notification(text):
 def get_notifications(user_id):
 	user = UserProfile.objects.get(pk = user_id)
 	notifications = user.notifications.all()
-	final = []
+	read_notifications = user.read_notifications.all()
+	unread = []
+	read = []
 	for notification in notifications:
-		final.append(str(notification.data))
-	print final
-	return final
+		unread.append(str(notification.data))
+	for notification in read_notifications:
+		read.append(str(notification.data))
+	return {"read" : read, "unread" : unread}
+
+def update_notifications(user_id, new_notifications):
+	try:
+		user = UserProfile.objects.get(pk = user_id)
+		notifications = user.notifications.all()
+		for notification in notifications:
+			if str(notification.data) in new_notifications:
+				user.notifications.remove(notification)
+				user.read_notifications.add(notification)
+		user.save()
+	except Exception as e:
+		return False
+	return True
 

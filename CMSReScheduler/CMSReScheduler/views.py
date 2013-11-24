@@ -211,12 +211,14 @@ def course(request, course, section):
 					value = body.get("department")
 					if value:
 						department = current.department
-						if (Department.objects.filter(name = body[value]).count == 0):
-							department = Department(name = item["department"], numberOfLecturers=0)
+						if (Department.objects.filter(name = body["department"]).count == 1):
+							department = Department.objects.get(name = body["department"])
 						else:
-							department = Department.objects.get(name = item["department"])
+							department = Department(name = body["department"], numberOfLecturers=0)
+							department.save()
 						current.department = department
-						info.setdefault(field, "Updated")
+						info.setdefault("department", "Updated")
+						status = GOOD_REQUEST
 					else:
 						info.setdefault(field, "Error: name entry was blank")
 				# Special key switch will switch all details but course and typeOfSession between two CourseSchedules
@@ -280,6 +282,7 @@ def course(request, course, section):
 	data = json.dumps(info)
 	return HttpResponse(content = data, status = status)
 
+@csrf_exempt
 def user(request, user_id):
 	info = {"Error" : "Nothing happened somehow"}
 	status = INTERNAL_ERROR
@@ -293,12 +296,18 @@ def user(request, user_id):
 			body = None
 	try:
 		if request.method == "GET":
-			data = classutils.get_notifications(user_id)
-			if data:
-				info = {"notifications" : json.dumps(data)}
-			else:
-				info = {"notifications" : ""}
+			info = classutils.get_notifications(user_id)
 			status = GOOD_REQUEST
+		elif request.method == "PUT":
+			data = classutils.get_notifications(user_id)
+			status = BAD_REQUEST
+			if body.has_key("read"):
+				if type(body["read"]) == list:
+					if classutils.update_notifications(user_id, body["read"]):
+						status = GOOD_REQUEST
+						info = {"Status" : "Updated successfully"}
+					else:
+						status = INTERNAL_ERROR
 	except Exception as e:
 		info = {"Error" : str(e)}
 	data = json.dumps(info)
