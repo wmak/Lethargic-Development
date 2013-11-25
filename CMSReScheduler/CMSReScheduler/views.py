@@ -177,7 +177,7 @@ def course(request, course, section):
 				"department" : "new value",
 			}
 	'''
-	info = {"Error" : "Unknown error occured"}
+	info = {}
 	status = INTERNAL_ERROR
 	body = ""
 	# If the request has a body, assume that it is json. And parse it.
@@ -220,7 +220,7 @@ def course(request, course, section):
 						info.setdefault("department", "Updated")
 						status = GOOD_REQUEST
 					else:
-						info.setdefault(field, "Error: name entry was blank")
+						info.setdefault(field, "Error: Department entry was blank")
 				# Special key switch will switch all details but course and typeOfSession between two CourseSchedules
 				if section and body.has_key("switch"):
 					try:
@@ -241,7 +241,6 @@ def course(request, course, section):
 				classutils.new_notification(notification)
 				current.save()
 			else:
-				info = {"Error" : "No body with request"}
 				status = BAD_REQUEST
 		elif request.method == "GET":
 			current = classutils.get_course(course)

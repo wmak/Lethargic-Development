@@ -35,3 +35,12 @@ Automation Test Suite
 4. Make sure that within conf/saunter.ini that the base_url setting matches the location of the currently running server
 5. Now you have selenium running start the autmoation test suite. Please don't use your computer while it is running as this may cause conflicting actions
 	- `pysaunter -s -v -m regression`
+
+Commandline Interface
+=====================
+## Setting up the commandline interface. Also written in python.
+1. Install necessary packages
+	- `pip install requests`
+
+
+_Note_: This entire setup assumes a python 2.7 environment. If you're running 3 onwards don't expect anything to work.
