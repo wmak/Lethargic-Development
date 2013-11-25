@@ -1,6 +1,11 @@
 import requests
 import ConfigParser
 import sys
+try:
+	import json
+except ImportError:
+	# Python 2.5
+	import simplejson as json
 
 def setup():
 	config = ConfigParser.ConfigParser()
@@ -16,12 +21,15 @@ def get(request):
 		return r.text
 
 def put(request, body):
-	pass
+	r = requests.put(("http://%s:%s/%s" % (root_url, port, request)), data = body)
+	return r.json()
 
 def course(method, code, body = None):
 	result = "An Error has occured"
 	if method == "get":
 		result = get(("course/%s/") % code)
+	if method == "put":
+		result = put(("course/%s/") % code, body)
 	return result
 
 if __name__=="__main__":
@@ -31,7 +39,8 @@ if __name__=="__main__":
 			if sys.argv[2].lower() == "get":
 				final = course(sys.argv[2].lower(), sys.argv[3].upper())
 			else:
-				final = course(sys.argv[2].lower(), sys.argv[3].lower(), sys.argv[4])
+				print sys.argv[4]
+				final = course(sys.argv[2].lower(), sys.argv[3].upper(), sys.argv[4])
 	except IndexError:
 		print "Incorrect number of variables. Your syntax must be as follows"
 		print "\t python CMS.py <COMMAND> <METHOD> <PARAMETER>"
