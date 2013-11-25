@@ -15,22 +15,11 @@ def setup():
 	root_url = config.get("Settings", "url")
 	port = config.get("Settings", "port")
 
-def get(request):
-	r = requests.get(("http://%s:%s/%s" % (root_url, port, request)))
-	if r.status_code == 200:
-		return r.text
-
-def put(request, body):
-	r = requests.put(("http://%s:%s/%s" % (root_url, port, request)), data = body)
-	return r.json()
-
 def course(method, code, body = None):
 	result = "An Error has occured"
-	if method == "get":
-		result = get(("course/%s/") % code)
-	if method == "put":
-		result = put(("course/%s/") % code, body)
-	return result
+	url = ("http://%s:%s/%s/%s" % (root_url, port, "course", code))
+	exec(("r = requests.%s(url, data = body)") % method)
+	return r.json()
 
 if __name__=="__main__":
 	try:
