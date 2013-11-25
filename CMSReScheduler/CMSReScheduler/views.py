@@ -96,7 +96,7 @@ def admin_edit_profile(request, username):
 			else:
 				form = ProfileEditForm(instance=userprofile)
 			c = {'form': form}
-			return render_to_response("profile.html", c, context_instance=RequestContext(request))
+			return render_to_response("admin_edit_profile.html", c, context_instance=RequestContext(request))
 		else:
 			return HttpResponse('You do not have permission to access the page requested.')
 
