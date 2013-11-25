@@ -21,6 +21,12 @@ def course(method, code, body = None):
 	exec(("r = requests.%s(url, data = body)") % method)
 	return r.json()
 
+def user(method, code, body = None):
+	result = "An Error has occured"
+	url = ("http://%s:%s/%s/%s" % (root_url, port, "user", code))
+	exec(("r = requests.%s(url, data = body)") % method)
+	return r.json()
+
 if __name__=="__main__":
 	try:
 		setup()
@@ -29,7 +35,10 @@ if __name__=="__main__":
 				final = course(sys.argv[2].lower(), sys.argv[3].upper())
 			else:
 				print sys.argv[4]
-				final = course(sys.argv[2].lower(), sys.argv[3].upper(), sys.argv[4])
+				final = course(ss.argv[2].lower(), sys.argv[3].upper(), sys.argv[4])
+		elif sys.argv[1].lower() == "user":
+			if sys.argv[2].lower() == "get":
+				final = course(sys.argv[2].lower(), sys.argv[3].upper())
 	except IndexError:
 		print "Incorrect number of variables. Your syntax must be as follows"
 		print "\t python CMS.py <COMMAND> <METHOD> <PARAMETER>"
@@ -39,6 +48,11 @@ if __name__=="__main__":
 		print "\t\t\t followed by the course code"
 		print "\t\t\t with the json body if you wish to make anything other than GET"
 		print "\t\t\t ex. python CMS.py ANTB20H3S course put {\"department\" : \"Anthropology\"}"
+		print "\t\t user"
+		print "\t\t\t followed by type of request"
+		print "\t\t\t followed by the user_id"
+		#todo
+		#print "\t\t\t PUT: activates user"
 	except Exception as e:
 		print "An unknown error has occured: "
 		print str(e)
