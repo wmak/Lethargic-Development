@@ -81,9 +81,29 @@ def edit_profile(request):
 		c = {'form': form}
 		return render_to_response("profile.html", c, context_instance=RequestContext(request))
 
-def edit_user(request):
+def admin_edit_profile(request, username):
 	if request.user.is_authenticated():
 		# Gets profile of the current user logged in the system
+		adminprofile = UserProfile.objects.get(pk=request.user.id)
+		if adminprofile.role == 'admin':
+			user = User.objects.get(username=username)
+			userprofile = UserProfile.objects.get(pk=user.id)
+			if request.method == 'POST':
+				form = ProfileEditForm(request.POST, instance=userprofile)
+				if form.is_valid():
+					form.save()
+					return HttpResponseRedirect('/')
+			else:
+				form = ProfileEditForm(instance=userprofile)
+			c = {'form': form}
+			return render_to_response("profile.html", c, context_instance=RequestContext(request))
+		else:
+			return HttpResponse('You do not have permission to access the page requested.')
+
+
+def edit_user(request):
+	if request.user.is_authenticated():
+		# Gets user info of the current user logged in the system
 		if request.method == 'POST':
 			form = UserEditForm(request.POST, instance=request.user)
 			if form.is_valid():
