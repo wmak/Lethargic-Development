@@ -40,35 +40,67 @@ def login_view(request):
 			if p.active or p.role == 'admin':
 				login(request, user)
 				# Redirect to a success page depending on the user's role.
-				return HttpResponseRedirect("/")
+				return HttpResponseRedirect("/?login=success")
 			else:
 				# Show an error page
-				return HttpResponse('Your user is inactive or doesn\'t exist.')
+				return render_to_response("login.html", {"username": username, "message": "The user %s is pending validation." % username, "message_type": "error", "user": request.user}, context_instance=RequestContext(request))
 		else:
 			# Username and password given don't match or user doesn't exist.
-			return HttpResponse('Wrong username or password.')
+			return render_to_response("login.html", {"username": username, "message": "Incorrect username or password.", "message_type": "error", "user": request.user}, context_instance=RequestContext(request))
 	else:
-		return render_to_response('login.html', context_instance=RequestContext(request))
+		if request.user.is_authenticated():
+			return HttpResponseRedirect("/?login=error")
+		else:
+			msg, msg_type = "", ""
+			if request.GET:
+				if "logout" in request.GET:
+					msg_type = request.GET['logout']
+					if msg_type == "error":
+						msg = "An error occurred when logging out. Please try again."
+					elif msg_type == "success":
+						msg = "You have logged out successfully."
+				elif "registration" in request.GET:
+					msg_type = request.GET['registration']
+					if msg_type == "success":
+						msg = "You have successfully been registered. Please log in."
+			return render_to_response('login.html', {"message": msg, "message_type": msg_type, "user": request.user}, context_instance=RequestContext(request))
 
 def logout_view(request):
-	logout(request)
-	# Redirect to a success page.
-	return HttpResponse("Logged out.")
+	if request.user.is_authenticated():
+		logout(request)
+		return HttpResponseRedirect("/login?logout=success")
+	else:
+		return HttpResponseRedirect("/login?logout=error")
 
 def register(request):
 	if request.method == 'POST':
 		form = RegisterForm(request.POST)
 		if form.is_valid():
 			new_user = form.save()
-			return HttpResponseRedirect('/')
+			return HttpResponseRedirect("/login?registration=success")
+		else:
+			return render_to_response("register.html", {"form": form}, context_instance=RequestContext(request))
 	else:
-		form = RegisterForm()
-	c = {'form': form}
-	return render_to_response("register.html", c, context_instance=RequestContext(request))
+		if request.user.is_authenticated():
+			return HttpResponseRedirect("/?registration=error")
+		else:
+			form = RegisterForm()
+			return render_to_response("register.html", {"form": form}, context_instance=RequestContext(request))
 
 #@login_required
 def index(request):
-	return render(request, 'index.html')
+	msg, msg_type = "", ""
+	if request.GET:
+		if "login" in request.GET:
+			msg_type = request.GET["login"]
+			if msg_type == "success":
+				msg = "You have successfully been logged in."
+			elif msg_type == "error":
+				msg = "You are already logged in."
+		elif "registration" in request.GET:
+			msg = "You are already logged in. You don't need to register."
+			msg_type = "error"
+	return render(request, 'index.html', {"message": msg, "message_type": msg_type, "user": request.user })
 
 #@login_required
 def admin(request):
@@ -77,6 +109,7 @@ def admin(request):
 	context = {}
 	for day in daysOfWeek:
 		context[day] = CourseSchedule.objects.filter(dayOfWeek=day).order_by("startTime")
+	context["user"] = request.user
 	return render(request, 'admin/index.html', context)
 
 def admin_upload(request):
@@ -111,7 +144,7 @@ def admin_upload(request):
 		if msg == "":
 			msg = "The %s file has been uploaded." % model_type
 			msg_type = "success"
-	return render_to_response('admin/upload.html', {'form': UploadCsv(), "departments": Department.objects.all, "message": msg, "message_type": msg_type}, context_instance=RequestContext(request))
+	return render_to_response('admin/upload.html', {'form': UploadCsv(), "departments": Department.objects.all, "message": msg, "message_type": msg_type, "user": request.user}, context_instance=RequestContext(request))
 
 '''This view should receive three strings:
 1 - which model will be used, shoulb be in the plural for consistency

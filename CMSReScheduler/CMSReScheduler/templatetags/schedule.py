@@ -4,53 +4,41 @@ from classes.models import Course, Department, CourseSchedule, Room
 
 register = template.Library()
 
+daysOfWeek = [
+["MO", "Monday"],
+["TU", "Tuesday"],
+["WE", "Wednesday"], 
+["TH", "Thursday"],
+["FR", "Friday"]
+]
+
 @register.filter
 def get_range(value):
 	return range(value)
 
 @register.filter
-def schedule_cell_day(value):
-	if value == 1:
-		return "schedule-day"
-	else:
-		return ""
-
-@register.filter
 def schedule_day(value):
-	# TODO: Refactor
-	if value == 1:
-		return "Monday"
-	elif value == 2:
-		return "Tuesday"
-	elif value == 3:
-		return "Wednesday"
-	elif value == 4:
-		return "Thursday"
-	elif value == 5:
-		return "Friday"
-	else:
+	try:
+		return daysOfWeek[value][1]
+	except Exception as e:
 		return ""
 
 @register.filter
-def schedule_cell_time(value):
-	if value == 1:
-		return "schedule-time"
+def get_time(value, arg=True):
+	if arg:
+		if value + 5 > 12:
+			return str(value - 7) + ":00 PM"
+		else:
+			return str(value + 5) + ":00 AM"
 	else:
-		return ""
+		return str(value + 7) + ":00:00"
 
 @register.filter
-def schedule_time(value):
-	if value + 5 > 12:
-		return str(value - 7) + ":00 PM"
-	else:
-		return str(value + 5) + ":00 AM"
+def get_courses_by_day(value):
+	return CourseSchedule.objects.filter(dayOfWeek=daysOfWeek[value][0])
 
 @register.filter
-def get_time(value):
-	return str(value + 7) + ":00:00"
-
-@register.filter
-def has_course(value, arg):
+def get_course(value, arg):
 	course = value.filter(startTime=arg)
 	if not course:
 		return None
