@@ -11,6 +11,11 @@ class UploadCsv(forms.Form):
 	title = forms.CharField(max_length=100)
 	file = forms.FileField()
 
+class ChangePasswordForm(forms.Form):
+	old_password = forms.CharField(max_length=20, widget=forms.PasswordInput())
+	newpassword = forms.CharField(max_length=20, widget=forms.PasswordInput())
+	newpassword2= forms.CharField(max_length=20, widget=forms.PasswordInput())
+
 class ProfileEditForm(ModelForm):
 	class Meta:
 		model = UserProfile
@@ -19,8 +24,13 @@ class ProfileEditForm(ModelForm):
 class UserEditForm(ModelForm):
 	class Meta:
 		model = User
-		exclude = ['username', 'password1', 'password2']
+		exclude = ['username', 'password1']
 		fields = ['first_name', 'last_name', 'email']
+
+class AdminUserEditForm(ModelForm):
+	class Meta:
+		model = User
+		fields = ['username', 'first_name', 'last_name', 'email']
 
 class RegisterForm(UserCreationForm):
 	email = forms.EmailField(label = "Email address")
