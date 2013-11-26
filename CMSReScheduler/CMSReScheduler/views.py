@@ -100,7 +100,7 @@ def index(request):
 		elif "registration" in request.GET:
 			msg = "You are already logged in. You don't need to register."
 			msg_type = "error"
-	return render(request, 'index.html', {"message": msg, "message_type": msg_type, "user": request.user })
+	return render(request, 'index.html', {"message": msg, "message_type": msg_type, "user": request.user, "notifications": UserProfile.objects.get(user=request.user).notifications, "read_notifications": UserProfile.objects.get(user=request.user).read_notifications })
 
 #@login_required
 def admin(request):
@@ -110,6 +110,8 @@ def admin(request):
 	for day in daysOfWeek:
 		context[day] = CourseSchedule.objects.filter(dayOfWeek=day).order_by("startTime")
 	context["user"] = request.user
+	context["notifications"] = UserProfile.objects.get(user=request.user).notifications
+	context["read_notifications"] = UserProfile.objects.get(user=request.user).read_notifications
 	return render(request, 'admin/index.html', context)
 
 def admin_upload(request):
@@ -144,7 +146,7 @@ def admin_upload(request):
 		if msg == "":
 			msg = "The %s file has been uploaded." % model_type
 			msg_type = "success"
-	return render_to_response('admin/upload.html', {'form': UploadCsv(), "departments": Department.objects.all, "message": msg, "message_type": msg_type, "user": request.user}, context_instance=RequestContext(request))
+	return render_to_response('admin/upload.html', {'form': UploadCsv(), "departments": Department.objects.all, "message": msg, "message_type": msg_type, "user": request.user, "notifications": UserProfile.objects.get(user=request.user).notifications, "read_notifcations": UserProfile.objects.get(user=request.user).read_notifications }, context_instance=RequestContext(request))
 
 '''This view should receive three strings:
 1 - which model will be used, shoulb be in the plural for consistency

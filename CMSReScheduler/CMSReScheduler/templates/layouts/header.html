@@ -17,6 +17,7 @@
 			<div id="header-logo">
 				<div class="fleft">&nbsp;<!--<img src="{{ STATIC_URL }}images/header.gif">--></div>
 			</div>
+			{% load header %}
 			<div id="header-nav">
 				<div class="right fullwidth">
 					<ul>
@@ -28,18 +29,22 @@
 							<li><a class="{% if active == "schedule" %}active{% endif %}" href="#">Schedule</a></li>
 							<li><a class="{% if active == "admin" %}active{% endif %}" href="{% url "admin" %}">Admin</a></li>
 							<li><a href="{% url "logout" %}">Log Out</a></li>
-							<!-- Replace "if true == true" check for notifications, and if they exist, whether there are any unread -->
-							<li><a class="{% if true == 1 %}active{% endif %}" id="notifications" href="#" onclick="toggleNotifications(this);">&nbsp;!&nbsp;</a></li>
+							<li><a class="{% if notifications|count > 0 %}active{% endif %}" id="notifications" href="#" onclick="toggleNotifications(this);">{{ notifications|count }}</a></li>
 						{% endif %}
 					</ul>
 				</div>
-				<!-- Replace "Noticication #" with for loop that iterates through notifications, displaying them -->
-				<!-- Unread notifications have the "active" class -->
 				<div class="hidden" id="notifications-box">
 					<ul>
-						<li class="notification">Notification 1</li>
-						<li class="notification active">Notification 2</li>
-						<li class="notification">Notification 3</li>
+						{% if notifications|count == 0 %}
+							<li class="notification center">No new notifications</li>
+						{% else %}
+							{% for notification in notifications.all %}
+								<li class="notification active">{{ notification.data }}</li>
+							{% endfor %}
+							{% for notification in read_notifications.all %}
+								<li class="notification">{{ notification.data }}</li>
+							{% endfor %}
+						{% endif %}
 					</ul>
 				</div>
 			</div>
