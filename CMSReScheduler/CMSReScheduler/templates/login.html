@@ -1,13 +1,20 @@
-{% block content %}
-    {{ state }}
-    <form action="/login/" method="post" >
-        {% csrf_token %}
-        Username:
-        <input type="text" name="username" value="{{ username }}" /><br />
-        Password:
-        <input type="password" name="password" value="" /><br />
-
-        <input type="submit" value="Login"/>
-        <input type="hidden" name="next" value="{{ next }}" />
-    </form>
-{% endblock %}
+        {% include "layouts/header.html" with title="Login" %}
+        {% block content %}
+            {{ state }}
+            <form class="registration-and-login" action="/login/" method="post">
+                {% csrf_token %}
+                <div class="form-entry">
+                    <div class="form-label">Username: </div>
+                    <div class="form-input"><input type="text" name="username" value="{{ username }}" /></div>
+                </div>
+                <div class="form-entry">
+                    <div class="form-label">Password: </div>
+                    <div class="form-input"><input type="password" name="password" value="" /></div>
+                </div>
+                <div class="form-entry" id="submit">
+                    <input type="submit" value="Login"/>
+                    <input type="hidden" name="next" value="{{ next }}" />
+                </div>
+            </form>
+        {% endblock %}
+        {% include "layouts/footer.html" %}

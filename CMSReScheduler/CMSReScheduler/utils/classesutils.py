@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
-from classes.models import Course, Department, CourseSchedule, Room
+from classes.models import Course, Department, CourseSchedule, Room, UserProfile, Notifications
 from datetime import datetime
 
 def update_courses(items):
@@ -57,8 +57,43 @@ def add_schedule(item, create_room = True, create_course = True):
 			course = Course.objects.get(code=item["course"])
 		else:
 			return "Error: course doesn't exist"
-		CourseSchedule(course=course, room=room, dayOfWeek=item["dayOfWeek"], startTime=startTime, endTime=endTime, typeOfSession=item["typeOfSession"], enrolment = 0).save()
+		CourseSchedule(course=course.code, room=room, dayOfWeek=item["dayOfWeek"], startTime=startTime, endTime=endTime, typeOfSession=item["typeOfSession"], enrolment = 0).save()
 		return True
 	except Exception as e:
 		print "EXCEPTION " + str(e)
 		return e
+
+def new_notification(text):
+	#TODO, filter by instructors who own the course
+	notification = Notifications(data = text)
+	notification.save()
+	users = UserProfile.objects.filter(notify = True)
+	for user in users:
+		user.notifications.add(notification)
+		user.save()
+
+def get_notifications(user_id):
+	user = UserProfile.objects.get(pk = user_id)
+	notifications = user.notifications.all()
+	read_notifications = user.read_notifications.all()
+	unread = []
+	read = []
+	for notification in notifications:
+		unread.append(str(notification.data))
+	for notification in read_notifications:
+		read.append(str(notification.data))
+	return {"read" : read, "unread" : unread}
+
+def update_notifications(user_id, new_notifications):
+	try:
+		user = UserProfile.objects.get(pk = user_id)
+		notifications = user.notifications.all()
+		for notification in notifications:
+			if str(notification.data) in new_notifications:
+				user.notifications.remove(notification)
+				user.read_notifications.add(notification)
+		user.save()
+	except Exception as e:
+		return False
+	return True
+

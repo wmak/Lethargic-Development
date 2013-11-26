@@ -28,3 +28,12 @@ function selectUploadType(self, value) {
 		document.getElementById('submit').style.display = "none";
 	}
 }
+
+$(document).ready(function() {
+	$("body").on("click", "a.schedule-cell.course", function() {
+		var url = "/course/" + $(this).find("#course").html();
+		$.getJSON(url, function(data) {
+			console.log(data);
+		});
+	});
+});

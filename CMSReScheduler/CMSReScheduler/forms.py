@@ -33,9 +33,9 @@ class AdminUserEditForm(ModelForm):
 		fields = ['username', 'first_name', 'last_name', 'email']
 
 class RegisterForm(UserCreationForm):
-	email = forms.EmailField(label = "Email address")
-	first_name = forms.CharField(label = "Name")
-	last_name = forms.CharField(label = "Surname")
+	email = forms.EmailField(label = "Email")
+	first_name = forms.CharField(label = "First Name")
+	last_name = forms.CharField(label = "Last Name")
 
 	def __init__(self, *args, **kwargs):
 		super(RegisterForm, self).__init__(*args, **kwargs)

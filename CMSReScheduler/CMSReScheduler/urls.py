@@ -14,11 +14,11 @@ urlpatterns = patterns('',
     url(r'^admin/users/all$', 'CMSReScheduler.views.list_users', name='list_users'),
     url(r'^admin/users/(?P<username>.*)/profile/$', 'CMSReScheduler.views.admin_edit_profile', name='admin_edit_profile'),
     url(r'^admin/users/(?P<username>.*)/edit/$', 'CMSReScheduler.views.admin_edit_user', name='admin_edit_user'),
+    url(r'^admin/users/(?P<username>.*)/delete/$', 'CMSReScheduler.views.delete_user', name='delete_user'),
     url(r'^login/$', 'CMSReScheduler.views.login_view', name='login'),
     url(r'^logout/$', 'CMSReScheduler.views.logout_view', name='logout'),
     url(r'^profile/$', 'CMSReScheduler.views.edit_profile', name='edit_profile'),
     url(r'^user/edit/$', 'CMSReScheduler.views.edit_user', name='edit_user'),
-    url(r'^admin/users/(?P<username>.*)/delete/$', 'CMSReScheduler.views.delete_user', name='delete_user'),
     url(r'^change_password/$', 'CMSReScheduler.views.change_password'),
     #this regex is not complete yet
     #it should only receive urls like: rooms/filter/capacity-building/50-IC/
@@ -32,4 +32,5 @@ urlpatterns = patterns('',
 	# url(r'^admin/', include(admin.site.urls)),
 
 	url(r'^course/(?P<course>\w+)/(?P<section>.*)$', 'CMSReScheduler.views.course', name='course'),
+    url(r'^user/(?P<user_id>\w+)$', 'CMSReScheduler.views.user', name='user')
 )
