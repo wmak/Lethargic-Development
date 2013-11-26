@@ -26,5 +26,6 @@ urlpatterns = patterns('',
 	# url(r'^admin/', include(admin.site.urls)),
 
 	url(r'^course/(?P<course>\w+)/(?P<section>.*)$', 'CMSReScheduler.views.course', name='course'),
-    url(r'^user/(?P<user_id>\w+)$', 'CMSReScheduler.views.user', name='user')
+    url(r'^user/(?P<user_id>\w+)$', 'CMSReScheduler.views.user', name='user'),
+    url(r'^export/$', 'CMSReScheduler.views.export', name='export'),
 )
