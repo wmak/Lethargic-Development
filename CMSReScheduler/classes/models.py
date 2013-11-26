@@ -147,3 +147,16 @@ class CourseSchedule(models.Model):
 		sdelta = datetime.timedelta(minutes = startTime.minute, hours = startTime.hour)
 		delta = edelta - sdelta
 		return delta.hours * 60 + delta.minutes
+
+class Program(models.Model):
+	programCode = models.CharField(max_length = 10)
+	requiredCourses = models.ManyToManyField(Course)
+
+class Student(models.Model):
+	utorid = models.CharField(max_length = 10)
+	studentNumber = models.CharField(max_length = 10)
+	lastName = models.CharField(max_length = 50)
+	firstName = models.CharField(max_length = 20)
+	email = models.EmailField()
+	programCode = models.ForeignKey(Program, null = True, blank = True)
+

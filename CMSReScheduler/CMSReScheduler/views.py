@@ -3,6 +3,7 @@
 
 import utils.csvutils as csvutils
 import utils.classesutils as classutils
+import utils.filterutils as filterutils
 
 from django.http import HttpResponse, HttpResponseRedirect, QueryDict
 from django.shortcuts import render, render_to_response
@@ -86,7 +87,7 @@ def admin_upload(request):
 			model_type = request.POST["type"]
 			form = UploadCsv(model_type, request.FILES)
 			if model_type == 'schedule':
-				format = ['course', 'room', 'dayOfWeek', 'startTime', 'endTime', 'typeOfSession']
+				format = ['course', 'typeOfSession', 'dayOfWeek', 'startTime', 'endTime', 'room']
 				parser_list = csvutils.parse(request.FILES['file'], format, ',')
 				classutils.update_schedule(parser_list)
 			# elif model_type == 'room':
@@ -97,6 +98,11 @@ def admin_upload(request):
 				format = ['code', 'name', 'department']
 				parser_list = csvutils.parse(request.FILES['file'], format, ',')
 				classutils.update_courses(parser_list)
+				print(Course.objects.all)
+			elif model_type == 'enrolment':
+				format = ['utorid', 'student-number', 'last-name', 'first-names', 'email']
+				parser_list = csvutils.parse(request.FILES['file'], format, ',')
+				classutils.update_enrolment(parser_list, request.FILES['file'])
 			# elif model_type == 'department':
 			# 	format = ['code', 'name']
 			# 	parser_list = csvutils.parse(request.FILES['file'], format, ',')
@@ -105,7 +111,7 @@ def admin_upload(request):
 				msg = "Invalid type."
 				msg_type = "error"
 		except Exception as e:
-			msg = "Invalid file."
+			msg = "Invalid file." + str(e)
 			msg_type = "error"
 
 		if msg == "":
@@ -118,26 +124,21 @@ def admin_upload(request):
 The strings must be separated by '-'s.
 The order of the fields does not matter as long as the values are 
 in the same order.'''
+@csrf_exempt
 def filter(request, model):
-	body = ""
 	info = ""
 	status = GOOD_REQUEST
-	if request.body:
-		try:
-			body = json.loads(request.body)
-		except:
-			info = {"Error" : "Badly formatted Json"}
-			body = None
 	if request.method == "GET":
+		body = request.GET
 		try:
 			if model == "rooms":
-				qSet = filter_rooms(body)
+				qSet = filterutils.filter_rooms(body)
 			elif model == "courses":
-				qSet = filter_courses(body)
+				qSet = filterutils.filter_courses(body)
 			elif model == "schedules":
-				qSet = filter_schedules(body)
+				qSet = filterutils.filter_schedules(body)
 			else:
-				info = {"Unable to filter. No such model named " + model)}
+				info = {"Error" : "Unable to filter. No such model named " + model}
 				status = BAD_REQUEST
 			JSONSerializer = serializers.get_serializer("json")
 			s = JSONSerializer()
@@ -146,10 +147,10 @@ def filter(request, model):
 			status = GOOD_REQUEST
 			return HttpResponse(content = data, status = status)
 		except Exception as e:
-			info = {"Error while filtering: " + str(e)}
+			info = {"Error" : "Error while filtering: " + str(e)}
 			status = INTERNAL_ERROR
 	else:
-		info = {"Unable to filter."}
+		info = {"Error" : "Unable to filter."}
 		status = INTERNAL_ERROR
 	data = json.dumps(info)
 	return HttpResponse(content = data, status = status)

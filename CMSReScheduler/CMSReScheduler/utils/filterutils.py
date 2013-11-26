@@ -22,12 +22,12 @@ def handle_length(qSet, dt):
 
 def check_length_of_availability(qSet, length):
 	for r in qSet:
-		csSet = CourseSchedule.filter(room = r.code).orderby(dayOfWeek, starTime)
+		csSet = CourseSchedule.filter(room = r.code).orderby(dayOfWeek, startTime)
 		available = false
 		for i in range (0, csSet.length):
 			if i + 1 == csSet.length:
 				break
-			elif csSet[i].dayOfWeek != csSet[i+1].dayOfWeek
+			elif csSet[i].dayOfWeek != csSet[i+1].dayOfWeek:
 				continue
 			#Calculating endTime for csSet[i]
 			endTime = csSet[i].starTime.hour * 60 + csSet[i].starTime.minute + csSet[i].getLength()
@@ -35,7 +35,7 @@ def check_length_of_availability(qSet, length):
 			sTime = csSet[i+1].starTime.hour * 60 + csSet[i+1].starTime.minute
 			if sTime - endTime > length:
 				available = true
-		if available == false
+		if available == false:
 			qSet.remove(r)
 		available = false
 	return qSet 
@@ -80,7 +80,7 @@ def filter_courses(body):
 	qSet = Course.objects.all()
 	if body.has_key("roomcode"):
 		if body["roomcode"]:
-    		qSet = qSet.exclude(courseschedule__room = body["roomcode"])
+			qSet = qSet.exclude(courseschedule__room = body["roomcode"])
 	if body.has_key("startTime"):
 		if body["startTime"]:
 			t = time.strptime(body["startTime"], "%H:%M")

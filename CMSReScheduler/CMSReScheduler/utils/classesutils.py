@@ -17,6 +17,10 @@ def update_schedule(items):
 			return status
 	return "Successfully Updated"
 
+def update_enrolment(items, file):
+	name, ext = str(file).split('.')
+	CourseSchedule.objects.filter(course = name).update(enrolment = len(items))
+
 def get_course(code):
 	courses = Course.objects.filter(code=code)
 	if courses:
