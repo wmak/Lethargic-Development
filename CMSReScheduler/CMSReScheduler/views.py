@@ -346,11 +346,14 @@ def user(request, user_id):
 	return HttpResponse(content = data, status = status)
 
 @csrf_exempt
-def export(request):
+def export(request, model):
 	from django.core.management import call_command
 	try:
 		output = open("datadump.json",'w')
-		call_command("dumpdata", stdout=output)
+		if model == "all":
+			call_command("dumpdata", format='json',indent=4, stdout=output)
+		else:
+			call_command("dumpdata", model, format='json',indent=4, stdout=output)
 		output.close()
 		output = open("datadump.json",'r+')
 		body = output.read()

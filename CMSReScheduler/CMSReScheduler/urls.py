@@ -27,5 +27,5 @@ urlpatterns = patterns('',
 
 	url(r'^course/(?P<course>\w+)/(?P<section>.*)$', 'CMSReScheduler.views.course', name='course'),
     url(r'^user/(?P<user_id>\w+)$', 'CMSReScheduler.views.user', name='user'),
-    url(r'^export/$', 'CMSReScheduler.views.export', name='export'),
+    url(r'^export/(?P<model>\w+)$', 'CMSReScheduler.views.export', name='export'),
 )
