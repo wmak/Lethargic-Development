@@ -1,141 +1,47 @@
-		{% include "layouts/header.html" with title="Admin Panel" active="admin" %}
-		{% include "layouts/admin-sidebar.html" %}
-		{% block content %}
-		<div class="content fleft">
-			{% load schedule %}
-			<div class="schedule-column">
-				{% for i in 18|get_range %}
-					<div class="schedule-cell schedule-time">
-						{% if forloop.counter == 1 %}
-							&nbsp;
-						{% else %}
-							&nbsp;<br />{{ forloop.counter|get_time }}<br />&nbsp;
-						{% endif %}
-					</div>
-				{% endfor %}
-			</div>
-<<<<<<< HEAD
-			<!-- *** TODO: Refector into a loop *** -->
-			<div class="schedule-column">
-				<div class="schedule-cell schedule-day">
-					{{ 1|schedule_day }}
-				</div>
-				{% for i in 17|get_range %}
-					<div class="schedule-cell">
-						{% with time=i|get_time %}
-							{% with course=MO|has_course:time %}
-								{% if course == None %}
-									&nbsp;<br />
-									&nbsp;<br />
-									&nbsp;
-								{% else %}
-									{{ course.course }}<br />
-									{{ course.typeOfSession }}<br />
-									{{ course.room }}
-								{% endif %}
-							{% endwith %}
-						{% endwith %}
-					</div>
-				{% endfor %}
-			</div>
-			<div class="schedule-column">
-				<div class="schedule-cell schedule-day">
-					{{ 2|schedule_day }}
-				</div>
-				{% for i in 17|get_range %}
-					<div class="schedule-cell">
-						{% with time=i|get_time %}
-							{% with course=TU|has_course:time %}
-								{% if course == None %}
-									&nbsp;<br />
-									&nbsp;<br />
-									&nbsp;
-								{% else %}
-									{{ course.course }}<br />
-									{{ course.typeOfSession }}<br />
-									{{ course.room }}
-								{% endif %}
-							{% endwith %}
-						{% endwith %}
-					</div>
-				{% endfor %}
-			</div>
-			<div class="schedule-column">
-				<div class="schedule-cell schedule-day">
-					{{ 3|schedule_day }}
-				</div>
-				{% for i in 17|get_range %}
-					<div class="schedule-cell">
-						{% with time=i|get_time %}
-							{% with course=WE|has_course:time %}
-								{% if course == None %}
-									&nbsp;<br />
-									&nbsp;<br />
-									&nbsp;
-								{% else %}
-									{{ course.course }}<br />
-									{{ course.typeOfSession }}<br />
-									{{ course.room }}
-								{% endif %}
-							{% endwith %}
-						{% endwith %}
-=======
-			{% for i in 5|get_range %}
-				<div class="schedule-column">
-					<div class="schedule-cell schedule-day">
-						{{ i|schedule_day }}
->>>>>>> develop
-					</div>
-					{% for j in 17|get_range %}
-						{% with time=j|get_time:False %}
-							{% with course=i|get_courses_by_day|get_course:time %}
-								{% if course == None %}
-									<a class="schedule-cell">
-										&nbsp;<br />
-										&nbsp;<br />
-										&nbsp;
-									</a>
-								{% else %}
-<<<<<<< HEAD
-									{{ course.course }}<br />
-									{{ course.typeOfSession }}<br />
-									{{ course.room }}
-=======
-									<a class="schedule-cell course" href="#">
-										<div id="course">{{ course.course }}</div>
-										<div id="typeOfSession">{{ course.typeOfSession }}</div>
-										<div id="room">{{ course.room }}</div>
-									</a>
->>>>>>> develop
-								{% endif %}
-							{% endwith %}
-						{% endwith %}
-					{% endfor %}
-				</div>
-<<<<<<< HEAD
-				{% for i in 17|get_range %}
-					<div class="schedule-cell">
-						{% with time=i|get_time %}
-							{% with course=FR|has_course:time %}
-								{% if course == None %}
-									&nbsp;<br />
-									&nbsp;<br />
-									&nbsp;
-								{% else %}
-									{{ course.course }}<br />
-									{{ course.typeOfSession }}<br />
-									{{ course.room }}
-								{% endif %}
-							{% endwith %}
-						{% endwith %}
-					</div>
-				{% endfor %}
-			</div>
-=======
-			{% endfor %}
->>>>>>> develop
-			<div class="clear"></div>
-		</div>
-		{% endblock %}
-		<div class="clear"></div>
-		{% include "layouts/footer.html" %}
+	{% include "layouts/header.html" with title="Admin Panel" active="admin" %}
+	{% include "layouts/admin-sidebar.html" %}
+	{% block content %}
+	<div class="content fleft">
+	        {% load schedule %}
+	        <div class="schedule-column">
+	                {% for i in 18|get_range %}
+	                        <div class="schedule-cell schedule-time">
+	                                {% if forloop.counter == 1 %}
+	                                        &nbsp;
+	                                {% else %}
+	                                        &nbsp;<br />{{ forloop.counter|get_time }}<br />&nbsp;
+	                                {% endif %}
+	                        </div>
+	                {% endfor %}
+	        </div>
+	        {% for i in 5|get_range %}
+	                <div class="schedule-column">
+	                        <div class="schedule-cell schedule-day">
+	                                {{ i|schedule_day }}
+	                        </div>
+	                        {% for j in 17|get_range %}
+	                                {% with time=j|get_time %}
+	                                        {% with course=i|get_courses_by_day|get_course:time %}
+	                                                {% if course == None %}
+	                                                        <a class="schedule-cell">
+	                                                                &nbsp;<br />
+	                                                                &nbsp;<br />
+	                                                                &nbsp;
+	                                                        </a>
+	                                                {% else %}
+	                                                        <a class="schedule-cell course" href="#">
+	                                                                <div id="course">{{ course.course }}</div>
+	                                                                <div id="typeOfSession">{{ course.typeOfSession }}</div>
+	                                                                <div id="room">{{ course.room }}</div>
+	                                                        </a>
+	                                                {% endif %}
+	                                        {% endwith %}
+	                                {% endwith %}
+	                        {% endfor %}
+	                </div>
+	        {% endfor %}
+	        <div class="clear"></div>
+	</div>
+	{% endblock %}
+	<div class="clear"></div>
+	{% include "layouts/footer.html" %}

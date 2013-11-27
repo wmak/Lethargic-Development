@@ -3,13 +3,13 @@
 
 import utils.csvutils as csvutils
 import utils.classesutils as classutils
+import utils.filterutils as filterutils
 
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, QueryDict
 from django.shortcuts import render, render_to_response
 from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
 from django.core import serializers
-from forms import UploadCsv, InstructorRegistrationForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
@@ -123,26 +123,37 @@ def admin_upload(request):
 			model_type = request.POST["type"]
 			form = UploadCsv(model_type, request.FILES)
 			if model_type == 'schedule':
-				format = ['course', 'room', 'dayOfWeek', 'startTime', 'endTime', 'typeOfSession']
+				format = ['course', 'typeOfSession', 'dayOfWeek', 'startTime', 'endTime', 'room']
 				parser_list = csvutils.parse(request.FILES['file'], format, ',')
 				classutils.update_schedule(parser_list)
-			# elif model_type == 'room':
-			# 	format = ['code', 'name', 'building']
-			# 	parser_list = csvutils.parse(request.FILES['file'], format, ',')
-			# 	csvutils.update_rooms(parser_list)
+			elif model_type == 'room':
+			 	capacity, parser_list = csvutils.parse_room_file(request.FILES['file'])
+			 	classutils.update_room(parser_list, capacity)
 			elif model_type == 'course':
 				format = ['code', 'name', 'department']
 				parser_list = csvutils.parse(request.FILES['file'], format, ',')
 				classutils.update_courses(parser_list)
-			# elif model_type == 'department':
-			# 	format = ['code', 'name']
-			# 	parser_list = csvutils.parse(request.FILES['file'], format, ',')
-			# 	csvutils.update_departments(parser_list)
+			elif model_type == 'enrolment':
+				format = ['utorid', 'student-number', 'last-name', 'first-names', 'email']
+				parser_list = csvutils.parse(request.FILES['file'], format, ',')
+				classutils.update_enrolment(parser_list, request.FILES['file'])
+			elif model_type == "department_programs":
+				format = ['code', 'name']
+				parser_list = csvutils.parse(request.FILES['file'], format, ',')
+				classutils.update_department_programs(parser_list)
+			elif model_type == "students_programs":
+				format = ['utorid', 'program-code']
+				parser_list = csvutils.parse(request.FILES['file'], format, ',')
+				classutils.update_students_programs(parser_list)
+			elif model_type == "program_requirements":
+				format = ['course_code', 'req_type']
+				parser_list = csvutils.parse(request.FILES['file'], format, ',')
+				classutils.update_program_requirements(parser_list, request.FILES['file'])
 			else:
 				msg = "Invalid type."
 				msg_type = "error"
 		except Exception as e:
-			msg = "Invalid file."
+			msg = "Invalid file." + str(e)
 			msg_type = "error"
 
 		if msg == "":
@@ -151,32 +162,27 @@ def admin_upload(request):
 
 	return render_to_response('admin/upload.html', {'form': UploadCsv(), "departments": Department.objects.all, "message": msg, "message_type": msg_type, "user": request.user}, context_instance=RequestContext(request))
 
-'''This view should receive three strings:
+'''This view should receive one string:
 1 - which model will be used, shoulb be in the plural for consistency
-2 - fields on which we should filter
-3 - values for each of the fields passed in 1.
 The strings must be separated by '-'s.
 The order of the fields does not matter as long as the values are 
 in the same order.'''
-def filter(request, model, fields, values): 
+@csrf_exempt
+def filter(request, model):
+	info = ""
+	status = GOOD_REQUEST
 	if request.method == "GET":
-		status = GOOD_REQUEST
+		body = request.GET
 		try:
-			fList = fields.split('-')
-			vList = values.split('-')
-			qSet = []
-			if(fList.length != vList.length):
-				data = json.dumps("Unable to filter. Number of fields does not match the number of values.")
-				status = BAD_REQUEST
-				return HttpResponse(content = data, status = status)
 			if model == "rooms":
-				qSet = filterRooms(fList, vList)
+				qSet = filterutils.filter_rooms(body)
 			elif model == "courses":
-				qSet = filterCourses(fList, vList)
+				qSet = filterutils.filter_courses(body)
+			elif model == "schedules":
+				qSet = filterutils.filter_schedules(body)
 			else:
-				data = json.dumps("Unable to filter. No such model named %s" % (model))
+				info = {"Error" : "Unable to filter. No such model named " + model}
 				status = BAD_REQUEST
-				return HttpResponse(content = data, status = status)
 			JSONSerializer = serializers.get_serializer("json")
 			s = JSONSerializer()
 			s.serialize(qSet)
@@ -184,13 +190,14 @@ def filter(request, model, fields, values):
 			status = GOOD_REQUEST
 			return HttpResponse(content = data, status = status)
 		except Exception as e:
-			data = json.dumps("Error while filtering")
+			info = {"Error" : "Error while filtering: " + str(e)}
 			status = INTERNAL_ERROR
-			return HttpResponse(content = data, status = status)
 	else:
-		data = json.dumps("Unable to filter.")
+		info = {"Error" : "Unable to filter."}
 		status = INTERNAL_ERROR
-		return HttpResponse(content = data, status = status)
+	data = json.dumps(info)
+	return HttpResponse(content = data, status = status)
+
 
 @csrf_exempt
 def course(request, course, section):
