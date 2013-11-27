@@ -44,10 +44,23 @@ html, body {
 h1 {
 	font-size: 2em;
 	font-weight: bold;
+	margin-bottom: 1em;
+}
+h2 {
+	font-size: 1.6em;
+	font-weight: bold;
+	margin-bottom: 0.6em;
+}
+h3 {
+	font-size: 1.2em;
+	margin-bottom: 0.2em;
 }
 a {
 	color: #000;
 	text-decoration: none;
+}
+.underline {
+	text-decoration: underline;
 }
 
 .fleft {
@@ -318,6 +331,14 @@ footer {
 			    -moz-box-sizing: border-box;
 			    box-sizing: border-box;
 			}
+
+/* Users List */
+ul#users-list {
+	list-style-type: none;
+}
+	ul#users-list > li > a:hover {
+		text-decoration: underline;
+	}
 
 #footer {
 	font-size: 0.8em;
