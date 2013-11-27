@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
-from classes.models import Course, Department, CourseSchedule, Room, UserProfile, Notifications
+from classes.models import Course, Department, CourseSchedule, Room, UserProfile, Notifications, Student
 from datetime import datetime
 
 def update_courses(items):
@@ -19,7 +19,37 @@ def update_schedule(items):
 
 def update_enrolment(items, file):
 	name, ext = str(file).split('.')
-	CourseSchedule.objects.filter(course = name).update(enrolment = len(items))
+	cs = CourseSchedule.objects.filter(course = name)
+	if cs.count() == 0:
+		return "This course is not present in any Schedule. Unable to update the enrolment."
+	else:
+		cs.update(enrolment = len(items))
+		for s in items:
+			student = Student.objects.filter(utorid = s["utorid"]);
+			if student.count() == 0:
+				student = Student(utorid = s["utorid"], studentNumber = s["student-number"], lastName = s["last-name"], firstName = s["first-names"], email = s["email"])
+				student.save()
+		return "Successfully Updated"
+
+def update_room(room_schedule, capacity):
+	room = Room.objects.filter(code = room_schedule[0].room)
+	if room.count() == 0:
+		r = Room(code = room_schedule[0].room, capacity = capacity)
+		r.save()
+	else:
+		room.update(capacity = capacity)
+	for s in room_schedule:
+		if s.course == "":
+			continue
+		item = CourseSchedule.objects.filter(course = s.course, typeOfSession = s.typeOfSession, dayOfWeek = s.dayOfWeek)
+		print(s.course)
+		print(s.typeOfSession)
+		print(s.dayOfWeek)
+		if item.count() == 0:
+			print("entrei no if")
+			s.save()
+		else:
+			item.update(room = s.room, endTime = s.endTime)
 
 def get_course(code):
 	courses = Course.objects.filter(code=code)

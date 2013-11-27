@@ -148,6 +148,9 @@ class CourseSchedule(models.Model):
 		delta = edelta - sdelta
 		return delta.hours * 60 + delta.minutes
 
+	def __unicode__(self):
+		return u'%s %s - %s: %s %s %s' % (self.dayOfWeek, self.startTime, self.endTime, self.course, self.typeOfSession, self.room)
+
 class Program(models.Model):
 	programCode = models.CharField(max_length = 10)
 	requiredCourses = models.ManyToManyField(Course)

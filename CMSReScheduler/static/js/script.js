@@ -26,6 +26,11 @@ function selectUploadType(self, value) {
 		document.getElementById('instructor').style.display = "none";
 		document.getElementById('file').style.display = "block";
 		document.getElementById('submit').style.display = "block";
+	} else if (self.options[self.selectedIndex].value == "room"){
+		document.getElementById('department').style.display = "none";
+		document.getElementById('instructor').style.display = "none";
+		document.getElementById('file').style.display = "block";
+		document.getElementById('submit').style.display = "block";
 	} else {
 		document.getElementById('department').style.display = "none";
 		document.getElementById('instructor').style.display = "none";

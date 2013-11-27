@@ -90,15 +90,13 @@ def admin_upload(request):
 				format = ['course', 'typeOfSession', 'dayOfWeek', 'startTime', 'endTime', 'room']
 				parser_list = csvutils.parse(request.FILES['file'], format, ',')
 				classutils.update_schedule(parser_list)
-			# elif model_type == 'room':
-			# 	format = ['code', 'name', 'building']
-			# 	parser_list = csvutils.parse(request.FILES['file'], format, ',')
-			# 	csvutils.update_rooms(parser_list)
+			elif model_type == 'room':
+			 	capacity, parser_list = csvutils.parse_room_file(request.FILES['file'])
+			 	classutils.update_room(parser_list, capacity)
 			elif model_type == 'course':
 				format = ['code', 'name', 'department']
 				parser_list = csvutils.parse(request.FILES['file'], format, ',')
 				classutils.update_courses(parser_list)
-				print(Course.objects.all)
 			elif model_type == 'enrolment':
 				format = ['utorid', 'student-number', 'last-name', 'first-names', 'email']
 				parser_list = csvutils.parse(request.FILES['file'], format, ',')
