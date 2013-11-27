@@ -21,7 +21,7 @@ urlpatterns = patterns('',
     url(r'^login/$', 'CMSReScheduler.views.login_view', name='login'),
     url(r'^logout/$', 'CMSReScheduler.views.logout_view', name='logout'),
     url(r'^profile/$', 'CMSReScheduler.views.edit_profile', name='edit_profile'),
-    url(r'^user/edit/$', 'CMSReScheduler.views.edit_user', name='edit_user'),
+    url(r'^my_user/$', 'CMSReScheduler.views.edit_user', name='edit_user'),
     url(r'^change_password/$', 'CMSReScheduler.views.change_password'),
     #this regex is not complete yet
     #it should only receive urls like: rooms/filter/capacity-building/50-IC/

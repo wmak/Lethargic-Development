@@ -19,7 +19,13 @@ class ChangePasswordForm(forms.Form):
 class ProfileEditForm(ModelForm):
 	class Meta:
 		model = UserProfile
-		exclude = ['user']
+		exclude = ['user', 'notify', 'active', 'notifications', 'read_notifications']
+
+	def __init__(self, *args, **kwargs):
+		super(ProfileEditForm, self).__init__(*args, **kwargs)
+
+		for fieldname in ['myCourses']:
+			self.fields[fieldname].help_text = None
 
 class UserEditForm(ModelForm):
 	class Meta:
