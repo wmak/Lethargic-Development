@@ -109,9 +109,9 @@ class UserProfile(models.Model):
 	def getChairs():
 			return Chair.objects.all
 
-
 	def getInstructorsOfDepartment(dept):
 			return Instructor.objects.filter(department = dept)
+
 
 	def checkEnrolment(courseCode):
 			c = Course.objects.get(code = courseCode)

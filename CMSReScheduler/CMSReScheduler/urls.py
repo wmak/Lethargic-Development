@@ -17,6 +17,7 @@ urlpatterns = patterns('',
     url(r'^login/$', 'CMSReScheduler.views.login_view', name='login'),
     url(r'^logout/$', 'CMSReScheduler.views.logout_view', name='logout'),
 
+
     #this regex is not complete yet
     #it should only receive urls like: rooms/filter/capacity-building/50-IC/
     url(r'^(?P<model>.*)/filter/(?P<fields>.*)/(?P<values>.*)/$', 'CMSReScheduler.views.filter', name = 'filter'),

@@ -12,14 +12,10 @@ def update_courses(items):
 
 def update_schedule(items):
 	for item in items:
-<<<<<<< HEAD
-		add_schedule(item, True, True)
-=======
 		status = add_schedule(item, True)
 		if not status:
 			return status
 	return "Successfully Updated"
->>>>>>> develop
 
 def get_course(code):
 	courses = Course.objects.filter(code=code)
@@ -50,14 +46,6 @@ def add_schedule(item, create_room = True, create_course = True):
 	try:
 		CourseSchedule(course=item["course"], room=item["room"], dayOfWeek=item['dayOfWeek'], enrolment = 0, startTime=startTime, endTime=endTime, typeOfSession=item["typeOfSession"]).save()
 		if create_room and Room.objects.filter(code=item["room"]).count() == 0:
-<<<<<<< HEAD
-			Room(code = item["room"], capacity=0).save() 
-		if create_course and Course.objects.filter(code=item["course"]).count() == 0:
-			add_course({"code" : item["course"], "name" : "Default Name","department" : "Default Department"}, create_department = True)
-	except Exception as e:
-		print "EXCEPTION " + str(e)
-		return e
-=======
 			room = Room(code = item["room"], capacity=0)
 			room.save()
 		elif Room.objects.filter(code=item["room"]).count() == 1:
@@ -109,5 +97,3 @@ def update_notifications(user_id, new_notifications):
 	except Exception as e:
 		return False
 	return True
-
->>>>>>> develop
