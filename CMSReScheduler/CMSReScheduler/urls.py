@@ -7,7 +7,7 @@ from django.conf.urls import patterns, include, url
 urlpatterns = patterns('',
     # Examples:
     url(r'^$', 'CMSReScheduler.views.index', name='index'),
-    url(r'^registration/(?P<user_role>.*)/$', 'CMSReScheduler.views.registration', name='registration'),
+    #url(r'^registration/(?P<user_role>.*)/$', 'CMSReScheduler.views.registration', name='registration'),
     url(r'^rooms/(?P<room_code>.*)/$', 'CMSReScheduler.views.room_schedule', ),
     url(r'^schedule/(?P<department_name>.*)/(?P<instructor_name>.*)/$', 'CMSReScheduler.views.department_schedule'),
     url(r'^register/$', 'CMSReScheduler.views.register', name='register'),
@@ -25,7 +25,7 @@ urlpatterns = patterns('',
     url(r'^change_password/$', 'CMSReScheduler.views.change_password'),
     #this regex is not complete yet
     #it should only receive urls like: rooms/filter/capacity-building/50-IC/
-    url(r'^(?P<model>.*)/filter/(?P<fields>.*)/(?P<values>.*)/$', 'CMSReScheduler.views.filter', name = 'filter'),
+    url(r'^(?P<model>.*)/filter/$', 'CMSReScheduler.views.filter', name = 'filter'),
     # url(r'^CMSReScheduler/', include('CMSReScheduler.foo.urls')),
 
 	# Uncomment the admin/doc line below to enable admin documentation:
