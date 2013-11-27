@@ -151,9 +151,14 @@ class CourseSchedule(models.Model):
 	def __unicode__(self):
 		return u'%s %s - %s: %s %s %s' % (self.dayOfWeek, self.startTime, self.endTime, self.course, self.typeOfSession, self.room)
 
+class RequiredCourse(models.Model):
+	code = models.ForeignKey(Course)
+	req_type = models.CharField(max_length = 10) 
+
 class Program(models.Model):
-	programCode = models.CharField(max_length = 10)
-	requiredCourses = models.ManyToManyField(Course)
+	code = models.CharField(max_length = 10)
+	name = models.CharField(max_length = 100)
+	requiredCourses = models.ManyToManyField(RequiredCourse)
 
 class Student(models.Model):
 	utorid = models.CharField(max_length = 10)
@@ -162,4 +167,5 @@ class Student(models.Model):
 	firstName = models.CharField(max_length = 20)
 	email = models.EmailField()
 	programCode = models.ForeignKey(Program, null = True, blank = True)
+	courses = models.ManyToManyField(Course)
 

@@ -101,10 +101,18 @@ def admin_upload(request):
 				format = ['utorid', 'student-number', 'last-name', 'first-names', 'email']
 				parser_list = csvutils.parse(request.FILES['file'], format, ',')
 				classutils.update_enrolment(parser_list, request.FILES['file'])
-			# elif model_type == 'department':
-			# 	format = ['code', 'name']
-			# 	parser_list = csvutils.parse(request.FILES['file'], format, ',')
-			# 	csvutils.update_departments(parser_list)
+			elif model_type == "department_programs":
+				format = ['code', 'name']
+				parser_list = csvutils.parse(request.FILES['file'], format, ',')
+				classutils.update_department_programs(parser_list)
+			elif model_type == "students_programs":
+				format = ['utorid', 'program-code']
+				parser_list = csvutils.parse(request.FILES['file'], format, ',')
+				classutils.update_students_programs(parser_list)
+			elif model_type == "program_requirements":
+				format = ['course_code', 'req_type']
+				parser_list = csvutils.parse(request.FILES['file'], format, ',')
+				classutils.update_program_requirements(parser_list, request.FILES['file'])
 			else:
 				msg = "Invalid type."
 				msg_type = "error"
