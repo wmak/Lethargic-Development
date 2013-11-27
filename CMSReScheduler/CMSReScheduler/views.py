@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+  #!/usr/bin/env python
 # encoding: utf-8
 
 import utils.csvutils as csvutils
@@ -384,4 +384,22 @@ def user(request, user_id):
 		info = {"Error" : str(e)}
 	data = json.dumps(info)
 	return HttpResponse(content = data, status = status)
+
+@csrf_exempt
+def export(request, model):
+	from django.core.management import call_command
+	try:
+		output = open("datadump.json",'w')
+		if model == "all":
+			call_command("dumpdata", format='json',indent=4, stdout=output)
+		else:
+			call_command("dumpdata", model, format='json',indent=4, stdout=output)
+		output.close()
+		output = open("datadump.json",'r+')
+		body = output.read()
+		status = GOOD_REQUEST
+	except Exception as e:
+		status = BAD_REQUEST
+		body = "An Error occurred: " + str(e)
+	return HttpResponse(content = body, status = status)
 
