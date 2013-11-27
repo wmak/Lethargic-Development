@@ -1,10 +1,8 @@
-{% extends "layout/header.html" %}
-{% block content %}
+{% include "layouts/header.html" with title="Room Capacities" %}
         <div id="room_capacities">
         	<h1>Room Capacities</h1>
                 {% for x, y in list %}
                 <p>  {{x}} - {{y}} people</p>
                 {% endfor %}
         </div>
-{% endblock %}
-{% extends "layouts/footer.html" %} 
+{% include "layouts/footer.html" %}

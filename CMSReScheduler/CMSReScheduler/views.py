@@ -476,7 +476,7 @@ def room_capacities(request):
 
 			context = {'list': super_list}
 
-			return render_to_respose('room_capacities.html', context, context_instance-RequestContext(request))
+			return render_to_response('room_capacities.html', context, context_instance=RequestContext(request))
 		else:
 			return HttpResponseNotFound('<h1>Page not found. No Rooms. </h1>')
 
