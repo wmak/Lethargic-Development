@@ -1,0 +1,12 @@
+{% block content %}
+        <div id="users_list">
+                <p> Admin: {{username}}</p>
+                <p> Users list: </p>
+                {% for user in users %}
+                <p> User: {{user.username}}</p>
+                <p>  {{user.first_name}} </p>
+                <p>  {{user.last_name}} </p>
+                <p>  {{user.email}} </p>
+                {% endfor %}
+        </div>
+{% endblock %}

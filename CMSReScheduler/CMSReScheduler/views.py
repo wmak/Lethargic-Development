@@ -11,9 +11,10 @@ from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
 from django.core import serializers
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
-from forms import UploadCsv, RegisterForm
+from forms import UploadCsv, RegisterForm, ProfileEditForm, UserEditForm, AdminUserEditForm, ChangePasswordForm
 
 try:
 	import json
@@ -33,6 +34,7 @@ INTERNAL_ERROR = 500
 
 # Log in the user or raise an error if information given is wrong
 def login_view(request):
+	# Checks if the user requesting this feature is already logged in. 	
 	if request.POST:
 		username = request.POST.get('username', '')
 		password = request.POST.get('password', '')
@@ -90,6 +92,135 @@ def register(request):
 		else:
 			form = RegisterForm()
 			return render_to_response("register.html", {"form": form}, context_instance=RequestContext(request))
+
+# This method provides a way for the admin to edit another user's profile
+def delete_user(request, username):
+	if request.user.is_authenticated():
+		# Gets profile of the current user logged in the system
+		adminprofile = UserProfile.objects.get(pk=request.user.id)
+		# Checks if the user trying to delete is an admin
+		if adminprofile.role == 'admin':
+			# Finds an user by his username and delete.
+			user = User.objects.get(username=username)
+			if user == None:
+				return HttpResponse("User doesn't exist.")
+			else:
+				user.delete()
+				return HttpResponse("User deleted successfully.")
+		else:
+			return HttpResponse('You do not have permission to access the page requested.')
+
+# This method provides a way for the user to edit his own profile
+def edit_profile(request):
+	if request.user.is_authenticated():
+		# Gets profile of the current user logged in the system
+		profile = UserProfile.objects.get(pk=request.user.id)
+		if request.method == 'POST':
+			form = ProfileEditForm(request.POST, instance=profile)
+			if form.is_valid():
+				form.save()
+				return HttpResponseRedirect('/')
+		else:
+			form = ProfileEditForm(instance=profile)
+		c = {'form': form}
+		return render_to_response("profile.html", c, context_instance=RequestContext(request))
+
+# This method provides a way for the admin to edit another user's profile
+def admin_edit_profile(request, username):
+	if request.user.is_authenticated():
+		# Gets profile of the current user logged in the system
+		adminprofile = UserProfile.objects.get(pk=request.user.id)
+		# Checks if the user trying to edit a profile is an admin
+		if adminprofile.role == 'admin':
+			user = User.objects.get(username=username)
+			userprofile = UserProfile.objects.get(pk=user.id)
+			if request.method == 'POST':
+				form = ProfileEditForm(request.POST, instance=userprofile)
+				if form.is_valid():
+					form.save()
+					return HttpResponseRedirect('/')
+			else:
+				form = ProfileEditForm(instance=userprofile)
+			c = {'form': form}
+			return render_to_response("admin_edit_profile.html", c, context_instance=RequestContext(request))
+		else:
+			return HttpResponse('You do not have permission to access the page requested.')
+
+# This method provides a way for the admin to edit another user's information
+def admin_edit_user(request, username):
+	if request.user.is_authenticated():
+		# Gets profile of the current user logged in the system
+		adminprofile = UserProfile.objects.get(pk=request.user.id)
+		# Checks if the user trying to edit another user's information is an admin
+		if adminprofile.role == 'admin':
+			user = User.objects.get(username=username)
+			if request.method == 'POST':
+				form = AdminUserEditForm(request.POST, instance=user)
+				if form.is_valid():
+					form.save()
+					return HttpResponseRedirect('/')
+			else:
+				form = AdminUserEditForm(instance=user)
+			c = {'form': form}
+			return render_to_response("admin_edit_user.html", c, context_instance=RequestContext(request))
+		else:
+			return HttpResponse('You do not have permission to access the page requested.')
+
+# This method provides a way for the user to edit his own information
+def edit_user(request):
+	if request.user.is_authenticated():
+		# Gets user info of the current user logged in the system
+		if request.method == 'POST':
+			form = UserEditForm(request.POST, instance=request.user)
+			if form.is_valid():
+				form.save()
+				return HttpResponseRedirect('/')
+		else:
+			form = UserEditForm(instance=request.user)
+		c = {'form': form}
+		return render_to_response("edit_user.html", c, context_instance=RequestContext(request))
+
+# This method provides a way for the user to change his password
+def change_password(request):
+	if request.user.is_authenticated():
+		# Gets user info of the current user logged in the system
+		if request.method == 'POST':
+			form = ChangePasswordForm(request.POST)
+			if form.is_valid():
+				old_password = request.POST['old_password'].strip()
+				print old_password
+				newpassword = request.POST['newpassword'].strip()
+				newpassword2 = request.POST['newpassword2'].strip()
+
+				if old_password and newpassword and newpassword2 == newpassword:
+					saveuser = User.objects.get(id=request.user.id)
+					if request.user.check_password(old_password):
+						saveuser.set_password(request.POST['newpassword']);
+						saveuser.save()
+						return HttpResponse('Your password was changed.')
+					else:
+						return HttpResponse('Your old password is incorrect. Please, try again.')
+				else:
+					return HttpResponse('Insert your old password and new password correctly.')
+		else:
+			form = ChangePasswordForm()
+		c = {'form': form}
+		return render_to_response("password_change.html", c, context_instance=RequestContext(request))
+
+def list_users(request):
+	if request.user.is_authenticated():
+		p = UserProfile.objects.get(pk=request.user.id)
+		username = request.user.get_username()
+		# Verifies if the user's profile is active or the role is 'admin'
+		if p.active and p.role == 'admin':
+			users = User.objects.all()
+			return render_to_response("admin/users_list.html", {"username": username, "users": users, "user": request.user}, context_instance=RequestContext(request))
+		else:
+			message = 'Your user is not active or you are not an administrator.'
+			return render_to_response("admin/users_list.html", {"username": username, "message": message, "user": request.user}, context_instance=RequestContext(request))
+	else:
+		message = 'This page is only accessible after logging in. Please log in.'
+		return render_to_response("admin/users_list.html", {"message": message, "user": request.user}, context_instance=RequestContext(request))		
 
 #@login_required
 def index(request):
