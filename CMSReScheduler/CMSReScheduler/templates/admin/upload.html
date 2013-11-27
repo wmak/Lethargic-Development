@@ -1,7 +1,9 @@
 		{% include "layouts/header.html" with title="Admin Upload" active="admin" %}
 		{% include "layouts/admin-sidebar.html" with active="upload" %}
 		<div class="content fleft">
-
+			{% if message_type != "" %}
+				<div class="message" id="{{ message_type }}">{{ message }}</div>
+			{% endif %}
 
 			<form action="." method="post" enctype="multipart/form-data" class="form-left" id="admin-upload-form">
 				{% csrf_token %}
@@ -11,6 +13,11 @@
 						<option value="">Select Type</option>
 						<option value="schedule">Schedule</option>
 						<option value="course">Course</option>
+						<option value="enrolment">Enrolment</option>
+						<option value="room">Room</option>
+						<option value="department_programs">Department Programs</option>
+						<option value="students_programs">Students Programs</option>
+						<option value="program_requirements">Program Requirements</option>
 					</select>
 				</div>
 

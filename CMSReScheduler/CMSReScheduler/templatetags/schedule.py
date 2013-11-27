@@ -57,3 +57,7 @@ def get_course(value, arg):
 		return None
 	else:
 		return course[0]
+
+@register.filter
+def get_courses_by_day(value):
+        return CourseSchedule.objects.filter(dayOfWeek=daysOfWeek[value][0])
