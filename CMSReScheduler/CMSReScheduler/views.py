@@ -28,6 +28,7 @@ GOOD_REQUEST = 200
 BAD_REQUEST = 400
 INTERNAL_ERROR = 500
 
+
 # Log in the user or raise an error if information given is wrong
 def login_view(request):
 	if request.POST:
@@ -145,6 +146,7 @@ def admin_upload(request):
 		if msg == "":
 			msg = "The %s file has been uploaded." % model_type
 			msg_type = "success"
+
 	return render_to_response('admin/upload.html', {'form': UploadCsv(), "departments": Department.objects.all, "message": msg, "message_type": msg_type, "user": request.user}, context_instance=RequestContext(request))
 
 '''This view should receive three strings:
@@ -316,6 +318,36 @@ def course(request, course, section):
 	return HttpResponse(content = data, status = status)
 
 
+def room_schedule(request, room_code):
+	''' takes in a request object and the room from the url and makes a query to the database to find all the courses
+		that use that room and returns them to a webpage  
+	'''
+	try:
+		c = CourseSchedule.objects.filter(room=room_code)
+
+		if c:
+			courses = []
+			start_times = []
+			end_times = []
+			class_type = []
+			days = []
+
+			for course in c:
+				courses.append([new_course.code, new_course.name])
+				start_times.append(course.startTime)
+				end_times.append(course.endTime)
+				class_type.append(course.typeOfSession)
+				days.append(course.dayOfWeek)
+
+			context = {'room': room.code, 'courses': courses, 'start_times': start_times, 'end_times': end_times, \
+						'type': class_type, 'days': days}
+			return render_to_respose(room_schedule.html, context, context_instance-RequestContext(request))
+		else:
+			return HttpResponseNotFound('<h1>Page not found. Invalid Room </h1>')
+	except Exception:
+		return HttpResponseNotFound('<h1>Page not found. EXCEPTION </h1>')
+
+
 def department_schedule(request, department_name, instructor_name):
 	''' Takes in a request object as well as two strings for the name of the department and the name
 		of the instructor. Returns this a schedule of the instructor to departments.html.
@@ -402,4 +434,5 @@ def export(request, model):
 		status = BAD_REQUEST
 		body = "An Error occurred: " + str(e)
 	return HttpResponse(content = body, status = status)
+
 

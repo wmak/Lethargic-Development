@@ -51,8 +51,6 @@ class UserManager(models.Manager):
 		user = self.create(name=name, address=address, email=email, department=department)
 		return user
 
-	def getSchedule():
-		return CourseSchedule.objects.filter(room = self)
 
 class Notifications(models.Model):
 	data = models.CharField(max_length=128)#Change to width of the text box
@@ -110,6 +108,7 @@ class UserProfile(models.Model):
 
 	def getChairs():
 			return Chair.objects.all
+
 
 	def getInstructorsOfDepartment(dept):
 			return Instructor.objects.filter(department = dept)

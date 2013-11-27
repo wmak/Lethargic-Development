@@ -27,6 +27,9 @@ function selectUploadType(self, value) {
 		document.getElementById('file').style.display = "none";
 		document.getElementById('submit').style.display = "none";
 	}
+<<<<<<< HEAD
+}
+=======
 }
 
 $(document).ready(function() {
@@ -37,3 +40,4 @@ $(document).ready(function() {
 		});
 	});
 });
+>>>>>>> develop
