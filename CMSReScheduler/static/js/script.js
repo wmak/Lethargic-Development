@@ -52,10 +52,9 @@ function selectUploadType(self, value) {
 		document.getElementById('file').style.display = "none";
 		document.getElementById('submit').style.display = "none";
 	}
-<<<<<<< HEAD
+
 }
-=======
-}
+
 
 $(document).ready(function() {
 	$("body").on("click", "a.schedule-cell.course", function() {
@@ -65,4 +64,3 @@ $(document).ready(function() {
 		});
 	});
 });
->>>>>>> develop

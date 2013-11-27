@@ -7,7 +7,7 @@ from django.conf.urls import patterns, include, url
 urlpatterns = patterns('',
     # Examples:
     url(r'^$', 'CMSReScheduler.views.index', name='index'),
-    url(r'^registration/(?P<user_role>.*)/$', 'CMSReScheduler.views.registration', name='registration'),
+    #url(r'^registration/(?P<user_role>.*)/$', 'CMSReScheduler.views.registration', name='registration'),
     url(r'^rooms/(?P<room_code>.*)/$', 'CMSReScheduler.views.room_schedule', ),
     url(r'^schedule/(?P<department_name>.*)/(?P<instructor_name>.*)/$', 'CMSReScheduler.views.department_schedule'),
     url(r'^register/$', 'CMSReScheduler.views.register', name='register'),

@@ -20,7 +20,7 @@ def update_schedule(items):
 	return "Successfully Updated"
 
 def update_enrolment(items, file):
-	name, ext = str(file).split('.')
+	name = str(file).split('.')[0]
 	cs = CourseSchedule.objects.filter(course = name)
 	if cs.count() == 0:
 		return "This course is not present in any Schedule. Unable to update the enrolment."
@@ -129,7 +129,6 @@ def add_schedule(item, create_room = True, create_course = True):
 	startTime = datetime.strptime(item["startTime"], "%H:%M")
 	endTime = datetime.strptime(item["endTime"], "%H:%M")
 	try:
-		CourseSchedule(course=item["course"], room=item["room"], dayOfWeek=item['dayOfWeek'], enrolment = 0, startTime=startTime, endTime=endTime, typeOfSession=item["typeOfSession"]).save()
 		if create_room and Room.objects.filter(code=item["room"]).count() == 0:
 			room = Room(code = item["room"], capacity=0)
 			room.save()
@@ -183,4 +182,4 @@ def update_notifications(user_id, new_notifications):
 		return False
 	return True
 
->>>>>>> develop
+
