@@ -122,11 +122,11 @@ def edit_profile(request):
 				return HttpResponseRedirect('/')
 		else:
 			form = ProfileEditForm(instance=profile)
-		c = {'form': form}
-		return render_to_response("profile.html", c, context_instance=RequestContext(request))
+		return render_to_response("profile.html", {"form": form, "user": request.user}, context_instance=RequestContext(request))
 
 # This method provides a way for the admin to edit another user's profile
 def admin_edit_profile(request, username):
+	msg, msg_type = "", ""
 	if request.user.is_authenticated():
 		# Gets profile of the current user logged in the system
 		adminprofile = UserProfile.objects.get(pk=request.user.id)
@@ -138,16 +138,22 @@ def admin_edit_profile(request, username):
 				form = ProfileEditForm(request.POST, instance=userprofile)
 				if form.is_valid():
 					form.save()
-					return HttpResponseRedirect('/')
+					return HttpResponseRedirect('/admin/users/' + username + '/profile/?edit=success')
 			else:
 				form = ProfileEditForm(instance=userprofile)
-			c = {'form': form}
-			return render_to_response("admin_edit_profile.html", c, context_instance=RequestContext(request))
+			if request.GET and "edit" in request.GET:
+				msg_type = request.GET["edit"]
+				if msg_type == "success":
+					msg = "User profile edited successfully"
+				elif msg_type == "error":
+					msg = "An error occurred when editing the user profile."
+			return render_to_response("admin_edit_profile.html", {"form": form, "message": msg, "message_type": msg_type}, context_instance=RequestContext(request))
 		else:
 			return HttpResponse('You do not have permission to access the page requested.')
 
 # This method provides a way for the admin to edit another user's information
 def admin_edit_user(request, username):
+	msg, msg_type = "", ""
 	if request.user.is_authenticated():
 		# Gets profile of the current user logged in the system
 		adminprofile = UserProfile.objects.get(pk=request.user.id)
@@ -158,11 +164,16 @@ def admin_edit_user(request, username):
 				form = AdminUserEditForm(request.POST, instance=user)
 				if form.is_valid():
 					form.save()
-					return HttpResponseRedirect('/')
+					return HttpResponseRedirect('/admin/users/' + username + '/edit/?edit=success')
 			else:
 				form = AdminUserEditForm(instance=user)
-			c = {'form': form}
-			return render_to_response("admin_edit_user.html", c, context_instance=RequestContext(request))
+			if request.GET and "edit" in request.GET:
+				msg_type = request.GET["edit"]
+				if msg_type == "success":
+					msg = "User edited successfully"
+				elif msg_type == "error":
+					msg = "An error occurred when editing the user."
+			return render_to_response("admin_edit_user.html", {"form": form, "message": msg, "message_type": msg_type}, context_instance=RequestContext(request))
 		else:
 			return HttpResponse('You do not have permission to access the page requested.')
 

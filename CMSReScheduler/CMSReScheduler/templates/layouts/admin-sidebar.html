@@ -1,6 +1,6 @@
 <div class="sidebar fleft">
 	<a class="{% if active == "upload" %}active{% endif %}" href="{% url "admin_upload" %}">Upload</a>
-	<a href="#">Menu Option 2</a>
+	<a class="{% if active == "users" %}active{% endif %}" href="{% url "list_users" %}">Users List</a>
 	<a href="#">Menu Option 3</a>
 	<a href="#">Menu Option 4</a>
 	<a href="#">Menu Option 5</a>
