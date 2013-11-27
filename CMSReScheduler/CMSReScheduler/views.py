@@ -1,15 +1,16 @@
-#!/usr/bin/env python
+  #!/usr/bin/env python
 # encoding: utf-8
 
 import utils.csvutils as csvutils
 import utils.classesutils as classutils
 import utils.filterutils as filterutils
 
-from django.http import HttpResponse, HttpResponseRedirect, QueryDict
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, QueryDict
 from django.shortcuts import render, render_to_response
 from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
 from django.core import serializers
+from forms import UploadCsv, InstructorRegistrationForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
@@ -21,12 +22,15 @@ except ImportError:
 	# Python 2.5
 	import simplejson as json
 
-from classes.models import Course, Department, CourseSchedule, UserProfile, Notifications
+
+from classes.models import *
+
 
 '''Constant declaration'''
 GOOD_REQUEST = 200
 BAD_REQUEST = 400
 INTERNAL_ERROR = 500
+
 
 # Log in the user or raise an error if information given is wrong
 def login_view(request):
@@ -41,35 +45,67 @@ def login_view(request):
 			if p.active or p.role == 'admin':
 				login(request, user)
 				# Redirect to a success page depending on the user's role.
-				return HttpResponseRedirect("/")
+				return HttpResponseRedirect("/?login=success")
 			else:
 				# Show an error page
-				return HttpResponse('Your user is inactive or doesn\'t exist.')
+				return render_to_response("login.html", {"username": username, "message": "The user %s is pending validation." % username, "message_type": "error", "user": request.user}, context_instance=RequestContext(request))
 		else:
 			# Username and password given don't match or user doesn't exist.
-			return HttpResponse('Wrong username or password.')
+			return render_to_response("login.html", {"username": username, "message": "Incorrect username or password.", "message_type": "error", "user": request.user}, context_instance=RequestContext(request))
 	else:
-		return render_to_response('login.html', context_instance=RequestContext(request))
+		if request.user.is_authenticated():
+			return HttpResponseRedirect("/?login=error")
+		else:
+			msg, msg_type = "", ""
+			if request.GET:
+				if "logout" in request.GET:
+					msg_type = request.GET['logout']
+					if msg_type == "error":
+						msg = "An error occurred when logging out. Please try again."
+					elif msg_type == "success":
+						msg = "You have logged out successfully."
+				elif "registration" in request.GET:
+					msg_type = request.GET['registration']
+					if msg_type == "success":
+						msg = "You have successfully been registered. Please log in."
+			return render_to_response('login.html', {"message": msg, "message_type": msg_type, "user": request.user}, context_instance=RequestContext(request))
 
 def logout_view(request):
-	logout(request)
-	# Redirect to a success page.
-	return HttpResponse("Logged out.")
+	if request.user.is_authenticated():
+		logout(request)
+		return HttpResponseRedirect("/login?logout=success")
+	else:
+		return HttpResponseRedirect("/login?logout=error")
 
 def register(request):
 	if request.method == 'POST':
 		form = RegisterForm(request.POST)
 		if form.is_valid():
 			new_user = form.save()
-			return HttpResponseRedirect('/')
+			return HttpResponseRedirect("/login?registration=success")
+		else:
+			return render_to_response("register.html", {"form": form}, context_instance=RequestContext(request))
 	else:
-		form = RegisterForm()
-	c = {'form': form}
-	return render_to_response("register.html", c, context_instance=RequestContext(request))
+		if request.user.is_authenticated():
+			return HttpResponseRedirect("/?registration=error")
+		else:
+			form = RegisterForm()
+			return render_to_response("register.html", {"form": form}, context_instance=RequestContext(request))
 
 #@login_required
 def index(request):
-	return render(request, 'index.html')
+	msg, msg_type = "", ""
+	if request.GET:
+		if "login" in request.GET:
+			msg_type = request.GET["login"]
+			if msg_type == "success":
+				msg = "You have successfully been logged in."
+			elif msg_type == "error":
+				msg = "You are already logged in."
+		elif "registration" in request.GET:
+			msg = "You are already logged in. You don't need to register."
+			msg_type = "error"
+	return render(request, 'index.html', {"message": msg, "message_type": msg_type, "user": request.user })
 
 #@login_required
 def admin(request):
@@ -78,6 +114,7 @@ def admin(request):
 	context = {}
 	for day in daysOfWeek:
 		context[day] = CourseSchedule.objects.filter(dayOfWeek=day).order_by("startTime")
+	context["user"] = request.user
 	return render(request, 'admin/index.html', context)
 
 def admin_upload(request):
@@ -123,7 +160,8 @@ def admin_upload(request):
 		if msg == "":
 			msg = "The %s file has been uploaded." % model_type
 			msg_type = "success"
-	return render_to_response('admin/upload.html', {'form': UploadCsv(), "departments": Department.objects.all, "message": msg, "message_type": msg_type}, context_instance=RequestContext(request))
+
+	return render_to_response('admin/upload.html', {'form': UploadCsv(), "departments": Department.objects.all, "message": msg, "message_type": msg_type, "user": request.user}, context_instance=RequestContext(request))
 
 '''This view should receive one string:
 1 - which model will be used, shoulb be in the plural for consistency
@@ -185,7 +223,7 @@ def course(request, course, section):
 				"department" : "new value",
 			}
 	'''
-	info = {"Error" : "Unknown error occured"}
+	info = {}
 	status = INTERNAL_ERROR
 	body = ""
 	# If the request has a body, assume that it is json. And parse it.
@@ -228,7 +266,7 @@ def course(request, course, section):
 						info.setdefault("department", "Updated")
 						status = GOOD_REQUEST
 					else:
-						info.setdefault(field, "Error: name entry was blank")
+						info.setdefault(field, "Error: Department entry was blank")
 				# Special key switch will switch all details but course and typeOfSession between two CourseSchedules
 				if section and body.has_key("switch"):
 					try:
@@ -249,7 +287,6 @@ def course(request, course, section):
 				classutils.new_notification(notification)
 				current.save()
 			else:
-				info = {"Error" : "No body with request"}
 				status = BAD_REQUEST
 		elif request.method == "GET":
 			current = classutils.get_course(course)
@@ -290,6 +327,100 @@ def course(request, course, section):
 	data = json.dumps(info)
 	return HttpResponse(content = data, status = status)
 
+
+def room_capacities(request):
+	''' Takes in a request and returns all of the rooms, ordered by their code, and their capacities to a webpage 
+	'''
+
+	try:
+		room_objects = Room.objects.order_by('code')
+
+		if room_objects:
+			rooms = []
+			capacities = []
+
+			for item in room_objects:
+				rooms.append(item.code)
+				capacities.append(item.capacity)
+
+			context = {'rooms': rooms, 'capacities': capacities}
+
+			return render_to_respose('room_capacities.html', context, context_instance-RequestContext(request))
+		else:
+			return HttpResponseNotFound('<h1>Page not found. No Rooms. </h1>')
+
+	except Exception:
+		return HttpResponseNotFound('<h1>Page not found. EXCEPTION! </h1>')
+
+
+def room_schedule(request, room_code):
+	''' takes in a request object and the room from the url and makes a query to the database to find all the courses
+		that use that room and returns them to a webpage  
+	'''
+	try:
+		c = CourseSchedule.objects.filter(room=room_code)
+
+		if c:
+			courses = []
+			start_times = []
+			end_times = []
+			class_type = []
+			days = []
+
+			for course in c:
+				courses.append([new_course.code, new_course.name])
+				start_times.append(course.startTime)
+				end_times.append(course.endTime)
+				class_type.append(course.typeOfSession)
+				days.append(course.dayOfWeek)
+
+			context = {'room': room.code, 'courses': courses, 'start_times': start_times, 'end_times': end_times, \
+						'type': class_type, 'days': days}
+			return render_to_respose(room_schedule.html, context, context_instance-RequestContext(request))
+		else:
+			return HttpResponseNotFound('<h1>Page not found. Invalid Room </h1>')
+	except Exception:
+		return HttpResponseNotFound('<h1>Page not found. EXCEPTION </h1>')
+
+
+def department_schedule(request, department_name, instructor_name):
+	''' Takes in a request object as well as two strings for the name of the department and the name
+		of the instructor. Returns this a schedule of the instructor to departments.html.
+	'''
+
+	try:
+		department = Department.objects.get(name=department_name)
+		instructor = Instructor.objects.get(name=instructor_name)
+
+		if department and  instructor:
+			chair = Chair.object.get(deartment=department_name)
+			courses = instructor.getSchedule()
+			course_list = []
+			class_type = []
+			days = []
+			room = []
+
+			for c in courses :
+				course = Course.objects.get(code=c.course)
+				course_list.append([course.code, course.name])
+				start_times.append(c.startTime)
+				end_times.append(c.endTime)
+				class_type.append(c.typeOfSession)
+				days.append(c.dayOfWeek)
+				room.append(c.room)
+
+
+			context = {'room': room, 'courses': course_list, 'start_times': start_times, 'end_times': end_times, 'type': class_type, \
+						'department': department.name, 'Chair': chair.name, 'instructor': instructor.name, 'days': days}
+
+			return render_to_respose(departments.html, context, context_instance-RequestContext(request))
+		else:
+			return HttpResponseNotFound('<h1>Page not found. Invalid department or instructor name </h1>')
+			
+	except Exception as e:
+		return HttpResponseNotFound(e)
+
+
 @csrf_exempt
 def user(request, user_id):
 	info = {"Error" : "Nothing happened somehow"}
@@ -321,8 +452,20 @@ def user(request, user_id):
 	data = json.dumps(info)
 	return HttpResponse(content = data, status = status)
 
-
-def instructor_schedule(request, instructor):
-	i = Instructor.objects.get(name=instructor)
-	context = {"courses": i.myCourses, 'instructor': i.name}
-	return render_to_response('instructor_schedule.html', context, context_instance-RequestContext(request))
+@csrf_exempt
+def export(request, model):
+	from django.core.management import call_command
+	try:
+		output = open("datadump.json",'w')
+		if model == "all":
+			call_command("dumpdata", format='json',indent=4, stdout=output)
+		else:
+			call_command("dumpdata", model, format='json',indent=4, stdout=output)
+		output.close()
+		output = open("datadump.json",'r+')
+		body = output.read()
+		status = GOOD_REQUEST
+	except Exception as e:
+		status = BAD_REQUEST
+		body = "An Error occurred: " + str(e)
+	return HttpResponse(content = body, status = status)

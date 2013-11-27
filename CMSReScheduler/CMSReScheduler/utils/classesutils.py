@@ -14,7 +14,7 @@ def update_schedule(items):
 	for item in items:
 		cs = CourseSchedule.objects.filter(course = item["course"], typeOfSession = item["typeOfSession"], dayOfWeek = item["dayOfWeek"])
 		if cs.count() == 0:
-			status = add_schedule(item, True)
+			status = add_schedule(item, True, True)
 			if not status:
 				return status
 	return "Successfully Updated"
@@ -129,6 +129,7 @@ def add_schedule(item, create_room = True, create_course = True):
 	startTime = datetime.strptime(item["startTime"], "%H:%M")
 	endTime = datetime.strptime(item["endTime"], "%H:%M")
 	try:
+		CourseSchedule(course=item["course"], room=item["room"], dayOfWeek=item['dayOfWeek'], enrolment = 0, startTime=startTime, endTime=endTime, typeOfSession=item["typeOfSession"]).save()
 		if create_room and Room.objects.filter(code=item["room"]).count() == 0:
 			room = Room(code = item["room"], capacity=0)
 			room.save()
@@ -182,3 +183,4 @@ def update_notifications(user_id, new_notifications):
 		return False
 	return True
 
+>>>>>>> develop

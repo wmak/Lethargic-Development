@@ -52,4 +52,17 @@ function selectUploadType(self, value) {
 		document.getElementById('file').style.display = "none";
 		document.getElementById('submit').style.display = "none";
 	}
+<<<<<<< HEAD
 }
+=======
+}
+
+$(document).ready(function() {
+	$("body").on("click", "a.schedule-cell.course", function() {
+		var url = "/course/" + $(this).find("#course").html();
+		$.getJSON(url, function(data) {
+			console.log(data);
+		});
+	});
+});
+>>>>>>> develop

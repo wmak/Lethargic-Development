@@ -1,0 +1,10 @@
+{% extends "layout/header.html" %}
+{% block content %}
+        <div id="room_capacities">
+        	<h1>Room Capacities</h1>
+                {% for i in range(len(rooms) - 1) %}
+                <p>  {{rooms[i]}} - {{capacities[i]}} people</p>
+                {% endfor %}
+        </div>
+{% endblock %}
+{% extends "layouts/footer.html" %} 
