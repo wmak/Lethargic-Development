@@ -8,28 +8,29 @@
 		<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/style.css">
 
 		<!-- JS -->
+		<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.10.2.js"></script>	
 		<script type="text/javascript" src="{{ STATIC_URL }}js/script.js"></script>	
 	</head>
 
 	<body>
 		<header>
 			<div id="header-logo">
-				<div class="fleft"><!--<img src="{{ STATIC_URL }}images/header.gif">--></div>
-			</div>
-			<div id="header-title">
-				<h1 class="center fleft fullwidth"><a href="/">CMS (Re)Scheduling System</a></h1>
+				<div class="fleft">&nbsp;<!--<img src="{{ STATIC_URL }}images/header.gif">--></div>
 			</div>
 			<div id="header-nav">
-				<div class="right fleft fullwidth">
-					<ul class="fleft">
-						<!-- Replace "if true == true" check for notifications, and if they exist, whether there are any unread -->
-						<li><a class="{% if true == 1 %}active{% endif %}" id="notifications" href="#" onclick="toggleNotifications(this);">&nbsp;!&nbsp;</a></li>
-					</ul>
+				<div class="right fullwidth">
 					<ul>
-						<li><a class="{% if active == "profile" %}active{% endif %}" href="#">Profile</a></li>
-						<li><a class="{% if active == "schedule" %}active{% endif %}" href="#">Schedule</a></li>
-						<li><a class="{% if active == "admin" %}active{% endif %}" href="{% url "admin" %}">Admin</a></li>
-						<li><a href="#">Log Out</a></li>
+						{% if not user.is_authenticated %}
+							<li><a href="{% url "register" %}">Register</a></li>
+							<li><a href="{% url "login" %}">Log In</a></li>
+						{% else %}
+							<li><a class="{% if active == "profile" %}active{% endif %}" href="#">Profile</a></li>
+							<li><a class="{% if active == "schedule" %}active{% endif %}" href="#">Schedule</a></li>
+							<li><a class="{% if active == "admin" %}active{% endif %}" href="{% url "admin" %}">Admin</a></li>
+							<li><a href="{% url "logout" %}">Log Out</a></li>
+							<!-- Replace "if true == true" check for notifications, and if they exist, whether there are any unread -->
+							<li><a class="{% if true == 1 %}active{% endif %}" id="notifications" href="#" onclick="toggleNotifications(this);">&nbsp;!&nbsp;</a></li>
+						{% endif %}
 					</ul>
 				</div>
 				<!-- Replace "Noticication #" with for loop that iterates through notifications, displaying them -->
@@ -42,6 +43,13 @@
 					</ul>
 				</div>
 			</div>
+			<div id="header-title">
+				<h1 class="center fullwidth"><a href="/">CMS (Re)Scheduling System</a></h1>
+			</div>
 			<div class="clear"></div>
 			<hr></hr>
 		</header>
+
+		{% if message_type != None and message_type != "" %}
+			<div class="message" id="{{ message_type }}">{{ message }}</div>
+		{% endif %}
