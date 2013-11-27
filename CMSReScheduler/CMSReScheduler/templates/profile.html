@@ -1,23 +1,18 @@
-<!DOCTYPE html>
-<html>
-        <head>
-                <meta charset="utf-8">
-                <title>My Profile</title>        
-        </head>
+    {% include "layouts/header.html" with title="My Profile" active="profile" %}
+    <form class="no-sidebar" action="/profile/" method="post">
+            {% csrf_token %}
 
-        <body>
-                <h1>
-                        My Profile
-                </h1>
-                
-                <form action="/profile/" method="post">
-                        {% csrf_token %}
-                        
-                        {{ form.as_p }}
+            <h2>{{ user.username}}'s Profile</h2>
+            {% for field in form %}
+                <div class="form-entry">
+                    {{ field.errors }}
+                    <div class="form-label">{{ field.label_tag }}: </div>
+                    <div class="form-input">{{ field }}</div>
+                </div>
+            {% endfor %}
 
-                        <p><input type="submit" value="Submit" /></p>
-                </form>
-                
-        </body>
-
-</html> 
+            <div class="form-entry left" id="submit">
+                <input type="submit" value="Submit">
+            </div>
+    </form>
+    {% include "layouts/footer.html" %}

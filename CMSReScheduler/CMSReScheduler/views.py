@@ -122,8 +122,7 @@ def edit_profile(request):
 				return HttpResponseRedirect('/')
 		else:
 			form = ProfileEditForm(instance=profile)
-		c = {'form': form}
-		return render_to_response("profile.html", c, context_instance=RequestContext(request))
+		return render_to_response("profile.html", {"form": form, "user": request.user}, context_instance=RequestContext(request))
 
 # This method provides a way for the admin to edit another user's profile
 def admin_edit_profile(request, username):
