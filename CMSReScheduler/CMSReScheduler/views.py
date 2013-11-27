@@ -360,26 +360,32 @@ def room_schedule(request, room_code):
 		c = CourseSchedule.objects.filter(room=room_code)
 
 		if c:
-			courses = []
+			course_code = []
+			course_name = []
 			start_times = []
 			end_times = []
 			class_type = []
 			days = []
+			
+
 
 			for course in c:
-				courses.append([new_course.code, new_course.name])
+				new_course = Course.objects.get(code=course)
+				course_code.append(new_course.code)
+				course_name.append(new_course.name)
 				start_times.append(course.startTime)
 				end_times.append(course.endTime)
 				class_type.append(course.typeOfSession)
 				days.append(course.dayOfWeek)
 
-			context = {'room': room.code, 'courses': courses, 'start_times': start_times, 'end_times': end_times, \
-						'type': class_type, 'days': days}
-			return render_to_respose(room_schedule.html, context, context_instance-RequestContext(request))
+			super_list = zip(course_code, class_type, course_name, days, start_times, end_times)
+
+			context = {'room': room_code, 'list': super_list}
+			return render_to_response('room_schedule.html', context, context_instance=RequestContext(request))
 		else:
 			return HttpResponseNotFound('<h1>Page not found. Invalid Room </h1>')
-	except Exception:
-		return HttpResponseNotFound('<h1>Page not found. EXCEPTION </h1>')
+	except Exception as e:
+		return HttpResponseNotFound(e)
 
 
 def department_schedule(request, department_name, instructor_name):
@@ -392,27 +398,31 @@ def department_schedule(request, department_name, instructor_name):
 		instructor = Instructor.objects.get(name=instructor_name)
 
 		if department and  instructor:
-			chair = Chair.object.get(deartment=department_name)
+			chair = Chair.objects.get(deartment=department_name)
 			courses = instructor.getSchedule()
-			course_list = []
+			course_code = []
+			course_name = []
 			class_type = []
 			days = []
 			room = []
+			
 
-			for c in courses :
+			for c in courses:
 				course = Course.objects.get(code=c.course)
-				course_list.append([course.code, course.name])
+				course_code.append(course.code)
+				course_name.append(course.name)
 				start_times.append(c.startTime)
 				end_times.append(c.endTime)
 				class_type.append(c.typeOfSession)
 				days.append(c.dayOfWeek)
 				room.append(c.room)
 
+			super_list = zip(course_code, class_type, course_name, days, start_times, end_times)
 
-			context = {'room': room, 'courses': course_list, 'start_times': start_times, 'end_times': end_times, 'type': class_type, \
-						'department': department.name, 'Chair': chair.name, 'instructor': instructor.name, 'days': days}
 
-			return render_to_respose(departments.html, context, context_instance-RequestContext(request))
+			context = {'room': room, }
+
+			return render_to_response('departments.html', context, context_instance=RequestContext(request))
 		else:
 			return HttpResponseNotFound('<h1>Page not found. Invalid department or instructor name </h1>')
 			
