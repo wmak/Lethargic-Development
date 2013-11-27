@@ -5,9 +5,17 @@
         <form action="" method="post">
             {% csrf_token %}
             
-            {{ form.as_p }}
+            {% for field in form %}
+                <div class="form-entry">
+                    {{ field.errors }}
+                    <div class="form-label">{{ field.label_tag }}: </div>
+                    <div class="form-input">{{ field }}</div>
+                </div>
+            {% endfor %}
 
-            <p><input type="submit" value="Submit" /></p>
+            <div class="form-entry left" id="submit">
+                <input type="submit" value="Submit">
+            </div>
         </form>
     </div>
     {% endblock %}

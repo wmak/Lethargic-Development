@@ -306,11 +306,14 @@ footer {
 		.no-sidebar > .form-entry > ul.errorlist {
 			width: 100%;
 		}
-			.no-sidebar > .form-entry > ul.errorlist > li {
+			.form-entry > ul.errorlist > li {
 				list-style: none;
-				text-align: right;
+				text-align: left;
 				color: #d8000c;
 				font-size: 0.8em;
+			}
+			.no-sidebar > .form-entry > ul.errorlist > li {
+				text-align: right;
 			}
 		.no-sidebar > .form-entry > .form-label {
 			width: 28%;
