@@ -514,7 +514,7 @@ def room_schedule(request, room_code):
 
 
 			for course in c:
-				new_course = Course.objects.get(code=course)
+				new_course = Course.objects.get(code=course.course)
 				course_code.append(new_course.code)
 				course_name.append(new_course.name)
 				start_times.append(course.startTime)
