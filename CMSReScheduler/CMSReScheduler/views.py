@@ -235,18 +235,21 @@ def list_users(request):
 
 #@login_required
 def index(request):
-	msg, msg_type = "", ""
-	if request.GET:
-		if "login" in request.GET:
-			msg_type = request.GET["login"]
-			if msg_type == "success":
-				msg = "You have successfully been logged in."
-			elif msg_type == "error":
-				msg = "You are already logged in."
-		elif "registration" in request.GET:
-			msg = "You are already logged in. You don't need to register."
-			msg_type = "error"
-	return render(request, 'index.html', {"message": msg, "message_type": msg_type, "user": request.user, "notifications": UserProfile.objects.get(user=request.user).notifications, "read_notifications": UserProfile.objects.get(user=request.user).read_notifications })
+	if request.user.is_authenticated():
+		msg, msg_type = "", ""
+		if request.GET:
+			if "login" in request.GET:
+				msg_type = request.GET["login"]
+				if msg_type == "success":
+					msg = "You have successfully been logged in."
+				elif msg_type == "error":
+					msg = "You are already logged in."
+			elif "registration" in request.GET:
+				msg = "You are already logged in. You don't need to register."
+				msg_type = "error"
+		return render(request, 'index.html', {"message": msg, "message_type": msg_type, "user": request.user, "notifications": UserProfile.objects.get(user=request.user).notifications, "read_notifications": UserProfile.objects.get(user=request.user).read_notifications })
+	else:
+		return render(request, 'index.html')
 
 #@login_required
 def admin(request):
