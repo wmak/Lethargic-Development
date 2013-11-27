@@ -122,7 +122,7 @@ def edit_profile(request):
 				return HttpResponseRedirect('/')
 		else:
 			form = ProfileEditForm(instance=profile)
-		return render_to_response("profile.html", {"form": form, "user": request.user}, context_instance=RequestContext(request))
+		return render_to_response("profile.html", {"form": form, "user": request.user,  "notifications": UserProfile.objects.get(user=request.user).notifications, "read_notifications": UserProfile.objects.get(user=request.user).read_notifications }, context_instance=RequestContext(request))
 
 # This method provides a way for the admin to edit another user's profile
 def admin_edit_profile(request, username):
@@ -147,7 +147,7 @@ def admin_edit_profile(request, username):
 					msg = "User profile edited successfully"
 				elif msg_type == "error":
 					msg = "An error occurred when editing the user profile."
-			return render_to_response("admin_edit_profile.html", {"form": form, "message": msg, "message_type": msg_type}, context_instance=RequestContext(request))
+			return render_to_response("admin_edit_profile.html", {"form": form, "message": msg, "message_type": msg_type,  "notifications": UserProfile.objects.get(user=request.user).notifications, "read_notifications": UserProfile.objects.get(user=request.user).read_notifications }, context_instance=RequestContext(request))
 		else:
 			return HttpResponse('You do not have permission to access the page requested.')
 
@@ -173,7 +173,7 @@ def admin_edit_user(request, username):
 					msg = "User edited successfully"
 				elif msg_type == "error":
 					msg = "An error occurred when editing the user."
-			return render_to_response("admin_edit_user.html", {"form": form, "message": msg, "message_type": msg_type}, context_instance=RequestContext(request))
+			return render_to_response("admin_edit_user.html", {"form": form, "message": msg, "message_type": msg_type,  "notifications": UserProfile.objects.get(user=request.user).notifications, "read_notifications": UserProfile.objects.get(user=request.user).read_notifications }, context_instance=RequestContext(request))
 		else:
 			return HttpResponse('You do not have permission to access the page requested.')
 
@@ -225,10 +225,10 @@ def list_users(request):
 		# Verifies if the user's profile is active or the role is 'admin'
 		if p.active and p.role == 'admin':
 			users = User.objects.all()
-			return render_to_response("admin/users_list.html", {"username": username, "users": users, "user": request.user}, context_instance=RequestContext(request))
+			return render_to_response("admin/users_list.html", {"username": username, "users": users, "user": request.user,  "notifications": UserProfile.objects.get(user=request.user).notifications, "read_notifications": UserProfile.objects.get(user=request.user).read_notifications}, context_instance=RequestContext(request))
 		else:
 			message = 'Your user is not active or you are not an administrator.'
-			return render_to_response("admin/users_list.html", {"username": username, "message": message, "user": request.user}, context_instance=RequestContext(request))
+			return render_to_response("admin/users_list.html", {"username": username, "message": message, "user": request.user,  "notifications": UserProfile.objects.get(user=request.user).notifications, "read_notifications": UserProfile.objects.get(user=request.user).read_notifications}, context_instance=RequestContext(request))
 	else:
 		message = 'This page is only accessible after logging in. Please log in.'
 		return render_to_response("admin/users_list.html", {"message": message, "user": request.user}, context_instance=RequestContext(request))		
@@ -303,7 +303,7 @@ def admin_upload(request):
 		if msg == "":
 			msg = "The %s file has been uploaded." % model_type
 			msg_type = "success"
-	return render_to_response('admin/upload.html', {'form': UploadCsv(), "departments": Department.objects.all, "message": msg, "message_type": msg_type, "user": request.user, "notifications": UserProfile.objects.get(user=request.user).notifications, "read_notifcations": UserProfile.objects.get(user=request.user).read_notifications }, context_instance=RequestContext(request))
+	return render_to_response('admin/upload.html', {'form': UploadCsv(), "departments": Department.objects.all, "message": msg, "message_type": msg_type, "user": request.user, "notifications": UserProfile.objects.get(user=request.user).notifications, "read_notifications": UserProfile.objects.get(user=request.user).read_notifications }, context_instance=RequestContext(request))
 
 '''This view should receive one string:
 1 - which model will be used, shoulb be in the plural for consistency
