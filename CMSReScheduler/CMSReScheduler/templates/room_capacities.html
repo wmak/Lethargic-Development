@@ -2,8 +2,8 @@
 {% block content %}
         <div id="room_capacities">
         	<h1>Room Capacities</h1>
-                {% for i in range(len(rooms) - 1) %}
-                <p>  {{rooms[i]}} - {{capacities[i]}} people</p>
+                {% for x, y in list %}
+                <p>  {{x}} - {{y}} people</p>
                 {% endfor %}
         </div>
 {% endblock %}

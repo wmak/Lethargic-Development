@@ -472,15 +472,16 @@ def room_capacities(request):
 			for item in room_objects:
 				rooms.append(item.code)
 				capacities.append(item.capacity)
+			super_list = zip(rooms, capacities)
 
-			context = {'rooms': rooms, 'capacities': capacities}
+			context = {'list': super_list}
 
 			return render_to_respose('room_capacities.html', context, context_instance-RequestContext(request))
 		else:
 			return HttpResponseNotFound('<h1>Page not found. No Rooms. </h1>')
 
-	except Exception:
-		return HttpResponseNotFound('<h1>Page not found. EXCEPTION! </h1>')
+	except Exception as e:
+		return HttpResponseNotFound(e)
 
 
 def room_schedule(request, room_code):

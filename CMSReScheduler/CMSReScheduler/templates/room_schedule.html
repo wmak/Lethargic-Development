@@ -1,10 +1,11 @@
-{% extends "layouts/header.html" %}
+{% include "layouts/header.html" with title="Rooms Schedule" %}
 {% block content %}
         <div id="room_schedule">
-                <h1> Room: {{room} }</h1>
-                {% for i in range(len(courses)) %}
-               		<p> {{courses[i][0]}} {{type}} - {{courses[i][1]}} : Day: {{days[i]}},  Time: {{start_times[i]}} - {{end_times[i]}}</p>
+                <h1> Room: {{room}}</h1>
+                {% for a, b, c, d, e, f in list  %}
+               		<h2> {a}} {{b}} - {{c}}: </h2>
+               		<p> Day: {{d}},  Time: {{e}} - {{f}}</p>
                 {% endfor %}
         </div>
 {% endblock %}
-{% extends "layouts/footer.html" %} 
+{% include "layouts/footer.html" %}

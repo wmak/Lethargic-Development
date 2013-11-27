@@ -1,11 +1,11 @@
-{% extends "layouts/header.html" %}
+{% include "layouts/header.html" with title="Department Scedule" %}
 {% block content %}
         <div id="departments">
                 <h1> Department: {{department}}</h1>
-                {% for i in range(len(courses) - 1) %}
-                	<h2> {{courses[i][0]}} {{type}} - {{courses[i][1]}} </h2>
-               		<p> Day: {{days[i]}},  Time: {{start_times[i]}} - {{end_times[i]}}, Room: {{room[i]}}</p>
+               {% for a, b, c, d, e, f in list  %}
+                	<h2> {a}} {{b}} - {{c}}: </h2>
+               		<p> Day: {{d}},  Time: {{e}} - {{f}}</p>
                 {% endfor %}
         </div>
 {% endblock %}
-{% extends "layouts/footer.html" %} 
+{% include "layouts/footer.html" %}
