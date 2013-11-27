@@ -9,7 +9,7 @@
 	                                {% if forloop.counter == 1 %}
 	                                        &nbsp;
 	                                {% else %}
-	                                        &nbsp;<br />{{ forloop.counter|get_time }}<br />&nbsp;
+	                                        &nbsp;<br />{{ forloop.counter|get_time:True }}<br />&nbsp;
 	                                {% endif %}
 	                        </div>
 	                {% endfor %}

@@ -24,7 +24,7 @@ def schedule_day(value):
 		return ""
 
 @register.filter
-def get_time(value, arg=True):
+def get_time(value, arg=False):
 	if arg:
 		if value + 5 > 12:
 			return str(value - 7) + ":00 PM"
@@ -39,10 +39,6 @@ def schedule_time(value):
 		return str(value - 7) + ":00 PM"
 	else:
 		return str(value + 5) + ":00 AM"
-
-@register.filter
-def get_time(value):
-	return str(value + 7) + ":00:00"
 
 @register.filter
 #def has_course(value, arg):
