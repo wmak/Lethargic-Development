@@ -1,5 +1,4 @@
 from django import template
-from django.utils.safestring import mark_safe
 from classes.models import Course, Department, CourseSchedule, Room
 
 register = template.Library()

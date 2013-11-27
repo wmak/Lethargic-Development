@@ -1,7 +1,7 @@
         {% include "layouts/header.html" with title="Login" %}
         {% block content %}
             {{ state }}
-            <form class="registration-and-login" action="/login/" method="post">
+            <form class="no-sidebar" action="/login/" method="post">
                 {% csrf_token %}
                 <div class="form-entry">
                     <div class="form-label">Username: </div>

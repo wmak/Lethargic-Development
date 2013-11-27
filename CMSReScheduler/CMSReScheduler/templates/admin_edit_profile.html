@@ -1,23 +1,23 @@
-<!DOCTYPE html>
-<html>
-        <head>
-                <meta charset="utf-8">
-                <title>User Profile</title>        
-        </head>
+    {% include "layouts/header.html" with title="Edit Profile" active="admin" %}
+    {% include "layouts/admin-sidebar.html" with active="users" %}
+    {% block content %}
+    <div class="content fleft">
+        <form action="" method="post">
+            {% csrf_token %}
 
-        <body>
-                <h1>
-                        User Profile
-                </h1>
-                
-                <form action="" method="post">
-                        {% csrf_token %}
-                        
-                        {{ form.as_p }}
+            {% for field in form %}
+                <div class="form-entry">
+                    {{ field.errors }}
+                    <div class="form-label">{{ field.label_tag }}: </div>
+                    <div class="form-input">{{ field }}</div>
+                </div>
+            {% endfor %}
 
-                        <p><input type="submit" value="Submit" /></p>
-                </form>
-                
-        </body>
-
-</html> 
+            <div class="form-entry left" id="submit">
+                <input type="submit" value="Submit">
+            </div>
+        </form>
+    </div>
+    {% endblock %}
+    <div class="clear"></div>
+    {% include "layouts/footer.html" %}

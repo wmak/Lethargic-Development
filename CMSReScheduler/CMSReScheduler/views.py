@@ -122,11 +122,11 @@ def edit_profile(request):
 				return HttpResponseRedirect('/')
 		else:
 			form = ProfileEditForm(instance=profile)
-		c = {'form': form}
-		return render_to_response("profile.html", c, context_instance=RequestContext(request))
+		return render_to_response("profile.html", {"form": form, "user": request.user}, context_instance=RequestContext(request))
 
 # This method provides a way for the admin to edit another user's profile
 def admin_edit_profile(request, username):
+	msg, msg_type = "", ""
 	if request.user.is_authenticated():
 		# Gets profile of the current user logged in the system
 		adminprofile = UserProfile.objects.get(pk=request.user.id)
@@ -138,16 +138,22 @@ def admin_edit_profile(request, username):
 				form = ProfileEditForm(request.POST, instance=userprofile)
 				if form.is_valid():
 					form.save()
-					return HttpResponseRedirect('/')
+					return HttpResponseRedirect('/admin/users/' + username + '/profile/?edit=success')
 			else:
 				form = ProfileEditForm(instance=userprofile)
-			c = {'form': form}
-			return render_to_response("admin_edit_profile.html", c, context_instance=RequestContext(request))
+			if request.GET and "edit" in request.GET:
+				msg_type = request.GET["edit"]
+				if msg_type == "success":
+					msg = "User profile edited successfully"
+				elif msg_type == "error":
+					msg = "An error occurred when editing the user profile."
+			return render_to_response("admin_edit_profile.html", {"form": form, "message": msg, "message_type": msg_type}, context_instance=RequestContext(request))
 		else:
 			return HttpResponse('You do not have permission to access the page requested.')
 
 # This method provides a way for the admin to edit another user's information
 def admin_edit_user(request, username):
+	msg, msg_type = "", ""
 	if request.user.is_authenticated():
 		# Gets profile of the current user logged in the system
 		adminprofile = UserProfile.objects.get(pk=request.user.id)
@@ -158,11 +164,16 @@ def admin_edit_user(request, username):
 				form = AdminUserEditForm(request.POST, instance=user)
 				if form.is_valid():
 					form.save()
-					return HttpResponseRedirect('/')
+					return HttpResponseRedirect('/admin/users/' + username + '/edit/?edit=success')
 			else:
 				form = AdminUserEditForm(instance=user)
-			c = {'form': form}
-			return render_to_response("admin_edit_user.html", c, context_instance=RequestContext(request))
+			if request.GET and "edit" in request.GET:
+				msg_type = request.GET["edit"]
+				if msg_type == "success":
+					msg = "User edited successfully"
+				elif msg_type == "error":
+					msg = "An error occurred when editing the user."
+			return render_to_response("admin_edit_user.html", {"form": form, "message": msg, "message_type": msg_type}, context_instance=RequestContext(request))
 		else:
 			return HttpResponse('You do not have permission to access the page requested.')
 
@@ -235,7 +246,7 @@ def index(request):
 		elif "registration" in request.GET:
 			msg = "You are already logged in. You don't need to register."
 			msg_type = "error"
-	return render(request, 'index.html', {"message": msg, "message_type": msg_type, "user": request.user })
+	return render(request, 'index.html', {"message": msg, "message_type": msg_type, "user": request.user, "notifications": UserProfile.objects.get(user=request.user).notifications, "read_notifications": UserProfile.objects.get(user=request.user).read_notifications })
 
 #@login_required
 def admin(request):
@@ -245,6 +256,8 @@ def admin(request):
 	for day in daysOfWeek:
 		context[day] = CourseSchedule.objects.filter(dayOfWeek=day).order_by("startTime")
 	context["user"] = request.user
+	context["notifications"] = UserProfile.objects.get(user=request.user).notifications
+	context["read_notifications"] = UserProfile.objects.get(user=request.user).read_notifications
 	return render(request, 'admin/index.html', context)
 
 def admin_upload(request):
@@ -290,8 +303,7 @@ def admin_upload(request):
 		if msg == "":
 			msg = "The %s file has been uploaded." % model_type
 			msg_type = "success"
-
-	return render_to_response('admin/upload.html', {'form': UploadCsv(), "departments": Department.objects.all, "message": msg, "message_type": msg_type, "user": request.user}, context_instance=RequestContext(request))
+	return render_to_response('admin/upload.html', {'form': UploadCsv(), "departments": Department.objects.all, "message": msg, "message_type": msg_type, "user": request.user, "notifications": UserProfile.objects.get(user=request.user).notifications, "read_notifcations": UserProfile.objects.get(user=request.user).read_notifications }, context_instance=RequestContext(request))
 
 '''This view should receive one string:
 1 - which model will be used, shoulb be in the plural for consistency
