@@ -10,11 +10,11 @@ class DepartmentManager(models.Manager):
 		return department
 
 class Department(models.Model):
-		name = models.CharField(max_length=30)
-		numberOfLecturers = models.IntegerField()
+	name = models.CharField(max_length=30)
+	numberOfLecturers = models.IntegerField()
 
-		def __unicode__(self):
-				return self.name
+	def __unicode__(self):
+			return self.name
 
 class CourseManager(models.Manager):
 	def create_course(self, name, code, department):
@@ -51,8 +51,6 @@ class UserManager(models.Manager):
 		user = self.create(name=name, address=address, email=email, department=department)
 		return user
 
-	def getSchedule():
-		return CourseSchedule.objects.filter(room = self)
 
 class Notifications(models.Model):
 	data = models.CharField(max_length=128)#Change to width of the text box
@@ -71,7 +69,6 @@ class UserProfile(models.Model):
 	#Every user, when created, is inactive.
 	notify = models.BooleanField(default=True)
 	active = models.BooleanField(default=False)
-
 
 	def __str__(self):  
 		return "%s's profile" % self.user  
@@ -114,13 +111,14 @@ class UserProfile(models.Model):
 	def getInstructorsOfDepartment(dept):
 			return Instructor.objects.filter(department = dept)
 
+
 	def checkEnrolment(courseCode):
 			c = Course.objects.get(code = courseCode)
 			return c.enrolment
 
 def create_user_profile(sender, instance, created, **kwargs):
 	if created:
-		UserProfile.objects.create(user=instance)
+		profile, created = UserProfile.objects.get_or_create(user=instance)
 post_save.connect(create_user_profile, sender=User)
 
 class CourseScheduleManager(models.Manager):
@@ -148,3 +146,25 @@ class CourseSchedule(models.Model):
 		sdelta = datetime.timedelta(minutes = startTime.minute, hours = startTime.hour)
 		delta = edelta - sdelta
 		return delta.hours * 60 + delta.minutes
+
+	def __unicode__(self):
+		return u'%s %s - %s: %s %s %s' % (self.dayOfWeek, self.startTime, self.endTime, self.course, self.typeOfSession, self.room)
+
+class RequiredCourse(models.Model):
+	code = models.ForeignKey(Course)
+	req_type = models.CharField(max_length = 10) 
+
+class Program(models.Model):
+	code = models.CharField(max_length = 10)
+	name = models.CharField(max_length = 100)
+	requiredCourses = models.ManyToManyField(RequiredCourse)
+
+class Student(models.Model):
+	utorid = models.CharField(max_length = 10)
+	studentNumber = models.CharField(max_length = 10)
+	lastName = models.CharField(max_length = 50)
+	firstName = models.CharField(max_length = 20)
+	email = models.EmailField()
+	programCode = models.ForeignKey(Program, null = True, blank = True)
+	courses = models.ManyToManyField(Course)
+

@@ -41,6 +41,39 @@ Commandline Interface
 ## Setting up the commandline interface. Also written in python.
 1. Install necessary packages
 	- `pip install requests`
+2. Using the Commandline
+	- either using the python or shell application the command when in the commandline directory is
+		- `python CMS.py <PARAMETERS>`
+		- `sh CMS.sh <PARAMETERS>` (or if you wish chmod the file first and you can use just `./CMS.sh`
+	- As for parameters currently implemented there are two commands
+		- course
+			- course related commands
+			- `get` returns all relevant information concerning the course
+				- ex. `python CMS.py course get CSCC01H3`
+			- `put` modifies the course depending on a json string you pass
+				- The string should be in the following format:
+					- `{"key":"value"}`
+					- key can be one of 4 values
+						- "name"
+						- "enrolment"
+						- "department"
+						- "switch"
+					- the value for "name", "enrolment" and "department" can be strings
+					- for switch the value should be of the following format
+						- `{"code" : "Course code to switch with", "section" : "the section to swap with"}`
+				- ex. `python CMS.py course get CSCC01H3 "{\"name\":\"Software Engineering\"}"`
+			- `post` creates a new course in the system
+				- Requires a json string as well
+					- format needs to be:
+					- `{"code" : "new value", "name" : "new value", "enrolment" : "new value", "department" : "new value",}`
+			- `delete` deletes a course from the system
+				- no body is required, deletes the passed course code from the system
+		- user
+			- user related commands
+			- `get` returns this users notifications
+				- ex. `python CMS.py user get 1` #returns notifications for user with id=1
+			- `put` moves notifications to a read state
+				- ex. `python CMS.py user put 1 "[\"course 6 has been changed\"]`
 
 
 _Note_: This entire setup assumes a python 2.7 environment. If you're running 3 onwards don't expect anything to work.

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
-from classes.models import Course, Department, CourseSchedule, Room, UserProfile, Notifications
+from classes.models import Course, Department, CourseSchedule, Room, UserProfile, Notifications, Student, Program, RequiredCourse
 from datetime import datetime
 
 def update_courses(items):
@@ -12,10 +12,95 @@ def update_courses(items):
 
 def update_schedule(items):
 	for item in items:
-		status = add_schedule(item, True)
-		if not status:
-			return status
+		cs = CourseSchedule.objects.filter(course = item["course"], typeOfSession = item["typeOfSession"], dayOfWeek = item["dayOfWeek"])
+		if cs.count() == 0:
+			status = add_schedule(item, True, True)
+			if not status:
+				return status
 	return "Successfully Updated"
+
+def update_enrolment(items, file):
+	name = str(file).split('.')[0]
+	cs = CourseSchedule.objects.filter(course = name)
+	if cs.count() == 0:
+		return "This course is not present in any Schedule. Unable to update the enrolment."
+	else:
+		course = Course.objects.filter(code = name)
+		cs.update(enrolment = len(items))
+		for s in items:
+			student = Student.objects.filter(utorid = s["utorid"]);
+			if student.count() == 0:
+				student = Student(utorid = s["utorid"], studentNumber = s["student-number"], lastName = s["last-name"], firstName = s["first-names"], email = s["email"])
+				student.save()
+				student.courses.add(course[0])
+				student.save()
+			else:
+				for st in student:
+					st.courses.add(course[0])
+					st.save()
+		return "Successfully Updated"
+
+def update_room(room_schedule, capacity):
+	room = Room.objects.filter(code = room_schedule[0].room)
+	if room.count() == 0:
+		r = Room(code = room_schedule[0].room, capacity = capacity)
+		r.save()
+	else:
+		room.update(capacity = capacity)
+	for s in room_schedule:
+		if s.course == "":
+			continue
+		item = CourseSchedule.objects.filter(course = s.course, typeOfSession = s.typeOfSession, dayOfWeek = s.dayOfWeek)
+		if item.count() == 0:
+			s.save()
+		else:
+			item.update(room = s.room, endTime = s.endTime)
+
+def update_department_programs(items):
+	for item in items:
+		p = Program.objects.filter(code = item["code"])
+		if p.count() == 0:
+			p = Program(code = item["code"], name = item["name"])
+			p.save()
+	return "Successfully Updated"
+
+def update_students_programs(items):
+	for item in items:
+		p = Program.objects.filter(code = item["program-code"])
+		if p.count() == 0:
+			return "Unable to update students programs. There is no such program: " + item["program-code"]
+		s = Student.objects.filter(utorid = item["utorid"])
+		if s.count() == 0:
+			return "Unable to update students programs. There is no such student: " + item["utorid"]
+		else:
+			s.update(programCode = p[0])
+	return "Successfully Updated"
+
+def update_program_requirements(items, file):
+	msg = ""
+	pCode = str(file).split('.')[0]
+	p = Program.objects.filter(code = pCode)
+	if p.count() == 0:
+		return "Unable to update program requirements. There is no such program: " + pCode
+	for item in items:
+		c = Course.objects.filter(code = item["course_code"])
+		if c.count() == 0:
+			msg += ("There is no such course: " + item["course_code"] + "\n")
+		else:
+			rc = RequiredCourse.objects.filter(code = c[0], req_type = item["req_type"])
+			if rc.count() == 0:
+				req = RequiredCourse(code = c[0], req_type = item["req_type"])
+				req.save()
+				p[0].requiredCourses.add(req)
+				p[0].save()
+			else:
+				p[0].requiredCourses.add(rc[0])
+				p[0].save()
+	if msg == "":
+		return "Successfully Updated"
+	else:
+		return msg
+
 
 def get_course(code):
 	courses = Course.objects.filter(code=code)
@@ -96,4 +181,3 @@ def update_notifications(user_id, new_notifications):
 	except Exception as e:
 		return False
 	return True
-
