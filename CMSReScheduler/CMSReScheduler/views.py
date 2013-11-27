@@ -9,8 +9,11 @@ from django.shortcuts import render, render_to_response
 from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
 from django.core import serializers
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.decorators import login_required
+from forms import UploadCsv, RegisterForm
 
-from forms import UploadCsv, InstructorRegistrationForm
 try:
 	import json
 except ImportError:
@@ -19,20 +22,95 @@ except ImportError:
 
 from classes.models import *
 
+
 '''Constant declaration'''
 GOOD_REQUEST = 200
 BAD_REQUEST = 400
 INTERNAL_ERROR = 500
 
-def index(request):
-	return render(request, 'index.html')
+# Log in the user or raise an error if information given is wrong
+def login_view(request):
+	if request.POST:
+		username = request.POST.get('username', '')
+		password = request.POST.get('password', '')
+		user = authenticate(username=username, password=password)
+		# Gets user profile by user id if username and password given match
+		if user is not None:
+			p = UserProfile.objects.get(pk=user.id)
+			# Verifies if the user's profile is active or the role is 'admin'
+			if p.active or p.role == 'admin':
+				login(request, user)
+				# Redirect to a success page depending on the user's role.
+				return HttpResponseRedirect("/?login=success")
+			else:
+				# Show an error page
+				return render_to_response("login.html", {"username": username, "message": "The user %s is pending validation." % username, "message_type": "error", "user": request.user}, context_instance=RequestContext(request))
+		else:
+			# Username and password given don't match or user doesn't exist.
+			return render_to_response("login.html", {"username": username, "message": "Incorrect username or password.", "message_type": "error", "user": request.user}, context_instance=RequestContext(request))
+	else:
+		if request.user.is_authenticated():
+			return HttpResponseRedirect("/?login=error")
+		else:
+			msg, msg_type = "", ""
+			if request.GET:
+				if "logout" in request.GET:
+					msg_type = request.GET['logout']
+					if msg_type == "error":
+						msg = "An error occurred when logging out. Please try again."
+					elif msg_type == "success":
+						msg = "You have logged out successfully."
+				elif "registration" in request.GET:
+					msg_type = request.GET['registration']
+					if msg_type == "success":
+						msg = "You have successfully been registered. Please log in."
+			return render_to_response('login.html', {"message": msg, "message_type": msg_type, "user": request.user}, context_instance=RequestContext(request))
 
+def logout_view(request):
+	if request.user.is_authenticated():
+		logout(request)
+		return HttpResponseRedirect("/login?logout=success")
+	else:
+		return HttpResponseRedirect("/login?logout=error")
+
+def register(request):
+	if request.method == 'POST':
+		form = RegisterForm(request.POST)
+		if form.is_valid():
+			new_user = form.save()
+			return HttpResponseRedirect("/login?registration=success")
+		else:
+			return render_to_response("register.html", {"form": form}, context_instance=RequestContext(request))
+	else:
+		if request.user.is_authenticated():
+			return HttpResponseRedirect("/?registration=error")
+		else:
+			form = RegisterForm()
+			return render_to_response("register.html", {"form": form}, context_instance=RequestContext(request))
+
+#@login_required
+def index(request):
+	msg, msg_type = "", ""
+	if request.GET:
+		if "login" in request.GET:
+			msg_type = request.GET["login"]
+			if msg_type == "success":
+				msg = "You have successfully been logged in."
+			elif msg_type == "error":
+				msg = "You are already logged in."
+		elif "registration" in request.GET:
+			msg = "You are already logged in. You don't need to register."
+			msg_type = "error"
+	return render(request, 'index.html', {"message": msg, "message_type": msg_type, "user": request.user })
+
+#@login_required
 def admin(request):
 	# TODO: Filter the results by instructor
 	daysOfWeek = ["MO", "TU", "WE", "TH", "FR"]
 	context = {}
 	for day in daysOfWeek:
 		context[day] = CourseSchedule.objects.filter(dayOfWeek=day).order_by("startTime")
+	context["user"] = request.user
 	return render(request, 'admin/index.html', context)
 
 def admin_upload(request):
@@ -67,7 +145,7 @@ def admin_upload(request):
 		if msg == "":
 			msg = "The %s file has been uploaded." % model_type
 			msg_type = "success"
-	return render_to_response('admin/upload.html', {'form': UploadCsv(), "departments": Department.objects.all, "message": msg, "message_type": msg_type}, context_instance=RequestContext(request))
+	return render_to_response('admin/upload.html', {'form': UploadCsv(), "departments": Department.objects.all, "message": msg, "message_type": msg_type, "user": request.user}, context_instance=RequestContext(request))
 
 '''This view should receive three strings:
 1 - which model will be used, shoulb be in the plural for consistency
@@ -110,30 +188,7 @@ def filter(request, model, fields, values):
 		status = INTERNAL_ERROR
 		return HttpResponse(content = data, status = status)
 
-'''The registration will consider the user role 
-because there are 3 differente classes to deal with users'''
-def registration(request, user_role):
-	if request.method == 'POST':
-		# Depending on the role, the appropriate form will be rendered
-		if user_role == 'instructor':
-			form = InstructorRegistrationForm(request.POST)
-			if form.is_valid():
-				new_user = form.save()
-				info = 'User registered successfully.'
-				status = GOOD_REQUEST
-			else:
-				info = 'Invalid form.'
-				status = BAD_REQUEST
-		else:
-			# There is no "neutral user", so every registration has to include the role
-			info = 'Select one of the roles available.'
-			status = BAD_REQUEST
-		return render_to_response(content=info, status=status)
-	else:
-		form = InstructorRegistrationForm()
-		status = GOOD_REQUEST
-	return render_to_response('registration.html', {'form': form}, status=status, context_instance=RequestContext(request))
-
+@csrf_exempt
 def course(request, course, section):
 	''' 
 		Perform an action on a course 
@@ -156,7 +211,7 @@ def course(request, course, section):
 				"department" : "new value",
 			}
 	'''
-	info = {"Error" : "Nothing happened somehow"}
+	info = {}
 	status = INTERNAL_ERROR
 	body = ""
 	# If the request has a body, assume that it is json. And parse it.
@@ -169,50 +224,57 @@ def course(request, course, section):
 	try:
 		# Modifying a course if its a put request
 		if request.method == "PUT":
-			current = classutils.get_course(course)
-			# if the body has a name key, then it's a request for changing the name
-			if body.has_key("name"):
-				if body["name"]:
+			if body:
+				current = classutils.get_course(course)
+				# get fields for course:
+				fields = ["code", "name"]
+				for field in fields:
 					try:
-						current.enrolment = body["name"] 
-						info.setdefault("name", "Updated")
+						if body.has_key(field):
+							value = body.get(field)
+							if value:
+								exec("current." + field + " = value")
+								info.setdefault(field, "Updated")
+							else:
+								info.setdefault(field, "Error: name entry was blank")
 					except Exception as e:
-						info.setdefault("name", "Error: " + str(e))
-				else:
-					info.setdefault("name", "Error: name entry was blank")
-			# same Applies to enrolment
-			if body.has_key("enrolment"):
-				try:
-					current.enrolment = body["enrolment"]
-					info.setdefault("enrolment", "Updated")
-				except Exception as e:
-					info.setdefault("enrolment", "Error: " + str(e))
-			# and as well with department, these are separate if statements if the user wants to make multiple changes in one request
-			if body.has_key("department"):
-				try:
-					current.department = department.objects.get(name = body["department"])
-					info.setdefault("department", "Updated")
-				except Exception as e:
-					info.setdefault("department", "Error: " + str(e))
-			# Special key switch will switch all details but course and typeOfSession between two CourseSchedules
-			if section and body.has_key("switch"):
-				try:
-					current = CourseSchedule.objects.filter(course = current, typeOfSession = section)[0]
-					to_switch = classutils.get_course(body["switch"]["code"])
-					next = CourseSchedule.objects.filter(course = to_switch, typeOfSession = body["switch"]["section"])[0]
-					current.course, next.course = next.course, current.course
-					current.typeOfSession, next.typeOfSession = next.typeOfSession, current.typeOfSession
-					current.save()
-					next.save()
-					info = {"info" : course + section + " and " + body["switch"]["code"] + body["switch"]["section"] + " switched"}
-					status  = GOOD_REQUEST
-				except Exception as e:
-					info.setdefault("department", "Error: " + str(e))
-			if info:
+						info["Error"] = "Error updating"
+						info.setdefault(field, "Error: " + str(e))
+						status = BAD_REQUEST
+				if body.has_key("department"):
+					value = body.get("department")
+					if value:
+						department = current.department
+						if (Department.objects.filter(name = body["department"]).count == 1):
+							department = Department.objects.get(name = body["department"])
+						else:
+							department = Department(name = body["department"], numberOfLecturers=0)
+							department.save()
+						current.department = department
+						info.setdefault("department", "Updated")
+						status = GOOD_REQUEST
+					else:
+						info.setdefault(field, "Error: Department entry was blank")
+				# Special key switch will switch all details but course and typeOfSession between two CourseSchedules
+				if section and body.has_key("switch"):
+					try:
+						current = CourseSchedule.objects.filter(course = current, typeOfSession = section)[0]
+						to_switch = classutils.get_course(body["switch"]["code"])
+						next = CourseSchedule.objects.filter(course = to_switch, typeOfSession = body["switch"]["section"])[0]
+						current.course, next.course = next.course, current.course
+						current.typeOfSession, next.typeOfSession = next.typeOfSession, current.typeOfSession
+						current.save()
+						next.save()
+						info = {"info" : course + section + " and " + body["switch"]["code"] + body["switch"]["section"] + " switched"}
+						status  = GOOD_REQUEST
+					except Exception as e:
+						status = BAD_REQUEST
+						info.setdefault("department", "Error: " + str(e))
+			if status == GOOD_REQUEST:
+				notification = "%s has been modified" % course
+				classutils.new_notification(notification)
 				current.save()
-				status = GOOD_REQUEST
 			else:
-				info = {"Error" : "Nothing updated"}
 				status = BAD_REQUEST
 		elif request.method == "GET":
 			current = classutils.get_course(course)
@@ -291,4 +353,35 @@ def department_schedule(request, department_name, instructor_name):
 	except Exception as e:
 		return HttpResponseNotFound(e)
 
+
+@csrf_exempt
+def user(request, user_id):
+	info = {"Error" : "Nothing happened somehow"}
+	status = INTERNAL_ERROR
+	body = ""
+	# If the request has a body, assume that it is json. And parse it.
+	if request.body:
+		try:
+			body = json.loads(request.body)
+		except:
+			info = {"Error" : "Badly formatted Json"}
+			body = None
+	try:
+		if request.method == "GET":
+			info = classutils.get_notifications(user_id)
+			status = GOOD_REQUEST
+		elif request.method == "PUT":
+			data = classutils.get_notifications(user_id)
+			status = BAD_REQUEST
+			if body.has_key("read"):
+				if type(body["read"]) == list:
+					if classutils.update_notifications(user_id, body["read"]):
+						status = GOOD_REQUEST
+						info = {"Status" : "Updated successfully"}
+					else:
+						status = INTERNAL_ERROR
+	except Exception as e:
+		info = {"Error" : str(e)}
+	data = json.dumps(info)
+	return HttpResponse(content = data, status = status)
 

@@ -1,9 +1,6 @@
 		{% include "layouts/header.html" with title="Admin Upload" active="admin" %}
 		{% include "layouts/admin-sidebar.html" with active="upload" %}
 		<div class="content fleft">
-			{% if message_type != "" %}
-				<div class="message" id="{{ message_type }}">{{ message }}</div>
-			{% endif %}
 			<form action="." method="post" enctype="multipart/form-data" class="form-left" id="admin-upload-form">
 				{% csrf_token %}
 				<div class="form-entry">
