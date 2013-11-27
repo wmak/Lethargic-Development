@@ -17,7 +17,7 @@ except ImportError:
 	# Python 2.5
 	import simplejson as json
 
-from classes.models import Course, Department, CourseSchedule
+from classes.models import *
 
 '''Constant declaration'''
 GOOD_REQUEST = 200
@@ -258,6 +258,7 @@ def department_schedule(request, department_name, instructor_name):
 	''' Takes in a request object as well as two strings for the name of the department and the name
 		of the instructor. Returns this a schedule of the instructor to departments.html.
 	'''
+
 	try:
 		department = Department.objects.get(name=department_name)
 		instructor = Instructor.objects.get(name=instructor_name)
@@ -287,7 +288,7 @@ def department_schedule(request, department_name, instructor_name):
 		else:
 			return HttpResponseNotFound('<h1>Page not found. Invalid department or instructor name </h1>')
 			
-	except Exception:
-		return HttpResponseNotFound('<h1>Page not found. EXCEPTION </h1>')
+	except Exception as e:
+		return HttpResponseNotFound(e)
 
 
