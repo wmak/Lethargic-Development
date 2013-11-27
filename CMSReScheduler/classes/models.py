@@ -1,6 +1,9 @@
 from django.db import models
 from datetime import datetime
+from django.contrib.auth.models import User
+from django.db.models.signals import post_save
 # Create your models here.
+
 class DepartmentManager(models.Manager):
 	def create_department(self, name, numberOfLecturers):
 		department = self.create(name=name, numberOfLecturers=numberOfLecturers)
@@ -19,13 +22,12 @@ class CourseManager(models.Manager):
 		return course
 
 class Course(models.Model):
+	code = models.CharField(max_length=9) #ex. CSCC01H3F
+	name = models.CharField(max_length=50)
+	department = models.ForeignKey(Department)
 
-		code = models.CharField(max_length=9) #ex. CSCC01H3F
-		name = models.CharField(max_length=50)
-		department = models.ForeignKey(Department)
-
-		def __unicode__(self):
-				return u'%s - %s' % (self.code, self.name)
+	def __unicode__(self):
+			return u'%s - %s' % (self.code, self.name)
 
 class RoomManager(models.Manager):
 
@@ -50,34 +52,40 @@ class UserManager(models.Manager):
 		return user
 
 
+class Notifications(models.Model):
+	data = models.CharField(max_length=128)#Change to width of the text box
 
-class User(models.Model):
-		name = models.CharField(max_length=30)
-		address = models.CharField(max_length=50)
-		email = models.EmailField()
-		department = models.ForeignKey(Department)
+#Profile connected to each User created. Fields are not required because
+#for each user created, a profile is automatically created also.
+#The user registration doesn't include department, courses and so on
+class UserProfile(models.Model):
+	user = models.OneToOneField('auth.User', related_name='profile', primary_key=True)
+	department = models.ForeignKey(Department, null=True, blank=True)
+	address = models.CharField(max_length=50)
+	myCourses = models.ManyToManyField(Course, null=True, blank=True)
+	role = models.CharField(max_length = 10) # Instructor, admin or chair
+	notifications = models.ManyToManyField(Notifications)
+	read_notifications = models.ManyToManyField(Notifications, related_name='notifications')
+	#Every user, when created, is inactive.
+	notify = models.BooleanField(default=True)
+	active = models.BooleanField(default=False)
 
-		def __unicode__(self):
-				return self.name
 
+	def __str__(self):  
+		return "%s's profile" % self.user  
 
-class Instructor(User):                        #incomplete
-		room = models.ForeignKey(Room)
-		myCourses = models.ManyToManyField(Course)
+	def create_user_profile(sender, instance, created, **kwargs):  
+		if created:  
+			profile, created = UserProfile.objects.get_or_create(user=instance)
 
-		def __unicode__(self):
-				return u'Professor %s' % (self.name)
+	def is_active():
+		return active
 
-		def getSchedule():
-				schedule = []
-				for c in myCourses:
-						schedule.append(CourseSchedule.objects.filter(course = c))
-				return schedule
-
-class Chair(Instructor):
-		
-	#def prohibitChanges():
-		#TODO
+	def getSchedule():
+		schedule = []
+		for c in myCourses:
+				schedule.append(CourseSchedule.objects.filter(course = c))
+		return schedule
 
 	def viewDepartmentInstructors():
 		return Instructor.objects.filter(department = self.department)
@@ -95,24 +103,24 @@ class Chair(Instructor):
 			schedule.append(CourseSchedule.objects.filter(course = c))
 		return schedule
 
+	def listClassrooms():
+		return Room.objects.get(~Q(capacity = 1))
 
-class UndergradAdminAssistant(User):
+	def getChairs():
+			return Chair.objects.all
 
-		#This method returns all classrooms, that is,
-		#rooms with capacity different from 1.
-		def listClassrooms():
-				return Room.objects.get(~Q(capacity = 1))
 
-		def getChairs():
-				return Chair.objects.all
+	def getInstructorsOfDepartment(dept):
+			return Instructor.objects.filter(department = dept)
 
-		def getInstructorsOfDepartment(dept):
-					return Instructor.objects.filter(department = dept)
+	def checkEnrolment(courseCode):
+			c = Course.objects.get(code = courseCode)
+			return c.enrolment
 
-		def checkEnrolment(courseCode):
-				c = Course.objects.get(code = courseCode)
-				return c.enrolment
-
+def create_user_profile(sender, instance, created, **kwargs):
+	if created:
+		UserProfile.objects.create(user=instance)
+post_save.connect(create_user_profile, sender=User)
 
 class CourseScheduleManager(models.Manager):
 	def create_course_schedule(self, course, room, dayOfWeek, department, length, typeOfSession, enrolment):
@@ -126,7 +134,7 @@ class CourseSchedule(models.Model):
 	room = models.CharField(max_length=10) #must be a valid room code
 	dayOfWeek = models.CharField(max_length = 9)
 	startTime = models.TimeField()
-	endTime = models.TimeField() #in minutes
+	endTime = models.TimeField()
 	typeOfSession = models.CharField(max_length = 7) # LEC, TUT or PRA
 	enrolment = models.IntegerField()
 

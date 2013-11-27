@@ -9,11 +9,12 @@
 						{% if forloop.counter == 1 %}
 							&nbsp;
 						{% else %}
-							&nbsp;<br />{{ forloop.counter|schedule_time }}<br />&nbsp;
+							&nbsp;<br />{{ forloop.counter|get_time }}<br />&nbsp;
 						{% endif %}
 					</div>
 				{% endfor %}
 			</div>
+<<<<<<< HEAD
 			<!-- *** TODO: Refector into a loop *** -->
 			<div class="schedule-column">
 				<div class="schedule-cell schedule-day">
@@ -78,35 +79,40 @@
 								{% endif %}
 							{% endwith %}
 						{% endwith %}
+=======
+			{% for i in 5|get_range %}
+				<div class="schedule-column">
+					<div class="schedule-cell schedule-day">
+						{{ i|schedule_day }}
+>>>>>>> develop
 					</div>
-				{% endfor %}
-			</div>
-			<div class="schedule-column">
-				<div class="schedule-cell schedule-day">
-					{{ 4|schedule_day }}
-				</div>
-				{% for i in 17|get_range %}
-					<div class="schedule-cell">
-						{% with time=i|get_time %}
-							{% with course=TH|has_course:time %}
+					{% for j in 17|get_range %}
+						{% with time=j|get_time:False %}
+							{% with course=i|get_courses_by_day|get_course:time %}
 								{% if course == None %}
-									&nbsp;<br />
-									&nbsp;<br />
-									&nbsp;
+									<a class="schedule-cell">
+										&nbsp;<br />
+										&nbsp;<br />
+										&nbsp;
+									</a>
 								{% else %}
+<<<<<<< HEAD
 									{{ course.course }}<br />
 									{{ course.typeOfSession }}<br />
 									{{ course.room }}
+=======
+									<a class="schedule-cell course" href="#">
+										<div id="course">{{ course.course }}</div>
+										<div id="typeOfSession">{{ course.typeOfSession }}</div>
+										<div id="room">{{ course.room }}</div>
+									</a>
+>>>>>>> develop
 								{% endif %}
 							{% endwith %}
 						{% endwith %}
-					</div>
-				{% endfor %}
-			</div>
-			<div class="schedule-column">
-				<div class="schedule-cell schedule-day">
-					{{ 5|schedule_day }}
+					{% endfor %}
 				</div>
+<<<<<<< HEAD
 				{% for i in 17|get_range %}
 					<div class="schedule-cell">
 						{% with time=i|get_time %}
@@ -125,6 +131,9 @@
 					</div>
 				{% endfor %}
 			</div>
+=======
+			{% endfor %}
+>>>>>>> develop
 			<div class="clear"></div>
 		</div>
 		{% endblock %}
