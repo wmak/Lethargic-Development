@@ -247,9 +247,10 @@ def index(request):
 			elif "registration" in request.GET:
 				msg = "You are already logged in. You don't need to register."
 				msg_type = "error"
-		return render(request, 'index.html', {"message": msg, "message_type": msg_type, "user": request.user, "notifications": UserProfile.objects.get(user=request.user).notifications, "read_notifications": UserProfile.objects.get(user=request.user).read_notifications })
+		instructor = UserProfile.objects.get(user__username=request.user.username)
+		return render(request, 'index.html', {"instructor": instructor, "message": msg, "message_type": msg_type, "user": request.user, "notifications": UserProfile.objects.get(user=request.user).notifications, "read_notifications": UserProfile.objects.get(user=request.user).read_notifications })
 	else:
-		return render(request, 'index.html')
+		return HttpResponseRedirect('/login')
 
 #@login_required
 def admin(request):
