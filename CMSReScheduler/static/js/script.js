@@ -13,9 +13,9 @@ function toggleNotifications(obj) {
 function selectUploadType(self, value) {
 	if (self.options[self.selectedIndex].value == "schedule") {
 		document.getElementById('department').style.display = "block";
-		document.getElementById('instructor').style.display = "block";
-		document.getElementById('file').style.display = "block";
-		document.getElementById('submit').style.display = "block";
+		document.getElementById('instructor').style.display = "none";
+		document.getElementById('file').style.display = "none";
+		document.getElementById('submit').style.display = "none";
 	} else if (self.options[self.selectedIndex].value == "course") {
 		document.getElementById('department').style.display = "none";
 		document.getElementById('instructor').style.display = "none";
@@ -75,6 +75,7 @@ $(document).ready(function() {
 			});
 		} else {
 			$("#instructor").css("display", "none");
+			$("#file").css("display", "none");
 			$("#submit").css("display", "none");
 			$("select[name='instructor'").html("<option value=''>Select Instructor</option>");
 			$(this).closest("#schedule-view-form").attr("action", "/admin/schedule/");
@@ -84,8 +85,10 @@ $(document).ready(function() {
 	$("body").on("change", "select[name='instructor']", function() {
 		if ($(this).val() != "") {
 			$(this).closest("#schedule-view-form").attr("action", "/admin/schedule/" + $(this).val() + "/");
+			$("#file").css("display", "block");
 			$("#submit").css("display", "block");
 		} else {
+			$("#file").css("display", "none");
 			$("#submit").css("display", "none");
 			$(this).closest("#schedule-view-form").attr("action", "/admin/schedule/");
 		}
