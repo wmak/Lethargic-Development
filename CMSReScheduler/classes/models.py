@@ -75,42 +75,6 @@ class UserProfile(models.Model):
 	def is_active():
 		return active
 
-	def getSchedule():
-		schedule = []
-		for c in myCourses:
-				schedule.append(CourseSchedule.objects.filter(course = c))
-		return schedule
-
-	def viewDepartmentInstructors():
-		return Instructor.objects.filter(department = self.department)
-	
-	def viewInstructorsSchedules():
-		instructors = viewDepartmentInstructors();
-		schedules = []
-		for i in instructors:
-			schedules.append(i.getSchedule())
-		return schedules
-
-	def getSchedule():
-		schedule = []
-		for c in myCourses:
-			schedule.append(CourseSchedule.objects.filter(course = c))
-		return schedule
-
-	def listClassrooms():
-		return Room.objects.get(~Q(capacity = 1))
-
-	def getChairs():
-			return Chair.objects.all
-
-	def getInstructorsOfDepartment(dept):
-			return Instructor.objects.filter(department = dept)
-
-
-	def checkEnrolment(courseCode):
-			c = Course.objects.get(code = courseCode)
-			return c.enrolment
-
 def create_user_profile(sender, instance, created, **kwargs):
 	if created:
 		profile, created = UserProfile.objects.get_or_create(user=instance)
