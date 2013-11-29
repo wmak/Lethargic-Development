@@ -545,7 +545,6 @@ def department_schedule(request, department_name, instructor_name):
 		instructor = Instructor.objects.get(name=instructor_name)
 
 		if department and  instructor:
-			chair = Chair.objects.get(deartment=department_name)
 			courses = instructor.getSchedule()
 			course_code = []
 			course_name = []
