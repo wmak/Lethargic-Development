@@ -40,19 +40,19 @@ def schedule_time(value):
 		return str(value + 5) + ":00 AM"
 
 @register.filter
-#def has_course(value, arg):
-
-def get_courses_by_day(value):
-	return CourseSchedule.objects.filter(dayOfWeek=daysOfWeek[value][0])
+def get_courses_by_day(value, arg):
+	courses = []
+	for course in arg.myCourses.all():
+		courses += CourseSchedule.objects.get(course=course.code)
+	course_schedule = []
+	for course in courses:
+		if course.dayOfWeek == daysOfWeek[value][0]:
+			course_schedule += course
+	return course_schedule
 
 @register.filter
 def get_course(value, arg):
-	course = value.filter(startTime=arg)
-	if not course:
-		return None
-	else:
-		return course[0]
-
-@register.filter
-def get_courses_by_day(value):
-        return CourseSchedule.objects.filter(dayOfWeek=daysOfWeek[value][0])
+	for course in value:
+		if course.startTime == arg:
+			return course
+	return None

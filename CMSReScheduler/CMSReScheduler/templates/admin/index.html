@@ -3,8 +3,9 @@
 	{% block content %}
 	<div class="content fleft">
 		<h2>Select a schedule to view</h2>
-		<form action="/schedule/" method="get" class="form-left" id="schedule-view-form">
+		<form action="/admin/schedule/" method="post" class="form-left" id="schedule-view-form">
 			<div class="form-entry" id="department">
+				{% csrf_token %}
 				<div class="form-label">Department: </div>
 				<select name="department" class="form-input">
 					<option value="">Select Department</option>

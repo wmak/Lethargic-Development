@@ -67,7 +67,6 @@ $(document).ready(function() {
 		if ($(this).val() != "") {
 			$("#instructor").css("display", "block");
 			$("select[name='instructor'").html("<option value=''>Select Instructor</option>");
-			$(this).closest("#schedule-view-form").attr("action", "/schedule/" + $(this).val() + "/");
 			var url = "/instructors/" + $(this).val();
 			$.getJSON(url, function(data) {
 				$.each(data.instructors, function(index) {
@@ -78,22 +77,17 @@ $(document).ready(function() {
 			$("#instructor").css("display", "none");
 			$("#submit").css("display", "none");
 			$("select[name='instructor'").html("<option value=''>Select Instructor</option>");
-			$(this).closest("#schedule-view-form").attr("action", "/schedule/");
+			$(this).closest("#schedule-view-form").attr("action", "/admin/schedule/");
 		}
 	});
 
 	$("#schedule-view-form").on("change", "select[name='instructor']", function() {
-		action = $(this).closest("#schedule-view-form").attr("action");
 		if ($(this).val() != "") {
-			if ((action.split("/").length - 1) == 4) {
-				$(this).closest("#schedule-view-form").attr("action", action.substring(0, action.lastIndexOf("/", action.length - 2)) + "/" + $(this).val() + "/")
-			} else {
-				$(this).closest("#schedule-view-form").attr("action", action + $(this).val() + "/");
-			}
+			$(this).closest("#schedule-view-form").attr("action", "/admin/schedule/" + $(this).val() + "/");
 			$("#submit").css("display", "block");
 		} else {
 			$("#submit").css("display", "none");
-			$(this).closest("#schedule-view-form").attr("action", action.substring(0, action.lastIndexOf("/", action.length - 2)) + "/");
+			$(this).closest("#schedule-view-form").attr("action", "/admin/schedule/");
 		}
 	});
 });

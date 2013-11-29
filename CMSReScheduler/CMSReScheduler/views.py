@@ -253,11 +253,7 @@ def index(request):
 
 #@login_required
 def admin(request):
-	# TODO: Filter the results by instructor
-	daysOfWeek = ["MO", "TU", "WE", "TH", "FR"]
 	context = {}
-	for day in daysOfWeek:
-		context[day] = CourseSchedule.objects.filter(dayOfWeek=day).order_by("startTime")
 	context["user"] = request.user
 	context["notifications"] = UserProfile.objects.get(user=request.user).notifications
 	context["read_notifications"] = UserProfile.objects.get(user=request.user).read_notifications
@@ -308,6 +304,17 @@ def admin_upload(request):
 			msg = "The %s file has been uploaded." % model_type
 			msg_type = "success"
 	return render_to_response('admin/upload.html', {'form': UploadCsv(), "departments": Department.objects.all, "message": msg, "message_type": msg_type, "user": request.user, "notifications": UserProfile.objects.get(user=request.user).notifications, "read_notifications": UserProfile.objects.get(user=request.user).read_notifications }, context_instance=RequestContext(request))
+
+def admin_schedule(request, instructor_name):
+	context = {}
+	try:
+		instructor = UserProfile.objects.get(user__username=instructor_name)
+		if instructor:
+			return render_to_response("admin/schedule.html", {"instructor": instructor, "user": request.user, "notifications": UserProfile.objects.get(user=request.user).notifications, "read_notifications": UserProfile.objects.get(user=request.user).read_notifications}, context_instance=RequestContext(request))
+		else:
+			return render_to_response("admin/schedule.html", {"message": "Invalid instructor", "message_type": "error", "user": request.user, "notifications": UserProfile.objects.get(user=request.user).notifications, "read_notifications": UserProfile.objects.get(user=request.user).read_notifications}, context_instance=RequestContext(request))
+  	except Exception as e:
+  		return HttpResponseNotFound(e)
 
 '''This view should receive one string:
 1 - which model will be used, shoulb be in the plural for consistency
