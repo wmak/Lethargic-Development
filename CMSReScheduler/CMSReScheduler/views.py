@@ -269,7 +269,7 @@ def admin_upload(request):
 			if model_type == 'schedule':
 				format = ['course', 'typeOfSession', 'dayOfWeek', 'startTime', 'endTime', 'room']
 				parser_list = csvutils.parse(request.FILES['file'], format, ',')
-				classutils.update_schedule(parser_list)
+				classutils.update_schedule(parser_list, request.POST['instructor'])
 			elif model_type == 'room':
 			 	capacity, parser_list = csvutils.parse_room_file(request.FILES['file'])
 			 	classutils.update_room(parser_list, capacity)
@@ -297,7 +297,7 @@ def admin_upload(request):
 				msg = "Invalid type."
 				msg_type = "error"
 		except Exception as e:
-			msg = "Invalid file." + str(e)
+			msg = "Invalid file. " + str(e)
 			msg_type = "error"
 
 		if msg == "":

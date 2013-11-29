@@ -43,16 +43,17 @@ def schedule_time(value):
 def get_courses_by_day(value, arg):
 	courses = []
 	for course in arg.myCourses.all():
-		courses += CourseSchedule.objects.get(course=course.code)
+		for temp in CourseSchedule.objects.filter(course=course.code):
+			courses.append(temp)
 	course_schedule = []
 	for course in courses:
 		if course.dayOfWeek == daysOfWeek[value][0]:
-			course_schedule += course
+			course_schedule.append(course)
 	return course_schedule
 
 @register.filter
 def get_course(value, arg):
 	for course in value:
-		if course.startTime == arg:
+		if str(course.startTime) == arg:
 			return course
 	return None

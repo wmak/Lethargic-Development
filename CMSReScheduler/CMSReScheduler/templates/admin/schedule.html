@@ -1,0 +1,47 @@
+	{% include "layouts/header.html" with title="Schedule" active="admin" %}
+	{% include "layouts/admin-sidebar.html" %}
+	{% block content %}
+	<div class="content fleft">
+		{% load schedule %}
+        <div class="schedule-column">
+            {% for i in 18|get_range %}
+                <div class="schedule-cell schedule-time">
+                    {% if forloop.counter == 1 %}
+                        &nbsp;
+                    {% else %}
+                        &nbsp;<br />{{ forloop.counter|get_time:True }}<br />&nbsp;
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+        {% for i in 5|get_range %}
+            <div class="schedule-column">
+                <div class="schedule-cell schedule-day">
+                    {{ i|schedule_day }}
+                </div>
+                {% for j in 17|get_range %}
+                    {% with time=j|get_time %}
+                        {% with course=i|get_courses_by_day:instructor|get_course:time %}
+                            {% if course == None %}
+                               	<a class="schedule-cell">
+                                    &nbsp;<br />
+                                    &nbsp;<br />
+                                    &nbsp;
+                                </a>
+                            {% else %}
+                                <a class="schedule-cell course" href="#">
+                                    <div id="course">{{ course.course }}</div>
+                                    <div id="typeOfSession">{{ course.typeOfSession }}</div>
+                                    <div id="room">{{ course.room }}</div>
+                                </a>
+                            {% endif %}
+                        {% endwith %}
+                    {% endwith %}
+                {% endfor %}
+            </div>
+        {% endfor %}
+        <div class="clear"></div>
+    </div>
+    {% endblock %}
+	<div class="clear"></div>
+	{% include "layouts/footer.html" %}

@@ -63,7 +63,7 @@ $(document).ready(function() {
 		});
 	});
 
-	$("#schedule-view-form").on("change", "select[name='department']", function() {
+	$("body").on("change", "select[name='department']", function() {
 		if ($(this).val() != "") {
 			$("#instructor").css("display", "block");
 			$("select[name='instructor'").html("<option value=''>Select Instructor</option>");
@@ -81,7 +81,7 @@ $(document).ready(function() {
 		}
 	});
 
-	$("#schedule-view-form").on("change", "select[name='instructor']", function() {
+	$("body").on("change", "select[name='instructor']", function() {
 		if ($(this).val() != "") {
 			$(this).closest("#schedule-view-form").attr("action", "/admin/schedule/" + $(this).val() + "/");
 			$("#submit").css("display", "block");
