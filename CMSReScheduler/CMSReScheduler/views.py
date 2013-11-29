@@ -261,6 +261,7 @@ def admin(request):
 	context["user"] = request.user
 	context["notifications"] = UserProfile.objects.get(user=request.user).notifications
 	context["read_notifications"] = UserProfile.objects.get(user=request.user).read_notifications
+	context["departments"] = Department.objects.all
 	return render(request, 'admin/index.html', context)
 
 def admin_upload(request):
@@ -576,6 +577,26 @@ def department_schedule(request, department_name, instructor_name):
 	except Exception as e:
 		return HttpResponseNotFound(e)
 
+@csrf_exempt
+def instructors(request, department_name):
+	info = {"Error" : "Nothing happened somehow"}
+	status = INTERNAL_ERROR
+	try:
+		department = Department.objects.get(name=department_name)
+
+		if department:
+			instructors = []
+			for instructor in UserProfile.objects.filter(department__name=department.name):
+				instructors += [instructor.user.username]
+			info = {"instructors" : instructors }
+			status = GOOD_REQUEST
+		else:
+			info = {"Error" : "Department could not be found"}
+			status = BAD_REQUEST
+	except Exception as e:
+		info = {"Error" : str(e)}
+	data = json.dumps(info)
+	return HttpResponse(content = data, status = status)
 
 @csrf_exempt
 def user(request, user_id):

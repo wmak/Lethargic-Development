@@ -55,13 +55,46 @@ function selectUploadType(self, value) {
 
 }
 
-
 $(document).ready(function() {
 	$("body").on("click", "a.schedule-cell.course", function() {
 		var url = "/course/" + $(this).find("#course").html();
 		$.getJSON(url, function(data) {
 			console.log(data);
 		});
+	});
+
+	$("#schedule-view-form").on("change", "select[name='department']", function() {
+		if ($(this).val() != "") {
+			$("#instructor").css("display", "block");
+			$("select[name='instructor'").html("<option value=''>Select Instructor</option>");
+			$(this).closest("#schedule-view-form").attr("action", "/schedule/" + $(this).val() + "/");
+			var url = "/instructors/" + $(this).val();
+			$.getJSON(url, function(data) {
+				$.each(data.instructors, function(index) {
+					$("select[name='instructor'").append("<option value='" + data.instructors[index] + "'>" + data.instructors[index] + "</option>");
+				});
+			});
+		} else {
+			$("#instructor").css("display", "none");
+			$("#submit").css("display", "none");
+			$("select[name='instructor'").html("<option value=''>Select Instructor</option>");
+			$(this).closest("#schedule-view-form").attr("action", "/schedule/");
+		}
+	});
+
+	$("#schedule-view-form").on("change", "select[name='instructor']", function() {
+		action = $(this).closest("#schedule-view-form").attr("action");
+		if ($(this).val() != "") {
+			if ((action.split("/").length - 1) == 4) {
+				$(this).closest("#schedule-view-form").attr("action", action.substring(0, action.lastIndexOf("/", action.length - 2)) + "/" + $(this).val() + "/")
+			} else {
+				$(this).closest("#schedule-view-form").attr("action", action + $(this).val() + "/");
+			}
+			$("#submit").css("display", "block");
+		} else {
+			$("#submit").css("display", "none");
+			$(this).closest("#schedule-view-form").attr("action", action.substring(0, action.lastIndexOf("/", action.length - 2)) + "/");
+		}
 	});
 });
 
