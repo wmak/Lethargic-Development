@@ -535,17 +535,18 @@ def room_schedule(request, room_code):
 		return HttpResponseNotFound(e)
 
 
-def department_schedule(request, department_name, instructor_name):
+def department_schedule(request, department_name, user_name):
 	''' Takes in a request object as well as two strings for the name of the department and the name
 		of the instructor. Returns this a schedule of the instructor to departments.html.
 	'''
 
 	try:
 		department = Department.objects.get(name=department_name)
-		instructor = Instructor.objects.get(name=instructor_name)
+		instructor = UserProfile.objects.get(user=user_name, role='Instructor')
+		chair = UserProfile.objects.get(department=department_name, role='Chair')
 
 		if department and  instructor:
-			courses = instructor.getSchedule()
+			courses = instructor.myCOurses
 			course_code = []
 			course_name = []
 			class_type = []
@@ -566,7 +567,7 @@ def department_schedule(request, department_name, instructor_name):
 			super_list = zip(course_code, class_type, course_name, days, start_times, end_times)
 
 
-			context = {'room': room, }
+			context = {'list': super_list, 'department': department, 'instructor': instructor, 'chair': chair}
 
 			return render_to_response('departments.html', context, context_instance=RequestContext(request))
 		else:
