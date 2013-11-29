@@ -46,11 +46,6 @@ class Room(models.Model):
 			return CourseSchedule.objects.filter(room = self)
 
 
-class UserManager(models.Manager):
-	def create_user(self, name, address, email, department):
-		user = self.create(name=name, address=address, email=email, department=department)
-		return user
-
 
 class Notifications(models.Model):
 	data = models.CharField(max_length=128)#Change to width of the text box
