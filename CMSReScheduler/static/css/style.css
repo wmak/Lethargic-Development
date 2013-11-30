@@ -191,18 +191,19 @@ footer {
 		border-style: solid;
 		border-width: 0 12px 10px 12px;
 	}
-		#header-nav > #notifications-box > ul > li.notification {
+		#header-nav > #notifications-box > ul > a.notification {
+			display: list-item;
 			padding: 10px;
 			list-style: none;
 			border-bottom: 1px #000 solid;
 		}
-		#header-nav > #notifications-box > ul > li.notification:hover {
+		#header-nav > #notifications-box > ul > a.notification:hover {
 			cursor: pointer;
 		}
-		#header-nav > #notifications-box > ul > li.notification.active {
+		#header-nav > #notifications-box > ul > a.notification.active {
 			background: rgba(30, 144, 255, 0.3);
 		}
-		#header-nav > #notifications-box > ul > li.notification:last-child {
+		#header-nav > #notifications-box > ul > a.notification:last-child {
 			border-bottom: none;
 		}
 

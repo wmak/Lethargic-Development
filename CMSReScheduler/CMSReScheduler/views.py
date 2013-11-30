@@ -122,7 +122,7 @@ def edit_profile(request):
 				return HttpResponseRedirect('/')
 		else:
 			form = ProfileEditForm(instance=profile)
-		return render_to_response("profile.html", {"form": form, "user": request.user,  "notifications": UserProfile.objects.get(user=request.user).notifications, "read_notifications": UserProfile.objects.get(user=request.user).read_notifications }, context_instance=RequestContext(request))
+		return render_to_response("profile.html", {"form": form, "user": request.user,  "notifications": UserProfile.objects.get(user=request.user).notifications.all()[:5], "read_notifications": UserProfile.objects.get(user=request.user).read_notifications.all()[:5]}, context_instance=RequestContext(request))
 
 # This method provides a way for the admin to edit another user's profile
 def admin_edit_profile(request, username):
@@ -147,7 +147,7 @@ def admin_edit_profile(request, username):
 					msg = "User profile edited successfully"
 				elif msg_type == "error":
 					msg = "An error occurred when editing the user profile."
-			return render_to_response("admin_edit_profile.html", {"form": form, "message": msg, "message_type": msg_type,  "notifications": UserProfile.objects.get(user=request.user).notifications, "read_notifications": UserProfile.objects.get(user=request.user).read_notifications }, context_instance=RequestContext(request))
+			return render_to_response("admin_edit_profile.html", {"form": form, "message": msg, "message_type": msg_type,  "notifications": UserProfile.objects.get(user=request.user).notifications.all()[:5], "read_notifications": UserProfile.objects.get(user=request.user).read_notifications.all()[:5]}, context_instance=RequestContext(request))
 		else:
 			return HttpResponse('You do not have permission to access the page requested.')
 
@@ -173,7 +173,7 @@ def admin_edit_user(request, username):
 					msg = "User edited successfully"
 				elif msg_type == "error":
 					msg = "An error occurred when editing the user."
-			return render_to_response("admin_edit_user.html", {"form": form, "message": msg, "message_type": msg_type,  "notifications": UserProfile.objects.get(user=request.user).notifications, "read_notifications": UserProfile.objects.get(user=request.user).read_notifications }, context_instance=RequestContext(request))
+			return render_to_response("admin_edit_user.html", {"form": form, "message": msg, "message_type": msg_type,  "notifications": UserProfile.objects.get(user=request.user).notifications.all()[:5], "read_notifications": UserProfile.objects.get(user=request.user).read_notifications.all()[:5]}, context_instance=RequestContext(request))
 		else:
 			return HttpResponse('You do not have permission to access the page requested.')
 
@@ -225,10 +225,10 @@ def list_users(request):
 		# Verifies if the user's profile is active or the role is 'admin'
 		if p.active and p.role == 'admin':
 			users = User.objects.all()
-			return render_to_response("admin/users_list.html", {"username": username, "users": users, "user": request.user,  "notifications": UserProfile.objects.get(user=request.user).notifications, "read_notifications": UserProfile.objects.get(user=request.user).read_notifications}, context_instance=RequestContext(request))
+			return render_to_response("admin/users_list.html", {"username": username, "users": users, "user": request.user,  "notifications": UserProfile.objects.get(user=request.user).notifications.all()[:5], "read_notifications": UserProfile.objects.get(user=request.user).read_notifications.all()[:5]}, context_instance=RequestContext(request))
 		else:
 			message = 'Your user is not active or you are not an administrator.'
-			return render_to_response("admin/users_list.html", {"username": username, "message": message, "user": request.user,  "notifications": UserProfile.objects.get(user=request.user).notifications, "read_notifications": UserProfile.objects.get(user=request.user).read_notifications}, context_instance=RequestContext(request))
+			return render_to_response("admin/users_list.html", {"username": username, "message": message, "user": request.user,  "notifications": UserProfile.objects.get(user=request.user).notifications.all()[:5], "read_notifications": UserProfile.objects.get(user=request.user).read_notifications.all()[:5]}, context_instance=RequestContext(request))
 	else:
 		message = 'This page is only accessible after logging in. Please log in.'
 		return render_to_response("admin/users_list.html", {"message": message, "user": request.user}, context_instance=RequestContext(request))		
@@ -248,7 +248,7 @@ def index(request):
 				msg = "You are already logged in. You don't need to register."
 				msg_type = "error"
 		instructor = UserProfile.objects.get(user__username=request.user.username)
-		return render(request, 'index.html', {"instructor": instructor, "message": msg, "message_type": msg_type, "user": request.user, "notifications": UserProfile.objects.get(user=request.user).notifications, "read_notifications": UserProfile.objects.get(user=request.user).read_notifications })
+		return render(request, 'index.html', {"instructor": instructor, "message": msg, "message_type": msg_type, "user": request.user, "notifications": UserProfile.objects.get(user=request.user).notifications.all()[:5], "read_notifications": UserProfile.objects.get(user=request.user).read_notifications.all()[:5]})
 	else:
 		return HttpResponseRedirect('/login')
 
@@ -256,8 +256,8 @@ def index(request):
 def admin(request):
 	context = {}
 	context["user"] = request.user
-	context["notifications"] = UserProfile.objects.get(user=request.user).notifications
-	context["read_notifications"] = UserProfile.objects.get(user=request.user).read_notifications
+	context["notifications"] = UserProfile.objects.get(user=request.user).notifications.all()[:5]
+	context["read_notifications"] = UserProfile.objects.get(user=request.user).read_notifications.all()[:5]
 	context["departments"] = Department.objects.all
 	return render(request, 'admin/index.html', context)
 
@@ -304,16 +304,16 @@ def admin_upload(request):
 		if msg == "":
 			msg = "The %s file has been uploaded." % model_type
 			msg_type = "success"
-	return render_to_response('admin/upload.html', {'form': UploadCsv(), "departments": Department.objects.all, "message": msg, "message_type": msg_type, "user": request.user, "notifications": UserProfile.objects.get(user=request.user).notifications, "read_notifications": UserProfile.objects.get(user=request.user).read_notifications }, context_instance=RequestContext(request))
+	return render_to_response('admin/upload.html', {'form': UploadCsv(), "departments": Department.objects.all, "message": msg, "message_type": msg_type, "user": request.user, "notifications": UserProfile.objects.get(user=request.user).notifications.all()[:5], "read_notifications": UserProfile.objects.get(user=request.user).read_notifications.all()[:5]}, context_instance=RequestContext(request))
 
 def admin_schedule(request, instructor_name):
 	context = {}
 	try:
 		instructor = UserProfile.objects.get(user__username=instructor_name)
 		if instructor:
-			return render_to_response("admin/schedule.html", {"instructor": instructor, "user": request.user, "notifications": UserProfile.objects.get(user=request.user).notifications, "read_notifications": UserProfile.objects.get(user=request.user).read_notifications}, context_instance=RequestContext(request))
+			return render_to_response("admin/schedule.html", {"instructor": instructor, "user": request.user, "notifications": UserProfile.objects.get(user=request.user).notifications.all()[:5], "read_notifications": UserProfile.objects.get(user=request.user).read_notifications.all()[:5]}, context_instance=RequestContext(request))
 		else:
-			return render_to_response("admin/schedule.html", {"message": "Invalid instructor", "message_type": "error", "user": request.user, "notifications": UserProfile.objects.get(user=request.user).notifications, "read_notifications": UserProfile.objects.get(user=request.user).read_notifications}, context_instance=RequestContext(request))
+			return render_to_response("admin/schedule.html", {"message": "Invalid instructor", "message_type": "error", "user": request.user, "notifications": UserProfile.objects.get(user=request.user).notifications.all()[:5], "read_notifications": UserProfile.objects.get(user=request.user).read_notifications.all()[:5]}, context_instance=RequestContext(request))
   	except Exception as e:
   		return HttpResponseNotFound(e)
 
@@ -489,7 +489,7 @@ def add_course(request):
 			msg = "The course has successfully been added."
 		elif msg_type == "error":
 			msg = "An error occurred while adding the course."
-	return render_to_response("add_course.html", {"user": request.user, "message": msg, "message_type": msg_type, "notifications": UserProfile.objects.get(user=request.user).notifications, "read_notifications": UserProfile.objects.get(user=request.user).read_notifications}, context_instance=RequestContext(request))
+	return render_to_response("add_course.html", {"user": request.user, "message": msg, "message_type": msg_type, "notifications": UserProfile.objects.get(user=request.user).notifications.all()[:5], "read_notifications": UserProfile.objects.get(user=request.user).read_notifications.all()[:5]}, context_instance=RequestContext(request))
 
 def delete_course(request):
 	msg, msg_type = "", ""
@@ -500,7 +500,7 @@ def delete_course(request):
 		elif msg_type == "error":
 			msg = "An error occurred while deleting the course."
 	courses = UserProfile.objects.get(user__username=request.user.username).myCourses.all()
-	return render_to_response("delete_course.html", {"courses": courses, "user": request.user, "message": msg, "message_type": msg_type, "notifications": UserProfile.objects.get(user=request.user).notifications, "read_notifications": UserProfile.objects.get(user=request.user).read_notifications}, context_instance=RequestContext(request))
+	return render_to_response("delete_course.html", {"courses": courses, "user": request.user, "message": msg, "message_type": msg_type, "notifications": UserProfile.objects.get(user=request.user).notifications.all()[:5], "read_notifications": UserProfile.objects.get(user=request.user).read_notifications.all()[:5]}, context_instance=RequestContext(request))
 
 def switch_course(request):
 	msg, msg_type = "", ""
@@ -511,7 +511,7 @@ def switch_course(request):
 		elif msg_type == "error":
 			msg = "An error occurred while switching the courses."
 	courses = UserProfile.objects.get(user__username=request.user.username).myCourses.all()
-	return render_to_response("switch_course.html", {"courses": courses, "user": request.user, "message": msg, "message_type": msg_type, "notifications": UserProfile.objects.get(user=request.user).notifications, "read_notifications": UserProfile.objects.get(user=request.user).read_notifications}, context_instance=RequestContext(request))
+	return render_to_response("switch_course.html", {"courses": courses, "user": request.user, "message": msg, "message_type": msg_type, "notifications": UserProfile.objects.get(user=request.user).notifications.all()[:5], "read_notifications": UserProfile.objects.get(user=request.user).read_notifications.all()[:5]}, context_instance=RequestContext(request))
 
 
 def room_capacities(request):

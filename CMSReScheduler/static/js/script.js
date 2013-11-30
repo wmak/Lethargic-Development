@@ -1,15 +1,3 @@
-function toggleNotifications(obj) {
-	notifications = document.getElementById("notifications-box");
-	if (notifications.style.display == 'block') {
-		notifications.style.display = 'none';
-		obj.className = obj.className.replace(" clicked", "");
-	} else {
-		notifications.style.display = 'block';
-		obj.className.replace(" clicked", "");
-		obj.className += " clicked";
-    }
-}
-
 function selectUploadType(self, value) {
 	if (self.options[self.selectedIndex].value == "schedule") {
 		document.getElementById('department').style.display = "block";
@@ -157,6 +145,34 @@ $(document).ready(function() {
 			}
 		});
 		e.preventDefault();
+	});
+
+	$("a#notifications").click(function() {
+		$("#notifications-box").toggle();
+		if ($("#notifications-box").css("display") == "block") {
+			$(this).addClass("clicked");
+		} else {
+			$(this).removeClass("clicked");
+		}
+	});
+
+	$("a.notification.active").click(function() {
+		var temp = $(this);
+		$.ajax({
+			url: "/user/" + $("input[name='user_id']").val(),
+			type: "PUT",
+			data: JSON.stringify({
+				"read" : [$(this).text()]
+			}),
+			success: function() {
+				$(temp).removeClass("active");
+				var num = parseInt($(temp).closest("#header-nav").find("a#notifications").html()) - 1;
+				if (num == 0) {
+					$(temp).closest("#header-nav").find("a#notifications").removeClass("active");
+				}
+				$(temp).closest("#header-nav").find("a#notifications").html(num);
+			}
+		});
 	});
 });
 

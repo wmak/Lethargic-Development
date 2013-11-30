@@ -31,20 +31,20 @@
 								<li><a class="{% if active == "admin" %}active{% endif %}" href="{% url "admin" %}">Admin</a></li>
 							{% endif %}
 							<li><a href="{% url "logout" %}">Log Out</a></li>
-							<li><a class="{% if notifications|count > 0 %}active{% endif %}" id="notifications" href="#" onclick="toggleNotifications(this);">{{ notifications|count }}</a></li>
+							<li><a class="{% if notifications|count > 0 %}active{% endif %}" id="notifications" href="#">{{ notifications|count }}</a></li>
 						{% endif %}
 					</ul>
 				</div>
 				<div class="hidden" id="notifications-box">
 					<ul>
-						{% if notifications|count == 0 %}
-							<li class="notification center">No new notifications</li>
+						{% if notifications|count == 0 and read_notifications|count == 0 %}
+							<a class="notification center" href="#">No new notifications</a>
 						{% else %}
-							{% for notification in notifications.all %}
-								<li class="notification active">{{ notification.data }}</li>
+							{% for notification in notifications %}
+								<a class="notification active" href="#">{{ notification.data }}</a></a>
 							{% endfor %}
-							{% for notification in read_notifications.all %}
-								<li class="notification">{{ notification.data }}</li>
+							{% for notification in read_notifications %}
+								<a class="notification" href="#">{{ notification.data }}</a>
 							{% endfor %}
 						{% endif %}
 					</ul>
@@ -56,6 +56,8 @@
 			<div class="clear"></div>
 			<hr></hr>
 		</header>
+
+		<input type="hidden" name="user_id" value="{{ user.id }}">
 
 		{% if message_type != None and message_type != "" %}
 			<div class="message" id="{{ message_type }}">{{ message }}</div>
