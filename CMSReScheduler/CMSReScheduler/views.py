@@ -559,7 +559,7 @@ def department_schedule(request, department_name, user_name):
 				for i in L:
 					course_schedules.append(i)
 
-			for c in course_schedule:
+			for c in course_schedules:
 				course = Course.objects.get(code=c.course)
 				course_code.append(course.code)
 				course_name.append(course.name)
