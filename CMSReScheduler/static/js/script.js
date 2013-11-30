@@ -93,5 +93,70 @@ $(document).ready(function() {
 			$(this).closest("#schedule-view-form").attr("action", "/admin/schedule/");
 		}
 	});
+
+	$("#add-course-form").on("click", "#submit", function(e) {
+		$.ajax({
+			url: "/course/" + $("#add-course-form").find("input[name='code']").val() + "/",
+			type: "POST",
+			data: JSON.stringify({
+				"code" : $("#add-course-form").find("input[name='code']").val(),
+				"name" : $("#add-course-form").find("input[name='name']").val(),
+				"enrolment" : $("#add-course-form").find("input[name='enrolment']").val(),
+				"department" : $("#add-course-form").find("input[name='department']").val()
+			}),
+			dataType: 'json',
+			success: function() {
+				location.href = "/add_course?add=success"
+			}, 
+			error: function() {
+				location.href = "/add_course?add=error"
+			}
+		});
+		e.preventDefault();
+	});
+
+	$("#delete-course-form").on("click", "#submit", function(e) {
+		var temp = $(this).closest("#delete-course-form").find("select[name='course'] option:selected").text().split(" - ");
+		var course = temp[0];
+		var section = temp[1];
+		$.ajax({
+			url: "/course/" + course + "/" + section + "/",
+			type: "DELETE",
+			success: function() {
+				location.href = "/delete_course?delete=success"
+			}, 
+			error: function() {
+				location.href = "/delete_course?delete=error"
+			}
+		});
+		e.preventDefault();
+	});
+
+	$("#switch-course-form").on("click", "#submit", function(e) {
+		var temp1 = $(this).closest("#switch-course-form").find("select[name='course1'] option:selected").text().split(" - ");
+		var temp2 = $(this).closest("#switch-course-form").find("select[name='course2'] option:selected").text().split(" - ");
+		var course1 = temp1[0];
+		var course2 = temp2[0];
+		var section1 = temp1[1];
+		var section2 = temp2[1];
+		$.ajax({
+			url: "/course/" + course1 + "/" + section1,
+			type: "PUT",
+			data: JSON.stringify({
+				"switch" : {
+					"code" : course2,
+					"section": section2
+				}
+			}),
+			dataType: 'json',
+			success: function() {
+				location.href = "/switch_course?switch=success"
+			}, 
+			error: function() {
+				location.href = "/switch_course?switch=error"
+			}
+		});
+		e.preventDefault();
+	});
 });
 

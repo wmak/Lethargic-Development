@@ -424,9 +424,9 @@ def course(request, course, section):
 				# Special key switch will switch all details but course and typeOfSession between two CourseSchedules
 				if section and body.has_key("switch"):
 					try:
-						current = CourseSchedule.objects.filter(course = current, typeOfSession = section)[0]
-						to_switch = classutils.get_course(body["switch"]["code"])
-						next = CourseSchedule.objects.filter(course = to_switch, typeOfSession = body["switch"]["section"])[0]
+						print section
+						current = CourseSchedule.objects.filter(course = course, typeOfSession = section)[0]
+						next = CourseSchedule.objects.filter(course = body["switch"]["code"], typeOfSession = body["switch"]["section"])[0]
 						current.course, next.course = next.course, current.course
 						current.typeOfSession, next.typeOfSession = next.typeOfSession, current.typeOfSession
 						current.save()
@@ -466,11 +466,11 @@ def course(request, course, section):
 		elif request.method == "POST":
 			body.setdefault("code", course)
 			result = classutils.add_course(body)
-			if not result:
+			if result:
 				info = {course : "successfully added"}
 				status = GOOD_REQUEST
 			else:
-				info = {"Error" : "Internal error occurred" + result}
+				info = {"Error" : "Internal error occurred " + str(result)}
 				status = INTERNAL_ERROR
 		else:
 			info = {"Error" : "Unknown request"}
@@ -480,6 +480,38 @@ def course(request, course, section):
 		status = INTERNAL_ERROR
 	data = json.dumps(info)
 	return HttpResponse(content = data, status = status)
+
+def add_course(request):
+	msg, msg_type = "", ""
+	if request.GET and "add" in request.GET:
+		msg_type = request.GET["add"]
+		if msg_type == "success":
+			msg = "The course has successfully been added."
+		elif msg_type == "error":
+			msg = "An error occurred while adding the course."
+	return render_to_response("add_course.html", {"user": request.user, "message": msg, "message_type": msg_type, "notifications": UserProfile.objects.get(user=request.user).notifications, "read_notifications": UserProfile.objects.get(user=request.user).read_notifications}, context_instance=RequestContext(request))
+
+def delete_course(request):
+	msg, msg_type = "", ""
+	if request.GET and "delete" in request.GET:
+		msg_type = request.GET["delete"]
+		if msg_type == "success":
+			msg = "The course has successfully been deleted."
+		elif msg_type == "error":
+			msg = "An error occurred while deleting the course."
+	courses = UserProfile.objects.get(user__username=request.user.username).myCourses.all()
+	return render_to_response("delete_course.html", {"courses": courses, "user": request.user, "message": msg, "message_type": msg_type, "notifications": UserProfile.objects.get(user=request.user).notifications, "read_notifications": UserProfile.objects.get(user=request.user).read_notifications}, context_instance=RequestContext(request))
+
+def switch_course(request):
+	msg, msg_type = "", ""
+	if request.GET and "switch" in request.GET:
+		msg_type = request.GET["switch"]
+		if msg_type == "success":
+			msg = "The courses have successfully been switched."
+		elif msg_type == "error":
+			msg = "An error occurred while switching the courses."
+	courses = UserProfile.objects.get(user__username=request.user.username).myCourses.all()
+	return render_to_response("switch_course.html", {"courses": courses, "user": request.user, "message": msg, "message_type": msg_type, "notifications": UserProfile.objects.get(user=request.user).notifications, "read_notifications": UserProfile.objects.get(user=request.user).read_notifications}, context_instance=RequestContext(request))
 
 
 def room_capacities(request):

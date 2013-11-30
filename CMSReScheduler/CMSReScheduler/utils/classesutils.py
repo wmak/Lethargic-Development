@@ -18,7 +18,7 @@ def update_schedule(items, instructor_name):
 			status = add_schedule(item, True, True)
 			if not status:
 				return status
-		instructor.myCourses.add(Course.objects.get(code = item['course']))
+		instructor.myCourses.add(Course.objects.filter(code = item['course'])[0])
 	return "Successfully Updated"
 
 def update_enrolment(items, file):

@@ -11,6 +11,8 @@
                         <div class="form-label">{{ field.label_tag }}: </div>
                         <div class="form-input">{{ field }}</div>
                     </div>
+                {% else %}
+                    <div class="hidden">{{ field }}</div>
                 {% endif %}
             {% endfor %}
 
