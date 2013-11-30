@@ -552,17 +552,22 @@ def department_schedule(request, department_name, user_name):
 			class_type = []
 			days = []
 			room = []
-			
+			course_schedules = []
 
+			for item in courses:
+				L = CourseSchedule.objects.filter(item.code)
+				for i in L:
+					course_schedules.append(i)
+					
 			for c in courses:
-				course = CourseSchedule.objects.get(name=c.code)
-				course_code.append(c.code)
-				course_name.append(c.name)
-				start_times.append(course.startTime)
-				end_times.append(course.endTime)
-				class_type.append(course.typeOfSession)
-				days.append(course.dayOfWeek)
-				room.append(course.room)
+				course = Course.objects.get(code=c.course)
+				course_code.append(course.code)
+				course_name.append(course.name)
+				start_times.append(c.startTime)
+				end_times.append(c.endTime)
+				class_type.append(c.typeOfSession)
+				days.append(c.dayOfWeek)
+				room.append(c.room)
 
 			super_list = zip(course_code, class_type, course_name, days, start_times, end_times)
 
