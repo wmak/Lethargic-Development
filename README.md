@@ -45,7 +45,7 @@ Commandline Interface
 	- either using the python or shell application the command when in the commandline directory is
 		- `python CMS.py <PARAMETERS>`
 		- `sh CMS.sh <PARAMETERS>` (or if you wish chmod the file first and you can use just `./CMS.sh`
-	- As for parameters currently implemented there are two commands
+	- As for parameters currently implemented there are three commands
 		- course
 			- course related commands
 			- `get` returns all relevant information concerning the course
@@ -74,6 +74,27 @@ Commandline Interface
 				- ex. `python CMS.py user get 1` #returns notifications for user with id=1
 			- `put` moves notifications to a read state
 				- ex. `python CMS.py user put 1 "[\"course 6 has been changed\"]`
+		-filtering
+			- filters courses, rooms and schedules related commands
+			- 'get' returns all the information required
+				- The string should be in the following format:
+					- `{"key":"value"}`
+					- For rooms, the keys and the values can be the following:
+						- "capacity": an integer indicating the minimum capacity the room should have
+						- "availableon": the day to use checking if the room is available
+						- "availableat": the startTime to use when checking if the room is available, in the format "HH:MM"
+						- "availablefor": the length (in minutes) to use when checking if the room is available
+						- "building": two upper-case characters indicating the code for a building (IC, for example)
+					- For courses, the keys and the values can be the following:
+						- "roomcode": the code of the room in which the desired courses take place
+						- "starttime": the desired startTimee for the courses, in the format "HH:MM"
+						- "building": two upper-case characters indicating the code for a building (IC, for example).
+					- For schedules, the keys and the values can be the following:
+						- "roomcode": the room of which you want the schedule
+						- "starttime": the starttime for which you want the scheduel, in the format "HH:MM"
+						- building: two upper-case characters indicating the code for a building (IC, for example).
+						- department: the characters that represent the abbreviation of a department (CSC, for example)
+						- dayOfWeek: will be used to return the schedules of a specific day of the week
 
 
 _Note_: This entire setup assumes a python 2.7 environment. If you're running 3 onwards don't expect anything to work.
