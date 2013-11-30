@@ -567,7 +567,7 @@ def department_schedule(request, department_name, user_name):
 			super_list = zip(course_code, class_type, course_name, days, start_times, end_times)
 
 
-			context = {'list': super_list, 'department': department, 'instructor': instructor, 'chair': chair}
+			context = {'list': super_list, 'department': department, 'instructor': instructor.user, 'chair': chair.user}
 
 			return render_to_response('departments.html', context, context_instance=RequestContext(request))
 		else:
