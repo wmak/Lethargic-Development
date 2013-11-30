@@ -558,8 +558,8 @@ def department_schedule(request, department_name, user_name):
 				L = CourseSchedule.objects.filter(item.code)
 				for i in L:
 					course_schedules.append(i)
-					
-			for c in courses:
+
+			for c in course_schedule:
 				course = Course.objects.get(code=c.course)
 				course_code.append(course.code)
 				course_name.append(course.name)
