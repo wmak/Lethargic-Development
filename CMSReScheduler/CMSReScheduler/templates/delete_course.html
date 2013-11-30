@@ -1,0 +1,25 @@
+	{% include "layouts/header.html" with title="Delete Course" active="schedule" %}
+	{% include "layouts/sidebar.html" %}
+	{% block content %}
+	<div class="content fleft">
+		<h2>Select a course to delete</h2>
+		<form action="." method="post" class="form-left" id="delete-course-form">
+			{% csrf_token %}
+			<div class="form-entry">
+				<div class="form-label">Course: </div>
+				<select name="course" class="form-input">
+					<option value="">Select Course</option>
+					{% for course in courses %}
+						<option value="{{ course.code }}">{{ course }}</option>
+					{% endfor %}
+				</select>
+			</div>
+
+			<div class="form-entry" id="submit">
+				<input type="submit" value="Delete Course">
+			</div>
+		</form>
+	</div>
+	{% endblock %}
+	<div class="clear"></div>
+	{% include "layouts/footer.html" %}

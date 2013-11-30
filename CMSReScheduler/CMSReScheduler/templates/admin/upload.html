@@ -22,7 +22,7 @@
 					<select name="department" class="form-input">
 						<option value="">Select Department</option>
 						{% for department in departments %}
-							<option value="{{ department.id }}">{{ department.name }}</option>
+							<option value="{{ department.name }}">{{ department.name }}</option>
 						{% endfor %}
 					</select>
 				</div>

@@ -1,0 +1,32 @@
+	{% include "layouts/header.html" with title="Add Course" active="schedule" %}
+	{% include "layouts/sidebar.html" %}
+	{% block content %}
+	<div class="content fleft">
+		<h2>Enter the information of the new course</h2>
+		<form action="." method="post" class="form-left" id="add-course-form">
+			{% csrf_token %}
+			<div class="form-entry">
+				<div class="form-label">Code: </div>
+				<input type="text" name="code">
+			</div>
+			<div class="form-entry">
+				<div class="form-label">Name: </div>
+				<input type="text" name="name">
+			</div>
+			<div class="form-entry">
+				<div class="form-label">Enrolment: </div>
+				<input type="text" name="enrolment">
+			</div>
+			<div class="form-entry">
+				<div class="form-label">Department: </div>
+				<input type="text" name="department">
+			</div>
+
+			<div class="form-entry" id="submit">
+				<input type="submit" value="Add Course">
+			</div>
+		</form>
+	</div>
+	{% endblock %}
+	<div class="clear"></div>
+	{% include "layouts/footer.html" %}

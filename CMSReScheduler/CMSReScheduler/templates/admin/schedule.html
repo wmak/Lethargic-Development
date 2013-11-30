@@ -1,6 +1,7 @@
-	{% include "layouts/header.html" with title="My Schedule" active="schedule" %}
+	{% include "layouts/header.html" with title="Schedule" active="admin" %}
 	{% include "layouts/sidebar.html" %}
 	{% block content %}
+    <h2>{{ instructor.user.username }}'s Schedule:</h2>
 	<div class="content fleft">
 		{% load schedule %}
         <div class="schedule-column">

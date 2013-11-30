@@ -4,11 +4,16 @@
 
             <h2>{{ user.username}}'s Profile</h2>
             {% for field in form %}
-                <div class="form-entry">
-                    {{ field.errors }}
-                    <div class="form-label">{{ field.label_tag }}: </div>
-                    <div class="form-input">{{ field }}</div>
-                </div>
+                {% load header %}
+                {% if field.label != "Role" or user|is_admin %}
+                    <div class="form-entry">
+                        {{ field.errors }}
+                        <div class="form-label">{{ field.label_tag }}: </div>
+                        <div class="form-input">{{ field }}</div>
+                    </div>
+                {% else %}
+                    <div class="hidden">{{ field }}</div>
+                {% endif %}
             {% endfor %}
 
             <div class="form-entry left" id="submit">

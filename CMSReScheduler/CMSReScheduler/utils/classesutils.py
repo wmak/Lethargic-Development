@@ -10,13 +10,15 @@ def update_courses(items):
 		if entry.count() == 0:
 			add_course(item, True)
 
-def update_schedule(items):
+def update_schedule(items, instructor_name):
+	instructor = UserProfile.objects.get(user__username=instructor_name)
 	for item in items:
 		cs = CourseSchedule.objects.filter(course = item["course"], typeOfSession = item["typeOfSession"], dayOfWeek = item["dayOfWeek"])
 		if cs.count() == 0:
 			status = add_schedule(item, True, True)
 			if not status:
 				return status
+		instructor.myCourses.add(Course.objects.filter(code = item['course'])[0])
 	return "Successfully Updated"
 
 def update_enrolment(items, file):

@@ -247,20 +247,18 @@ def index(request):
 			elif "registration" in request.GET:
 				msg = "You are already logged in. You don't need to register."
 				msg_type = "error"
-		return render(request, 'index.html', {"message": msg, "message_type": msg_type, "user": request.user, "notifications": UserProfile.objects.get(user=request.user).notifications, "read_notifications": UserProfile.objects.get(user=request.user).read_notifications })
+		instructor = UserProfile.objects.get(user__username=request.user.username)
+		return render(request, 'index.html', {"instructor": instructor, "message": msg, "message_type": msg_type, "user": request.user, "notifications": UserProfile.objects.get(user=request.user).notifications, "read_notifications": UserProfile.objects.get(user=request.user).read_notifications })
 	else:
-		return render(request, 'index.html')
+		return HttpResponseRedirect('/login')
 
 #@login_required
 def admin(request):
-	# TODO: Filter the results by instructor
-	daysOfWeek = ["MO", "TU", "WE", "TH", "FR"]
 	context = {}
-	for day in daysOfWeek:
-		context[day] = CourseSchedule.objects.filter(dayOfWeek=day).order_by("startTime")
 	context["user"] = request.user
 	context["notifications"] = UserProfile.objects.get(user=request.user).notifications
 	context["read_notifications"] = UserProfile.objects.get(user=request.user).read_notifications
+	context["departments"] = Department.objects.all
 	return render(request, 'admin/index.html', context)
 
 def admin_upload(request):
@@ -272,7 +270,7 @@ def admin_upload(request):
 			if model_type == 'schedule':
 				format = ['course', 'typeOfSession', 'dayOfWeek', 'startTime', 'endTime', 'room']
 				parser_list = csvutils.parse(request.FILES['file'], format, ',')
-				classutils.update_schedule(parser_list)
+				classutils.update_schedule(parser_list, request.POST['instructor'])
 			elif model_type == 'room':
 			 	capacity, parser_list = csvutils.parse_room_file(request.FILES['file'])
 			 	classutils.update_room(parser_list, capacity)
@@ -300,13 +298,24 @@ def admin_upload(request):
 				msg = "Invalid type."
 				msg_type = "error"
 		except Exception as e:
-			msg = "Invalid file." + str(e)
+			msg = "Invalid file. " + str(e)
 			msg_type = "error"
 
 		if msg == "":
 			msg = "The %s file has been uploaded." % model_type
 			msg_type = "success"
 	return render_to_response('admin/upload.html', {'form': UploadCsv(), "departments": Department.objects.all, "message": msg, "message_type": msg_type, "user": request.user, "notifications": UserProfile.objects.get(user=request.user).notifications, "read_notifications": UserProfile.objects.get(user=request.user).read_notifications }, context_instance=RequestContext(request))
+
+def admin_schedule(request, instructor_name):
+	context = {}
+	try:
+		instructor = UserProfile.objects.get(user__username=instructor_name)
+		if instructor:
+			return render_to_response("admin/schedule.html", {"instructor": instructor, "user": request.user, "notifications": UserProfile.objects.get(user=request.user).notifications, "read_notifications": UserProfile.objects.get(user=request.user).read_notifications}, context_instance=RequestContext(request))
+		else:
+			return render_to_response("admin/schedule.html", {"message": "Invalid instructor", "message_type": "error", "user": request.user, "notifications": UserProfile.objects.get(user=request.user).notifications, "read_notifications": UserProfile.objects.get(user=request.user).read_notifications}, context_instance=RequestContext(request))
+  	except Exception as e:
+  		return HttpResponseNotFound(e)
 
 '''This view should receive one string:
 1 - which model will be used, shoulb be in the plural for consistency
@@ -415,9 +424,9 @@ def course(request, course, section):
 				# Special key switch will switch all details but course and typeOfSession between two CourseSchedules
 				if section and body.has_key("switch"):
 					try:
-						current = CourseSchedule.objects.filter(course = current, typeOfSession = section)[0]
-						to_switch = classutils.get_course(body["switch"]["code"])
-						next = CourseSchedule.objects.filter(course = to_switch, typeOfSession = body["switch"]["section"])[0]
+						print section
+						current = CourseSchedule.objects.filter(course = course, typeOfSession = section)[0]
+						next = CourseSchedule.objects.filter(course = body["switch"]["code"], typeOfSession = body["switch"]["section"])[0]
 						current.course, next.course = next.course, current.course
 						current.typeOfSession, next.typeOfSession = next.typeOfSession, current.typeOfSession
 						current.save()
@@ -457,11 +466,11 @@ def course(request, course, section):
 		elif request.method == "POST":
 			body.setdefault("code", course)
 			result = classutils.add_course(body)
-			if not result:
+			if result:
 				info = {course : "successfully added"}
 				status = GOOD_REQUEST
 			else:
-				info = {"Error" : "Internal error occurred" + result}
+				info = {"Error" : "Internal error occurred " + str(result)}
 				status = INTERNAL_ERROR
 		else:
 			info = {"Error" : "Unknown request"}
@@ -471,6 +480,38 @@ def course(request, course, section):
 		status = INTERNAL_ERROR
 	data = json.dumps(info)
 	return HttpResponse(content = data, status = status)
+
+def add_course(request):
+	msg, msg_type = "", ""
+	if request.GET and "add" in request.GET:
+		msg_type = request.GET["add"]
+		if msg_type == "success":
+			msg = "The course has successfully been added."
+		elif msg_type == "error":
+			msg = "An error occurred while adding the course."
+	return render_to_response("add_course.html", {"user": request.user, "message": msg, "message_type": msg_type, "notifications": UserProfile.objects.get(user=request.user).notifications, "read_notifications": UserProfile.objects.get(user=request.user).read_notifications}, context_instance=RequestContext(request))
+
+def delete_course(request):
+	msg, msg_type = "", ""
+	if request.GET and "delete" in request.GET:
+		msg_type = request.GET["delete"]
+		if msg_type == "success":
+			msg = "The course has successfully been deleted."
+		elif msg_type == "error":
+			msg = "An error occurred while deleting the course."
+	courses = UserProfile.objects.get(user__username=request.user.username).myCourses.all()
+	return render_to_response("delete_course.html", {"courses": courses, "user": request.user, "message": msg, "message_type": msg_type, "notifications": UserProfile.objects.get(user=request.user).notifications, "read_notifications": UserProfile.objects.get(user=request.user).read_notifications}, context_instance=RequestContext(request))
+
+def switch_course(request):
+	msg, msg_type = "", ""
+	if request.GET and "switch" in request.GET:
+		msg_type = request.GET["switch"]
+		if msg_type == "success":
+			msg = "The courses have successfully been switched."
+		elif msg_type == "error":
+			msg = "An error occurred while switching the courses."
+	courses = UserProfile.objects.get(user__username=request.user.username).myCourses.all()
+	return render_to_response("switch_course.html", {"courses": courses, "user": request.user, "message": msg, "message_type": msg_type, "notifications": UserProfile.objects.get(user=request.user).notifications, "read_notifications": UserProfile.objects.get(user=request.user).read_notifications}, context_instance=RequestContext(request))
 
 
 def room_capacities(request):
@@ -581,6 +622,26 @@ def department_schedule(request, department_name, user_name):
 	except Exception as e:
 		return HttpResponseNotFound(e)
 
+@csrf_exempt
+def instructors(request, department_name):
+	info = {"Error" : "Nothing happened somehow"}
+	status = INTERNAL_ERROR
+	try:
+		department = Department.objects.get(name=department_name)
+
+		if department:
+			instructors = []
+			for instructor in UserProfile.objects.filter(department__name=department.name):
+				instructors += [instructor.user.username]
+			info = {"instructors" : instructors }
+			status = GOOD_REQUEST
+		else:
+			info = {"Error" : "Department could not be found"}
+			status = BAD_REQUEST
+	except Exception as e:
+		info = {"Error" : str(e)}
+	data = json.dumps(info)
+	return HttpResponse(content = data, status = status)
 
 @csrf_exempt
 def user(request, user_id):
