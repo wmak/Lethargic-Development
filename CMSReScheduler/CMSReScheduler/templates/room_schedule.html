@@ -1,0 +1,11 @@
+{% include "layouts/header.html" with title="Rooms Schedule" %}
+{% block content %}
+        <div id="room_schedule">
+                <h1> Room: {{room}}</h1>
+                {% for a, b, c, d, e, f in list  %}
+               		<h3> {{a}} {{b}} - {{c}}: </h3>
+               		<p> Day: {{d}},  Time: {{e}} - {{f}}</p>
+                {% endfor %}
+        </div>
+{% endblock %}
+{% include "layouts/footer.html" %}

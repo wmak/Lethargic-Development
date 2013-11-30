@@ -1,0 +1,13 @@
+{% include "layouts/header.html" with title="Department Scedule" %}
+{% block content %}
+        <div id="departments">
+                <h1> Department: {{department}}</h1>
+                <h2>Chair: {{chair}} </h2>
+                ,<h2>Instructor: {{instructor}} </h2>
+               	{% for a, b, c, d, e, f in list  %}
+            	<h3> {{a}} {{b}} - {{c}}: </h3>
+           		<p> Day: {{d}},  Time: {{e}} - {{f}}</p>
+                {% endfor %}
+        </div>
+{% endblock %}
+{% include "layouts/footer.html" %}

@@ -44,10 +44,23 @@ html, body {
 h1 {
 	font-size: 2em;
 	font-weight: bold;
+	margin-bottom: 1em;
+}
+h2 {
+	font-size: 1.6em;
+	font-weight: bold;
+	margin-bottom: 0.6em;
+}
+h3 {
+	font-size: 1.2em;
+	margin-bottom: 0.2em;
 }
 a {
 	color: #000;
 	text-decoration: none;
+}
+.underline {
+	text-decoration: underline;
 }
 
 .fleft {
@@ -74,6 +87,21 @@ a {
 	display: none;
 }
 
+.message {
+	vertical-align: middle;
+	border: 1px solid;
+	padding: 10px;
+	margin-bottom: 10px;
+}
+.message#success {
+	color: #4f8a10;
+	background-color: #dff2bf;
+}
+.message#error {
+	color: #d8000c;
+	background-color: #ffbaba;
+}
+
 header {
 	margin-bottom: 1em;
 }
@@ -90,33 +118,29 @@ footer {
 	#header-logo > .fleft > img {
 		max-width: 100%;
 	}
-#header-title {
-	width: 48%;
-	display: inline-block;
-	vertical-align: middle;
-}
 #header-nav {
-	width: 24%;
+	width: 73%;
 	margin-left: 1%;
+	margin-bottom: 1em;
 	display: inline-block;
 	vertical-align: top;
 	position: relative;
 }
-	#header-nav > .right.fleft > ul > li {
+	#header-nav > .right > ul > li {
 		display: inline-block;
 		margin: 0 1%;
 	}
-		#header-nav > .right.fleft > ul > li > a {
+		#header-nav > .right > ul > li > a {
 			padding: 5px;
 			border-radius: 5px;
 		}
-		#header-nav > .right.fleft > ul > li > a:hover {
+		#header-nav > .right > ul > li > a:hover {
 			background: #eee;
 		}
-		#header-nav > .right.fleft > ul > li > a.active {
+		#header-nav > .right > ul > li > a.active {
 			background: rgba(30, 144, 255, 0.3);
 		}
-		#header-nav > .right.fleft > ul > li > a#notifications {
+		#header-nav > .right > ul > li > a#notifications {
 			padding: 3px 5px;
 			border-radius: 20px;
 			color: rgba(0, 0, 0, 0.5);
@@ -124,21 +148,22 @@ footer {
 			background: #eee;
 			font-weight: bold;
 		}
-		#header-nav > .right.fleft > ul > li > a#notifications.active {
+		#header-nav > .right > ul > li > a#notifications.active {
 			color: rgba(255, 30, 144, 0.8);
 			background: rgba(255, 30, 144, 0.3);
 			border: 1px rgba(255, 0, 144, 0.5) solid;
 		}
-		#header-nav > .right.fleft > ul > li > a#notifications.clicked {
+		#header-nav > .right > ul > li > a#notifications.clicked {
 			color: #000;
 			border: 1px rgba(100, 150, 200, 0.5) solid;
 			background: rgba(100, 150, 200, 0.3);
 		}
 	#header-nav > #notifications-box {
 		position: absolute;
-		width: 100%;
+		width: 50%;
 		word-wrap: break-word;
 		top: 32px;
+		right: 0;
 		background: #eee;
 		border: 1px #000 solid;
 	}
@@ -147,6 +172,7 @@ footer {
 		display: block;
 		position: absolute;
 		top: -10px;
+		right: 6px;
 		width: 0;
 		height: 0;
 		border-color: transparent transparent #eee transparent;
@@ -158,24 +184,26 @@ footer {
 		display: block;
 		position: absolute;
 		top: -11px;
+		right: 6px;
 		width: 0;
 		height: 0;
 		border-color: transparent transparent #000 transparent;
 		border-style: solid;
 		border-width: 0 12px 10px 12px;
 	}
-		#header-nav > #notifications-box > ul > li.notification {
+		#header-nav > #notifications-box > ul > a.notification {
+			display: list-item;
 			padding: 10px;
 			list-style: none;
 			border-bottom: 1px #000 solid;
 		}
-		#header-nav > #notifications-box > ul > li.notification:hover {
+		#header-nav > #notifications-box > ul > a.notification:hover {
 			cursor: pointer;
 		}
-		#header-nav > #notifications-box > ul > li.notification.active {
+		#header-nav > #notifications-box > ul > a.notification.active {
 			background: rgba(30, 144, 255, 0.3);
 		}
-		#header-nav > #notifications-box > ul > li.notification:last-child {
+		#header-nav > #notifications-box > ul > a.notification:last-child {
 			border-bottom: none;
 		}
 
@@ -230,28 +258,32 @@ footer {
 		vertical-align: middle;
 		padding: 1%;
 		border-bottom: 1px #000 solid;
+		display: block;
 	}
-		.schedule-column:first-child > .schedule-cell:last-child {
-			padding-bottom: 2px;
-		}
+	.schedule-column:first-child > .schedule-cell:last-child {
+		padding-bottom: 2px;
+	}
+	.schedule-column > .schedule-cell.course {
+		background: rgba(30, 144, 255, 0.3);
+	}
 	.schedule-column > .schedule-day {
 		font-weight: bold;
 	}
 
 /* Forms */
-.form-left > .form-entry {
+.form-entry {
 	padding-bottom: 1em;
 }
-	.form-left > .form-entry > .form-label {
+	.form-entry > .form-label {
 		width: 6em;
 		margin-right: 5px;
 		display: inline-block;
 	}
-	.form-left > .form-entry > .form-input {
+	.form-entry > .form-input {
 		margin-left: 5px;
 		display: inline-block;
 	}
-	.form-left > .form-entry > input[type='submit'] {
+	.form-entry > input[type='submit'] {
 		margin: 0;
 		padding: 5px;
 		font-size: 1em;
@@ -260,8 +292,56 @@ footer {
 		background: #eee;
 		cursor: pointer;
 	}
-	.form-left > .form-entry > input[type='submit']:hover {
+	.form-entry > input[type='submit']:hover {
 		background: rgba(30, 144, 255, 0.3);
+	}
+
+.no-sidebar {
+	text-align: center;
+	font-size: 1.2em;
+}
+	.no-sidebar > .form-entry {
+		width: 50%;
+		margin: 0 auto;
+	}
+		.no-sidebar > .form-entry > ul.errorlist {
+			width: 100%;
+		}
+			.form-entry > ul.errorlist > li {
+				list-style: none;
+				text-align: left;
+				color: #d8000c;
+				font-size: 0.8em;
+			}
+			.no-sidebar > .form-entry > ul.errorlist > li {
+				text-align: right;
+			}
+		.no-sidebar > .form-entry > .form-label {
+			width: 28%;
+			margin-right: 1%;
+			display: inline-block;
+			text-align: left;
+		}
+		.no-sidebar > .form-entry > .form-input {
+			width: 69%;
+			margin-left: 1%;
+			display: inline-block;
+		}
+			.no-sidebar > .form-entry > .form-input > input, .no-sidebar > .form-entry > .form-input > select {
+				width: 100%;
+				padding: 5px;
+				font-size: 1.2em;
+				-webkit-box-sizing: border-box;
+			    -moz-box-sizing: border-box;
+			    box-sizing: border-box;
+			}
+
+/* Users List */
+ul#users-list {
+	list-style-type: none;
+}
+	ul#users-list > li > a:hover {
+		text-decoration: underline;
 	}
 
 #footer {

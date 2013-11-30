@@ -1,0 +1,23 @@
+    {% include "layouts/header.html" with title="My Profile" active="profile" %}
+    <form class="no-sidebar" action="/profile/" method="post">
+            {% csrf_token %}
+
+            <h2>{{ user.username}}'s Profile</h2>
+            {% for field in form %}
+                {% load header %}
+                {% if field.label != "Role" or user|is_admin %}
+                    <div class="form-entry">
+                        {{ field.errors }}
+                        <div class="form-label">{{ field.label_tag }}: </div>
+                        <div class="form-input">{{ field }}</div>
+                    </div>
+                {% else %}
+                    <div class="hidden">{{ field }}</div>
+                {% endif %}
+            {% endfor %}
+
+            <div class="form-entry left" id="submit">
+                <input type="submit" value="Submit">
+            </div>
+    </form>
+    {% include "layouts/footer.html" %}
