@@ -5,21 +5,19 @@ These instructions assume a certain level of understanging of a unix environment
 _For the first run_
 
 1. `pip install Django==1.5.4`
-- install mysql
-	- `sudo apt get mysql`
-- Create a new user called "djangouser" with password "bulbasaur"
-	- `CREATE USER 'djangouser'@'localhost' IDENTIFIED BY 'bulbasaur';`
-	- `GRANT ALL PRIVILEGES ON *.* TO 'djangouser'@'localhost' WITH GRANT OPTION;`
-	- `FLUSH PRIVILEGES;`
-- Create a database in mysql called "CMSdb"
-	- `CREATE DATABASE CMSdb;`
-- `pip install MySQL-python`
+- Install required Python Libraries
+	- `pip install simplejson`
 - `cd CMSReScheduler`
     - This directory should have a file called manage.py
+- `python manage.py syncdb`
+- `python manage.py loaddata initialdata.json`
 - `python manage.py runserver`
 
 _For future runs_
+- `python manage.py syncdb`
+- `python manage.py loaddata initialdata.json`
 - `python manage.py runserver`
+
 Now the CMSReScheduler will be running on your local environment on port 8000
 
 Automation Test Suite
@@ -68,13 +66,13 @@ Commandline Interface
 					- `{"code" : "new value", "name" : "new value", "enrolment" : "new value", "department" : "new value",}`
 			- `delete` deletes a course from the system
 				- no body is required, deletes the passed course code from the system
-		- user
+		- `user`
 			- user related commands
 			- `get` returns this users notifications
 				- ex. `python CMS.py user get 1` #returns notifications for user with id=1
 			- `put` moves notifications to a read state
 				- ex. `python CMS.py user put 1 "[\"course 6 has been changed\"]`
-		-filtering
+		- `filter`
 			- filters courses, rooms and schedules related commands
 			- 'get' returns all the information required
 				- The string should be in the following format:
