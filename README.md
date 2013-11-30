@@ -66,13 +66,13 @@ Commandline Interface
 					- `{"code" : "new value", "name" : "new value", "enrolment" : "new value", "department" : "new value",}`
 			- `delete` deletes a course from the system
 				- no body is required, deletes the passed course code from the system
-		- user
+		- `user`
 			- user related commands
 			- `get` returns this users notifications
 				- ex. `python CMS.py user get 1` #returns notifications for user with id=1
 			- `put` moves notifications to a read state
 				- ex. `python CMS.py user put 1 "[\"course 6 has been changed\"]`
-		-filtering
+		- `filter`
 			- filters courses, rooms and schedules related commands
 			- 'get' returns all the information required
 				- The string should be in the following format:
